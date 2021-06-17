@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "DATA_UNIT_SCHEMA")
 public class DataUnitSchemaEntity extends AbstractEntity {
 
-	@Column(name = "SCHEMA_NAME", nullable = false)
+	@Column(name = "NAME", nullable = false)
 	private String name;
 
 	@OneToMany

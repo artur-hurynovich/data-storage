@@ -9,15 +9,27 @@
     <changeSet id="create-table-DATA_UNIT_PROPERTY_SCHEMA" author="artur_hurynovich">
         <createTable tableName="DATA_UNIT_PROPERTY_SCHEMA">
             <column name="ID" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false" unique="true" />
+                <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
-            <column name="PROPERTY_SCHEMA_NAME" type="VARCHAR(50)">
-                <constraints nullable="false" unique="false" />
+            <column name="NAME" type="VARCHAR(50)">
+                <constraints nullable="false" unique="false"/>
             </column>
-            <column name="PROPERTY_SCHEMA_TYPE" type="VARCHAR(50)">
-                <constraints nullable="false" unique="false" />
+            <column name="TYPE" type="VARCHAR(50)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="SCHEMA_ID" type="BIGINT">
+                <constraints nullable="false" unique="false"/>
             </column>
         </createTable>
+    </changeSet>
+
+    <changeSet id="create-FK_PROPERTY_SCHEMA_SCHEMA_ID" author="artur_hurynovich">
+        <addForeignKeyConstraint baseColumnNames="SCHEMA_ID"
+                                 baseTableName="DATA_UNIT_PROPERTY_SCHEMA"
+                                 constraintName="FK_PROPERTY_SCHEMA_SCHEMA_ID"
+                                 onDelete="CASCADE"
+                                 referencedColumnNames="ID"
+                                 referencedTableName="DATA_UNIT_SCHEMA"/>
     </changeSet>
 
 </databaseChangeLog>

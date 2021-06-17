@@ -12,10 +12,10 @@ import javax.persistence.Table;
 @Table(name = "DATA_UNIT_PROPERTY_SCHEMA")
 public class DataUnitPropertySchemaEntity extends AbstractEntity {
 
-	@Column(name = "PROPERTY_SCHEMA_NAME", nullable = false)
+	@Column(name = "NAME", nullable = false)
 	private String name;
 
-	@Column(name = "PROPERTY_SCHEMA_TYPE", nullable = false)
+	@Column(name = "TYPE", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private DataPropertyType type;
 
