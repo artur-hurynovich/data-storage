@@ -6,8 +6,8 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="create-table-DATA_UNIT_SCHEMA" author="artur_hurynovich">
-        <createTable tableName="DATA_UNIT_SCHEMA">
+    <changeSet id="create-table-DS_DATA_UNIT_SCHEMA" author="artur_hurynovich">
+        <createTable tableName="DS_DATA_UNIT_SCHEMA">
             <column name="ID" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>

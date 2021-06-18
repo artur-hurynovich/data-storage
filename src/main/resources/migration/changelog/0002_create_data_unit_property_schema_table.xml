@@ -6,8 +6,8 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="create-table-DATA_UNIT_PROPERTY_SCHEMA" author="artur_hurynovich">
-        <createTable tableName="DATA_UNIT_PROPERTY_SCHEMA">
+    <changeSet id="create-table-DS_DATA_UNIT_PROPERTY_SCHEMA" author="artur_hurynovich">
+        <createTable tableName="DS_DATA_UNIT_PROPERTY_SCHEMA">
             <column name="ID" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
@@ -25,11 +25,11 @@
 
     <changeSet id="create-FK_PROPERTY_SCHEMA_SCHEMA_ID" author="artur_hurynovich">
         <addForeignKeyConstraint baseColumnNames="SCHEMA_ID"
-                                 baseTableName="DATA_UNIT_PROPERTY_SCHEMA"
+                                 baseTableName="DS_DATA_UNIT_PROPERTY_SCHEMA"
                                  constraintName="FK_PROPERTY_SCHEMA_SCHEMA_ID"
                                  onDelete="CASCADE"
                                  referencedColumnNames="ID"
-                                 referencedTableName="DATA_UNIT_SCHEMA"/>
+                                 referencedTableName="DS_DATA_UNIT_SCHEMA"/>
     </changeSet>
 
 </databaseChangeLog>

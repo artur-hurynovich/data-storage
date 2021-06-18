@@ -9,7 +9,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "DATA_UNIT_PROPERTY_SCHEMA")
+@Table(name = "DS_DATA_UNIT_PROPERTY_SCHEMA")
 public class DataUnitPropertySchemaEntity extends AbstractEntity {
 
 	@Column(name = "NAME", nullable = false)

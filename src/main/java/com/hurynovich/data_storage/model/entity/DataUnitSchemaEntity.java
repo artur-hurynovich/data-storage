@@ -8,7 +8,7 @@ import javax.persistence.Table;
 import java.util.List;
 
 @Entity
-@Table(name = "DATA_UNIT_SCHEMA")
+@Table(name = "DS_DATA_UNIT_SCHEMA")
 public class DataUnitSchemaEntity extends AbstractEntity {
 
 	@Column(name = "NAME", nullable = false)
