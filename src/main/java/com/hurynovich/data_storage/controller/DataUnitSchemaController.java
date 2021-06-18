@@ -1,4 +1,4 @@
-package com.hurynovich.data_storage;
+package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.model.GenericResponseBodyWrapper;
 import com.hurynovich.data_storage.model.ValidationResult;
