@@ -1,5 +1,6 @@
 package com.hurynovich.data_storage.model.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -14,7 +15,7 @@ public class DataUnitSchemaEntity extends AbstractEntity {
 	@Column(name = "NAME", nullable = false)
 	private String name;
 
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "SCHEMA_ID", nullable = false)
 	private List<DataUnitPropertySchemaEntity> propertySchemas;
 

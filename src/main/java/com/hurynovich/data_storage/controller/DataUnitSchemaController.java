@@ -50,18 +50,9 @@ public class DataUnitSchemaController {
 
 	@DeleteMapping("/schema/{id}")
 	public ResponseEntity<DataUnitSchemaDTO> deleteSchemaById(final @PathVariable Long id) {
-		final ResponseEntity<DataUnitSchemaDTO> response;
+		dataUnitSchemaService.deleteById(id);
 
-		final Optional<DataUnitSchemaDTO> dataUnitSchemaOptional = dataUnitSchemaService.findById(id);
-		if (dataUnitSchemaOptional.isPresent()) {
-			dataUnitSchemaService.delete(dataUnitSchemaOptional.get());
-
-			response = ResponseEntity.noContent().build();
-		} else {
-			response = ResponseEntity.notFound().build();
-		}
-
-		return response;
+		return ResponseEntity.noContent().build();
 	}
 
 }

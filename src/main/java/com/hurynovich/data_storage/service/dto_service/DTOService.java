@@ -14,6 +14,6 @@ public interface DTOService<T extends Identified<I>, I extends Serializable> {
 
 	List<T> findAll();
 
-	void delete(T t);
+	void deleteById(I id);
 
 }

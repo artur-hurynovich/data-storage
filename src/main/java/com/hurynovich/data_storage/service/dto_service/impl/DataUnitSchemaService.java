@@ -7,10 +7,12 @@ import com.hurynovich.data_storage.service.dto_service.DTOService;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class DataUnitSchemaService implements DTOService<DataUnitSchemaDTO, Long> {
 
 	private final JpaRepository<DataUnitSchemaEntity, Long> repository;
@@ -45,8 +47,8 @@ public class DataUnitSchemaService implements DTOService<DataUnitSchemaDTO, Long
 	}
 
 	@Override
-	public void delete(final DataUnitSchemaDTO dataUnitSchema) {
-		repository.delete(converterToPersistent.convert(dataUnitSchema));
+	public void deleteById(final Long id) {
+		repository.deleteById(id);
 	}
 
 }
