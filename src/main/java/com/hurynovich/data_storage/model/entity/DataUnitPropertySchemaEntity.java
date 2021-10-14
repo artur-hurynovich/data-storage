@@ -10,7 +10,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "DS_DATA_UNIT_PROPERTY_SCHEMA")
-public class DataUnitPropertySchemaEntity extends AbstractEntity {
+public class DataUnitPropertySchemaEntity extends AbstractEntity<Long> {
 
 	@Column(name = "NAME", nullable = false)
 	private String name;

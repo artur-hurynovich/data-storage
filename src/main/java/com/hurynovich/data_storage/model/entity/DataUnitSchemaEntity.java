@@ -10,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "DS_DATA_UNIT_SCHEMA")
-public class DataUnitSchemaEntity extends AbstractEntity {
+public class DataUnitSchemaEntity extends AbstractEntity<Long> {
 
 	@Column(name = "NAME", nullable = false)
 	private String name;
