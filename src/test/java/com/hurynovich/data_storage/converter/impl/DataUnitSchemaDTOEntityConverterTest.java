@@ -15,7 +15,7 @@ import java.util.List;
 public class DataUnitSchemaDTOEntityConverterTest {
 
 	private final Converter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter =
-			new DataUnitSchemaDTOEntityConverter(new DataUnitPropertySchemaDTOEntityConverter());
+			new DataUnitSchemaDTOEntityConverter();
 
 	private final TestObjectGenerator<DataUnitSchemaDTO> testObjectGenerator =
 			new TestDataUnitSchemaDTOGenerator();
