@@ -1,19 +1,22 @@
 package com.hurynovich.data_storage.converter.impl;
 
 import com.hurynovich.data_storage.converter.Converter;
-import com.hurynovich.data_storage.model.DataUnitPropertyType;
 import com.hurynovich.data_storage.model.dto.DataUnitPropertySchemaDTO;
 import com.hurynovich.data_storage.model.entity.DataUnitPropertySchemaEntity;
+import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
+import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitPropertySchemaEntityGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class DataUnitPropertySchemaEntityDTOConverterTest {
 
 	private final Converter<DataUnitPropertySchemaEntity, DataUnitPropertySchemaDTO> converter =
 			new DataUnitPropertySchemaEntityDTOConverter();
+
+	private final TestObjectGenerator<DataUnitPropertySchemaEntity> testObjectGenerator =
+			new TestDataUnitPropertySchemaEntityGenerator();
 
 	@Test
 	public void convertNullTest() {
@@ -23,7 +26,7 @@ public class DataUnitPropertySchemaEntityDTOConverterTest {
 
 	@Test
 	public void convertNotNullTest() {
-		final DataUnitPropertySchemaEntity schemaEntity = buildSchemaEntity1();
+		final DataUnitPropertySchemaEntity schemaEntity = testObjectGenerator.generateSingleObject();
 
 		final DataUnitPropertySchemaDTO schemaDTO = converter.convert(schemaEntity);
 		Assertions.assertNotNull(schemaDTO);
@@ -42,12 +45,8 @@ public class DataUnitPropertySchemaEntityDTOConverterTest {
 
 	@Test
 	public void convertAllNotNullTest() {
-		final DataUnitPropertySchemaEntity schemaEntity1 = buildSchemaEntity1();
-		final DataUnitPropertySchemaEntity schemaEntity2 = buildSchemaEntity2();
-
-		final List<DataUnitPropertySchemaEntity> schemaEntities = Arrays.asList(schemaEntity1, schemaEntity2);
-		final List<DataUnitPropertySchemaDTO> schemaDTOs = converter.
-				convertAll(schemaEntities);
+		final List<DataUnitPropertySchemaEntity> schemaEntities = testObjectGenerator.generateMultipleObjects();
+		final List<DataUnitPropertySchemaDTO> schemaDTOs = converter.convertAll(schemaEntities);
 		Assertions.assertNotNull(schemaDTOs);
 		Assertions.assertEquals(schemaEntities.size(), schemaDTOs.size());
 
@@ -60,24 +59,6 @@ public class DataUnitPropertySchemaEntityDTOConverterTest {
 			Assertions.assertEquals(schemaEntity.getName(), schemaDTO.getName());
 			Assertions.assertEquals(schemaEntity.getType(), schemaDTO.getType());
 		}
-	}
-
-	private DataUnitPropertySchemaEntity buildSchemaEntity1() {
-		return buildSchemaEntity(1000L, "Data Unit Property Schema 1 Test Name", DataUnitPropertyType.BOOLEAN);
-	}
-
-	private DataUnitPropertySchemaEntity buildSchemaEntity2() {
-		return buildSchemaEntity(2000L, "Data Unit Property Schema 2 Test Name", DataUnitPropertyType.LABEL);
-	}
-
-	private DataUnitPropertySchemaEntity buildSchemaEntity(final Long id, final String name, final DataUnitPropertyType type) {
-		final DataUnitPropertySchemaEntity schemaEntity = new DataUnitPropertySchemaEntity();
-
-		schemaEntity.setId(id);
-		schemaEntity.setName(name);
-		schemaEntity.setType(type);
-
-		return schemaEntity;
 	}
 
 }
