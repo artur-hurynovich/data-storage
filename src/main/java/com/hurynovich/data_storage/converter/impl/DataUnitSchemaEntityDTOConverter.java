@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DataUnitSchemaEntityDTOConverter
-		extends GenericPersistenceConverter<DataUnitSchemaEntity, DataUnitSchemaDTO, Long> {
+		extends GenericConverter<DataUnitSchemaEntity, DataUnitSchemaDTO, Long> {
 
 	private static final String[] IGNORE_PROPERTIES = {"propertySchemas"};
 
@@ -34,7 +34,7 @@ public class DataUnitSchemaEntityDTOConverter
 	}
 
 	@Override
-	protected Class<DataUnitSchemaDTO> getResultClass() {
+	protected Class<DataUnitSchemaDTO> getTargetClass() {
 		return DataUnitSchemaDTO.class;
 	}
 
