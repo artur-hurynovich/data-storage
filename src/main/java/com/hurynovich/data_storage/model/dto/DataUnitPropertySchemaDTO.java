@@ -1,12 +1,12 @@
 package com.hurynovich.data_storage.model.dto;
 
-import com.hurynovich.data_storage.model.DataPropertyType;
+import com.hurynovich.data_storage.model.DataUnitPropertyType;
 
 public class DataUnitPropertySchemaDTO extends AbstractDTO<Long> {
 
 	private String name;
 
-	private DataPropertyType type;
+	private DataUnitPropertyType type;
 
 	public String getName() {
 		return name;
@@ -16,11 +16,11 @@ public class DataUnitPropertySchemaDTO extends AbstractDTO<Long> {
 		this.name = name;
 	}
 
-	public DataPropertyType getType() {
+	public DataUnitPropertyType getType() {
 		return type;
 	}
 
-	public void setType(final DataPropertyType type) {
+	public void setType(final DataUnitPropertyType type) {
 		this.type = type;
 	}
 

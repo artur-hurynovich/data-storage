@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.model.entity;
 
-import com.hurynovich.data_storage.model.DataPropertyType;
+import com.hurynovich.data_storage.model.DataUnitPropertyType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +17,7 @@ public class DataUnitPropertySchemaEntity extends AbstractEntity {
 
 	@Column(name = "TYPE", nullable = false)
 	@Enumerated(EnumType.STRING)
-	private DataPropertyType type;
+	private DataUnitPropertyType type;
 
 	public String getName() {
 		return name;
@@ -27,11 +27,11 @@ public class DataUnitPropertySchemaEntity extends AbstractEntity {
 		this.name = name;
 	}
 
-	public DataPropertyType getType() {
+	public DataUnitPropertyType getType() {
 		return type;
 	}
 
-	public void setType(final DataPropertyType type) {
+	public void setType(final DataUnitPropertyType type) {
 		this.type = type;
 	}
 

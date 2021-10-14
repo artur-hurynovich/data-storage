@@ -1,4 +1,4 @@
-package com.hurynovich.data_storage.service;
+package com.hurynovich.data_storage.service.dto_service;
 
 import com.hurynovich.data_storage.model.Identified;
 
@@ -14,8 +14,6 @@ public interface DTOService<T extends Identified<I>, I extends Serializable> {
 
 	List<T> findAll();
 
-	T update(T t);
-
-	void deleteById(I id);
+	void delete(T t);
 
 }

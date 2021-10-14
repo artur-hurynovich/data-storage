@@ -1,17 +1,14 @@
 package com.hurynovich.data_storage.controller;
 
-import com.hurynovich.data_storage.model.GenericResponseBodyWrapper;
-import com.hurynovich.data_storage.model.ValidationResult;
-import com.hurynovich.data_storage.model.ValidationResultType;
 import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
-import com.hurynovich.data_storage.service.DTOService;
-import com.hurynovich.data_storage.utils.ErrorUtils;
-import com.hurynovich.data_storage.validation.DTOValidator;
+import com.hurynovich.data_storage.service.dto_service.DTOService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -22,81 +19,49 @@ public class DataUnitSchemaController {
 
 	private final DTOService<DataUnitSchemaDTO, Long> dataUnitSchemaService;
 
-	private final DTOValidator<DataUnitSchemaDTO, Long> validator;
-
-	public DataUnitSchemaController(final DTOService<DataUnitSchemaDTO, Long> dataUnitSchemaService,
-									final DTOValidator<DataUnitSchemaDTO, Long> validator) {
+	public DataUnitSchemaController(final DTOService<DataUnitSchemaDTO, Long> dataUnitSchemaService) {
 		this.dataUnitSchemaService = dataUnitSchemaService;
-		this.validator = validator;
-	}
-
-	@GetMapping("/schemas")
-	public ResponseEntity<GenericResponseBodyWrapper> getSchemas() {
-		final ValidationResult validationResult = new ValidationResult();
-		final List<DataUnitSchemaDTO> object = dataUnitSchemaService.findAll();
-		final GenericResponseBodyWrapper response =
-				new GenericResponseBodyWrapper(validationResult, object);
-
-		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/schema")
-	public ResponseEntity<GenericResponseBodyWrapper> postSchema(final DataUnitSchemaDTO dataUnitSchema) {
-		final ResponseEntity<GenericResponseBodyWrapper> responseEntity;
-
-		final ValidationResult validationResult = validator.validateOnSave(dataUnitSchema);
-		if (validationResult.getType() == ValidationResultType.SUCCESS) {
-			responseEntity = ResponseEntity.ok(
-					new GenericResponseBodyWrapper(validationResult, dataUnitSchemaService.save(dataUnitSchema)));
-		} else {
-			responseEntity = ResponseEntity.badRequest().body(
-					new GenericResponseBodyWrapper(validationResult, dataUnitSchema));
-		}
-
-		return responseEntity;
+	public ResponseEntity<DataUnitSchemaDTO> postSchema(final @RequestBody DataUnitSchemaDTO dataUnitSchema) {
+		return ResponseEntity.ok(dataUnitSchemaService.save(dataUnitSchema));
 	}
 
-	@PutMapping("/schema")
-	public ResponseEntity<GenericResponseBodyWrapper> putSchema(final DataUnitSchemaDTO dataUnitSchema) {
-		final ResponseEntity<GenericResponseBodyWrapper> responseEntity;
+	@GetMapping("/schema/{id}")
+	public ResponseEntity<DataUnitSchemaDTO> getSchemaById(final @PathVariable Long id) {
+		final Optional<DataUnitSchemaDTO> dataUnitSchemaOptional = dataUnitSchemaService.findById(id);
 
-		final ValidationResult validationResult = validator.validateOnUpdate(dataUnitSchema);
-		if (validationResult.getType() == ValidationResultType.SUCCESS) {
-			responseEntity = ResponseEntity.ok(
-					new GenericResponseBodyWrapper(validationResult, dataUnitSchemaService.update(dataUnitSchema)));
-		} else {
-			responseEntity = ResponseEntity.badRequest().body(
-					new GenericResponseBodyWrapper(validationResult, dataUnitSchema));
-		}
-
-		return responseEntity;
+		return dataUnitSchemaOptional.
+				map(ResponseEntity::ok).
+				orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
-	@DeleteMapping("/schema")
-	public ResponseEntity<GenericResponseBodyWrapper> deleteSchema(final Long dataUnitSchemaId) {
-		final ResponseEntity<GenericResponseBodyWrapper> responseEntity;
+	@GetMapping("/schemas")
+	public ResponseEntity<List<DataUnitSchemaDTO>> getSchemas() {
+		return ResponseEntity.ok(dataUnitSchemaService.findAll());
+	}
 
-		final ValidationResult validationResult = validator.validateOnDelete(dataUnitSchemaId);
-		if (validationResult.getType() == ValidationResultType.SUCCESS) {
-			final Optional<DataUnitSchemaDTO> dataUnitSchemaOptional = dataUnitSchemaService.findById(dataUnitSchemaId);
+	@PutMapping("/schema/{id}")
+	public ResponseEntity<DataUnitSchemaDTO> putSchema(final @PathVariable Long id,
+													   final @RequestBody DataUnitSchemaDTO dataUnitSchema) {
+		return ResponseEntity.ok(dataUnitSchemaService.save(dataUnitSchema));
+	}
 
-			if (dataUnitSchemaOptional.isPresent()) {
-				responseEntity = ResponseEntity.ok(
-						new GenericResponseBodyWrapper(validationResult, dataUnitSchemaOptional.get()));
-			} else {
-				validationResult.setType(ValidationResultType.FAILURE);
+	@DeleteMapping("/schema/{id}")
+	public ResponseEntity<DataUnitSchemaDTO> deleteSchemaById(final @PathVariable Long id) {
+		final ResponseEntity<DataUnitSchemaDTO> response;
 
-				validationResult.addError(ErrorUtils.buildNotFoundByIdError(dataUnitSchemaId));
+		final Optional<DataUnitSchemaDTO> dataUnitSchemaOptional = dataUnitSchemaService.findById(id);
+		if (dataUnitSchemaOptional.isPresent()) {
+			dataUnitSchemaService.delete(dataUnitSchemaOptional.get());
 
-				responseEntity = ResponseEntity.ok(
-						new GenericResponseBodyWrapper(validationResult, dataUnitSchemaId));
-			}
+			response = ResponseEntity.noContent().build();
 		} else {
-			responseEntity = ResponseEntity.badRequest().body(
-					new GenericResponseBodyWrapper(validationResult, dataUnitSchemaId));
+			response = ResponseEntity.notFound().build();
 		}
 
-		return responseEntity;
+		return response;
 	}
 
 }

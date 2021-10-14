@@ -1,4 +1,4 @@
-package com.hurynovich.data_storage.repository.jpa;
+package com.hurynovich.data_storage.repository;
 
 import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
