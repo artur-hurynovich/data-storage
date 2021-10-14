@@ -16,13 +16,13 @@ public class TestDataUnitPropertySchemaEntityGenerator extends
 
 	private DataUnitPropertySchemaEntity generateSingleObject(final Long id, final String name,
 															  final DataUnitPropertyType type) {
-		final DataUnitPropertySchemaEntity schemaDTO = new DataUnitPropertySchemaEntity();
+		final DataUnitPropertySchemaEntity schemaEntity = new DataUnitPropertySchemaEntity();
 
-		schemaDTO.setId(id);
-		schemaDTO.setName(name);
-		schemaDTO.setType(type);
+		schemaEntity.setId(id);
+		schemaEntity.setName(name);
+		schemaEntity.setType(type);
 
-		return schemaDTO;
+		return schemaEntity;
 	}
 
 	@Override
