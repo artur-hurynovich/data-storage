@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
-import com.hurynovich.data_storage.converter.Converter;
+import com.hurynovich.data_storage.converter.DTOConverter;
 import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.service.dto_service.DTOService;
@@ -17,33 +17,29 @@ public class DataUnitSchemaService implements DTOService<DataUnitSchemaDTO, Long
 
 	private final JpaRepository<DataUnitSchemaEntity, Long> repository;
 
-	private final Converter<DataUnitSchemaDTO, DataUnitSchemaEntity> converterToPersistent;
-
-	private final Converter<DataUnitSchemaEntity, DataUnitSchemaDTO> converterFromPersistent;
+	private final DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter;
 
 	public DataUnitSchemaService(final JpaRepository<DataUnitSchemaEntity, Long> repository,
-								 final Converter<DataUnitSchemaDTO, DataUnitSchemaEntity> converterToPersistent,
-								 final Converter<DataUnitSchemaEntity, DataUnitSchemaDTO> converterFromPersistent) {
+								 final DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter) {
 		this.repository = repository;
-		this.converterToPersistent = converterToPersistent;
-		this.converterFromPersistent = converterFromPersistent;
+		this.converter = converter;
 	}
 
 	@Override
 	public DataUnitSchemaDTO save(final DataUnitSchemaDTO dataUnitSchema) {
-		return converterFromPersistent.convert(repository.save(converterToPersistent.convert(dataUnitSchema)));
+		return converter.convertToDTO(repository.save(converter.convertFromDTO(dataUnitSchema)));
 	}
 
 	@Override
 	public Optional<DataUnitSchemaDTO> findById(final Long id) {
 		final Optional<DataUnitSchemaEntity> optionalResult = repository.findById(id);
 
-		return optionalResult.map(converterFromPersistent::convert);
+		return optionalResult.map(converter::convertToDTO);
 	}
 
 	@Override
 	public List<DataUnitSchemaDTO> findAll() {
-		return converterFromPersistent.convertAll(repository.findAll());
+		return converter.convertAllToDTOs(repository.findAll());
 	}
 
 	@Override

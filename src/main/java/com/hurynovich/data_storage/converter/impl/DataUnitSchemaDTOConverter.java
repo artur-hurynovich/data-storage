@@ -5,11 +5,16 @@ import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DataUnitSchemaEntityDTOConverter
-		extends GenericConverter<DataUnitSchemaEntity, DataUnitSchemaDTO, Long> {
+public class DataUnitSchemaDTOConverter
+		extends GenericDTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> {
 
 	@Override
-	protected Class<DataUnitSchemaDTO> getTargetClass() {
+	protected Class<DataUnitSchemaEntity> getTargetClass() {
+		return DataUnitSchemaEntity.class;
+	}
+
+	@Override
+	protected Class<DataUnitSchemaDTO> getDTOClass() {
 		return DataUnitSchemaDTO.class;
 	}
 
