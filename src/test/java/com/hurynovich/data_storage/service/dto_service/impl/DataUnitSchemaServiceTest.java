@@ -57,7 +57,7 @@ class DataUnitSchemaServiceTest {
 	}
 
 	@Test
-	void findByIdSuccessTest() {
+	void findByIdTest() {
 		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
 
 		final Long id = schemaEntity.getId();
@@ -73,7 +73,7 @@ class DataUnitSchemaServiceTest {
 	}
 
 	@Test
-	void findByIdFailureTest() {
+	void findByIdEmptyTest() {
 		Mockito.when(repository.findById(incorrectId)).thenReturn(Optional.empty());
 
 		final Optional<DataUnitSchemaDTO> savedSchemaDTOOptional = service.findById(incorrectId);
@@ -81,7 +81,7 @@ class DataUnitSchemaServiceTest {
 	}
 
 	@Test
-	void findAllSuccessTest() {
+	void findAllTest() {
 		final List<DataUnitSchemaEntity> schemaEntities = entityGenerator.generateMultipleObjects();
 		Mockito.when(repository.findAll()).thenReturn(schemaEntities);
 
@@ -95,7 +95,7 @@ class DataUnitSchemaServiceTest {
 	}
 
 	@Test
-	void findAllFailureTest() {
+	void findAllEmptyTest() {
 		final ArrayList<DataUnitSchemaEntity> schemaEntities = new ArrayList<>();
 		Mockito.when(repository.findAll()).thenReturn(schemaEntities);
 		Mockito.when(converter.convertAllToDTOs(schemaEntities)).thenReturn(new ArrayList<>());
