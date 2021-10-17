@@ -2,6 +2,7 @@ package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.dto_service.DTOService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,7 @@ public class DataUnitSchemaController {
 
 	@PostMapping("/schema")
 	public ResponseEntity<DataUnitSchemaDTO> postSchema(final @RequestBody DataUnitSchemaDTO dataUnitSchema) {
-		return ResponseEntity.ok(dataUnitSchemaService.save(dataUnitSchema));
+		return new ResponseEntity<>(dataUnitSchemaService.save(dataUnitSchema), HttpStatus.CREATED);
 	}
 
 	@GetMapping("/schema/{id}")

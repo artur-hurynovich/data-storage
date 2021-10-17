@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class DataUnitSchemaDTOConverterTest {
+class DataUnitSchemaDTOConverterTest {
 
 	private final DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter =
 			new DataUnitSchemaDTOConverter();
@@ -25,13 +25,13 @@ public class DataUnitSchemaDTOConverterTest {
 			new TestDataUnitSchemaEntityGenerator();
 
 	@Test
-	public void convertFromDTONullTest() {
+	void convertFromDTONullTest() {
 		final DataUnitSchemaEntity schemaEntity = converter.convertFromDTO(null);
 		Assertions.assertNull(schemaEntity);
 	}
 
 	@Test
-	public void convertFromDTONotNullTest() {
+	void convertFromDTONotNullTest() {
 		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
 
 		final DataUnitSchemaEntity schemaEntity = converter.convertFromDTO(schemaDTO);
@@ -57,7 +57,7 @@ public class DataUnitSchemaDTOConverterTest {
 	}
 
 	@Test
-	public void convertAllFromDTOsNullTest() {
+	void convertAllFromDTOsNullTest() {
 		final List<DataUnitSchemaEntity> schemaEntities = converter.convertAllFromDTOs(null);
 
 		Assertions.assertNotNull(schemaEntities);
@@ -65,7 +65,7 @@ public class DataUnitSchemaDTOConverterTest {
 	}
 
 	@Test
-	public void convertAllFromDTOsNotNullTest() {
+	void convertAllFromDTOsNotNullTest() {
 		final List<DataUnitSchemaDTO> schemaDTOs = dtoGenerator.generateMultipleObjects();
 		final List<DataUnitSchemaEntity> schemaEntities = converter.convertAllFromDTOs(schemaDTOs);
 		Assertions.assertNotNull(schemaEntities);
@@ -98,13 +98,13 @@ public class DataUnitSchemaDTOConverterTest {
 	}
 
 	@Test
-	public void convertToDTONullTest() {
+	void convertToDTONullTest() {
 		final DataUnitSchemaDTO schemaDTO = converter.convertToDTO(null);
 		Assertions.assertNull(schemaDTO);
 	}
 
 	@Test
-	public void convertToDTONotNullTest() {
+	void convertToDTONotNullTest() {
 		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
 		final DataUnitSchemaDTO schemaDTO = converter.convertToDTO(schemaEntity);
 		Assertions.assertNotNull(schemaDTO);
@@ -129,7 +129,7 @@ public class DataUnitSchemaDTOConverterTest {
 	}
 
 	@Test
-	public void convertAllToDTOsNullTest() {
+	void convertAllToDTOsNullTest() {
 		final List<DataUnitSchemaDTO> schemaDTOs = converter.convertAllToDTOs(null);
 
 		Assertions.assertNotNull(schemaDTOs);
@@ -137,7 +137,7 @@ public class DataUnitSchemaDTOConverterTest {
 	}
 
 	@Test
-	public void convertAllToDTOsNotNullTest() {
+	void convertAllToDTOsNotNullTest() {
 		final List<DataUnitSchemaEntity> schemaEntities = entityGenerator.generateMultipleObjects();
 		final List<DataUnitSchemaDTO> schemaDTOs = converter.convertAllToDTOs(schemaEntities);
 		Assertions.assertNotNull(schemaDTOs);
