@@ -96,13 +96,22 @@ class DataUnitSchemaServiceTest {
 
 	@Test
 	void findAllEmptyTest() {
-		final ArrayList<DataUnitSchemaEntity> schemaEntities = new ArrayList<>();
+		final List<DataUnitSchemaEntity> schemaEntities = new ArrayList<>();
 		Mockito.when(dao.findAll()).thenReturn(schemaEntities);
 		Mockito.when(converter.convertAllToDTOs(schemaEntities)).thenReturn(new ArrayList<>());
 
 		final List<DataUnitSchemaDTO> savedSchemaDTOs = service.findAll();
 		Assertions.assertNotNull(savedSchemaDTOs);
 		Assertions.assertTrue(savedSchemaDTOs.isEmpty());
+	}
+
+	@Test
+	void deleteByIdTest() {
+		final DataUnitSchemaDTO dataUnitSchema = dtoGenerator.generateSingleObject();
+		final Long id = dataUnitSchema.getId();
+		service.deleteById(id);
+
+		Mockito.verify(dao).deleteById(id);
 	}
 
 }
