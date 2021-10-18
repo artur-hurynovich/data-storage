@@ -1,6 +1,7 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
 import com.hurynovich.data_storage.converter.DTOConverter;
+import com.hurynovich.data_storage.dao.DAO;
 import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ class DataUnitSchemaServiceTest {
 	private final Long incorrectId = 1L;
 
 	@Mock
-	private JpaRepository<DataUnitSchemaEntity, Long> repository;
+	private DAO<DataUnitSchemaEntity, Long> dao;
 
 	@Mock
 	private DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter;
@@ -41,7 +41,7 @@ class DataUnitSchemaServiceTest {
 
 	@BeforeEach
 	public void initService() {
-		service = new DataUnitSchemaService(repository, converter);
+		service = new DataUnitSchemaService(dao, converter);
 	}
 
 	@Test
@@ -49,7 +49,7 @@ class DataUnitSchemaServiceTest {
 		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
 		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
 		Mockito.when(converter.convertFromDTO(schemaDTO)).thenReturn(schemaEntity);
-		Mockito.when(repository.save(schemaEntity)).thenReturn(schemaEntity);
+		Mockito.when(dao.save(schemaEntity)).thenReturn(schemaEntity);
 		Mockito.when(converter.convertToDTO(schemaEntity)).thenReturn(schemaDTO);
 
 		final DataUnitSchemaDTO savedSchemaDTO = service.save(schemaDTO);
@@ -61,7 +61,7 @@ class DataUnitSchemaServiceTest {
 		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
 
 		final Long id = schemaEntity.getId();
-		Mockito.when(repository.findById(id)).thenReturn(Optional.of(schemaEntity));
+		Mockito.when(dao.findById(id)).thenReturn(Optional.of(schemaEntity));
 
 		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
 		Mockito.when(converter.convertToDTO(schemaEntity)).thenReturn(schemaDTO);
@@ -74,7 +74,7 @@ class DataUnitSchemaServiceTest {
 
 	@Test
 	void findByIdEmptyTest() {
-		Mockito.when(repository.findById(incorrectId)).thenReturn(Optional.empty());
+		Mockito.when(dao.findById(incorrectId)).thenReturn(Optional.empty());
 
 		final Optional<DataUnitSchemaDTO> savedSchemaDTOOptional = service.findById(incorrectId);
 		Assertions.assertFalse(savedSchemaDTOOptional.isPresent());
@@ -83,7 +83,7 @@ class DataUnitSchemaServiceTest {
 	@Test
 	void findAllTest() {
 		final List<DataUnitSchemaEntity> schemaEntities = entityGenerator.generateMultipleObjects();
-		Mockito.when(repository.findAll()).thenReturn(schemaEntities);
+		Mockito.when(dao.findAll()).thenReturn(schemaEntities);
 
 		final List<DataUnitSchemaDTO> schemaDTOs = dtoGenerator.generateMultipleObjects();
 		Mockito.when(converter.convertAllToDTOs(schemaEntities)).thenReturn(schemaDTOs);
@@ -97,7 +97,7 @@ class DataUnitSchemaServiceTest {
 	@Test
 	void findAllEmptyTest() {
 		final ArrayList<DataUnitSchemaEntity> schemaEntities = new ArrayList<>();
-		Mockito.when(repository.findAll()).thenReturn(schemaEntities);
+		Mockito.when(dao.findAll()).thenReturn(schemaEntities);
 		Mockito.when(converter.convertAllToDTOs(schemaEntities)).thenReturn(new ArrayList<>());
 
 		final List<DataUnitSchemaDTO> savedSchemaDTOs = service.findAll();
