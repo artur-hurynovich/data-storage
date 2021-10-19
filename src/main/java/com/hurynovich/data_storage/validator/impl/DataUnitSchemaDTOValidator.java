@@ -6,6 +6,8 @@ import com.hurynovich.data_storage.validator.DTOValidator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -19,7 +21,7 @@ public class DataUnitSchemaDTOValidator implements DTOValidator<DataUnitSchemaDT
 	private static final int DATA_UNIT_PROPERTY_SCHEMA_NAME_MAX_LENGTH = DATA_UNIT_SCHEMA_NAME_MAX_LENGTH;
 
 	@Override
-	public ValidationResult validate(final DataUnitSchemaDTO dataUnitSchema) {
+	public ValidationResult validate(final @Nullable DataUnitSchemaDTO dataUnitSchema) {
 		final ValidationResult result = new ValidationResult();
 
 		if (dataUnitSchema == null) {
@@ -52,13 +54,13 @@ public class DataUnitSchemaDTOValidator implements DTOValidator<DataUnitSchemaDT
 		return result;
 	}
 
-	private void validatePropertySchemas(final List<DataUnitPropertySchemaDTO> propertySchemas,
-										 final ValidationResult result) {
+	private void validatePropertySchemas(final @NonNull List<DataUnitPropertySchemaDTO> propertySchemas,
+										 final @NonNull ValidationResult result) {
 		propertySchemas.forEach(propertySchema -> validatePropertySchema(propertySchema, result));
 	}
 
-	private void validatePropertySchema(final DataUnitPropertySchemaDTO propertySchema,
-										final ValidationResult result) {
+	private void validatePropertySchema(final @Nullable DataUnitPropertySchemaDTO propertySchema,
+										final @NonNull ValidationResult result) {
 		if (propertySchema == null) {
 			result.setType(ValidationResultType.FAILURE);
 

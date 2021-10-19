@@ -3,6 +3,7 @@ package com.hurynovich.data_storage.dao.impl;
 import com.hurynovich.data_storage.dao.DAO;
 import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,17 +14,17 @@ public class DataUnitSchemaDAO implements DAO<DataUnitSchemaEntity, Long> {
 
 	private final JpaRepository<DataUnitSchemaEntity, Long> repository;
 
-	public DataUnitSchemaDAO(final JpaRepository<DataUnitSchemaEntity, Long> repository) {
+	public DataUnitSchemaDAO(final @NonNull JpaRepository<DataUnitSchemaEntity, Long> repository) {
 		this.repository = repository;
 	}
 
 	@Override
-	public DataUnitSchemaEntity save(final DataUnitSchemaEntity dataUnitSchemaEntity) {
+	public DataUnitSchemaEntity save(final @NonNull DataUnitSchemaEntity dataUnitSchemaEntity) {
 		return repository.save(dataUnitSchemaEntity);
 	}
 
 	@Override
-	public Optional<DataUnitSchemaEntity> findById(final Long id) {
+	public Optional<DataUnitSchemaEntity> findById(final @NonNull Long id) {
 		return repository.findById(id);
 	}
 
@@ -33,7 +34,7 @@ public class DataUnitSchemaDAO implements DAO<DataUnitSchemaEntity, Long> {
 	}
 
 	@Override
-	public void deleteById(final Long id) {
+	public void deleteById(final @NonNull Long id) {
 		repository.deleteById(id);
 	}
 
