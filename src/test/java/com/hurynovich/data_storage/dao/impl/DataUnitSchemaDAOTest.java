@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-class DataUnitSchemaDAOImplTest {
+class DataUnitSchemaDAOTest {
 
 	private final Long incorrectId = 1L;
 
@@ -33,7 +33,7 @@ class DataUnitSchemaDAOImplTest {
 
 	@BeforeEach
 	public void initDAO() {
-		dao = new DataUnitSchemaDAOImpl(repository);
+		dao = new DataUnitSchemaDAO(repository);
 	}
 
 	@Test

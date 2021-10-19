@@ -4,6 +4,7 @@ import com.hurynovich.data_storage.converter.DTOConverter;
 import com.hurynovich.data_storage.dao.DAO;
 import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
+import com.hurynovich.data_storage.service.dto_service.DTOService;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaEntityGenerator;
@@ -31,7 +32,7 @@ class DataUnitSchemaServiceTest {
 	@Mock
 	private DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter;
 
-	private DataUnitSchemaService service;
+	private DTOService<DataUnitSchemaDTO, Long> service;
 
 	private final TestObjectGenerator<DataUnitSchemaDTO> dtoGenerator =
 			new TestDataUnitSchemaDTOGenerator();
@@ -107,8 +108,8 @@ class DataUnitSchemaServiceTest {
 
 	@Test
 	void deleteByIdTest() {
-		final DataUnitSchemaDTO dataUnitSchema = dtoGenerator.generateSingleObject();
-		final Long id = dataUnitSchema.getId();
+		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
+		final Long id = schemaDTO.getId();
 		service.deleteById(id);
 
 		Mockito.verify(dao).deleteById(id);

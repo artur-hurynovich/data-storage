@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class DataUnitDAOImpl implements DAO<DataUnitDocument, String> {
+public class DataUnitDAO implements DAO<DataUnitDocument, String> {
 
 	private final MongoRepository<DataUnitDocument, String> repository;
 
-	public DataUnitDAOImpl(final MongoRepository<DataUnitDocument, String> repository) {
+	public DataUnitDAO(final MongoRepository<DataUnitDocument, String> repository) {
 		this.repository = repository;
 	}
 

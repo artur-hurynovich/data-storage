@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-class DataUnitDAOImplTest {
+class DataUnitDAOTest {
 
 	private final String incorrectId = "1";
 
@@ -33,7 +33,7 @@ class DataUnitDAOImplTest {
 
 	@BeforeEach
 	public void initDAO() {
-		dao = new DataUnitDAOImpl(repository);
+		dao = new DataUnitDAO(repository);
 	}
 
 	@Test
