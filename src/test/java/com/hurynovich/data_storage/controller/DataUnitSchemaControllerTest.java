@@ -73,9 +73,7 @@ class DataUnitSchemaControllerTest {
 	@Test
 	void postValidSchemaNotNullIdTest() {
 		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
-		final ValidationResult validationResult = new ValidationResult();
-		validationResult.setType(ValidationResultType.FAILURE);
-		validationResult.addError("'dataUnitSchema.id' should be null");
+		Mockito.when(validator.validate(schemaDTO)).thenReturn(new ValidationResult());
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> response = controller.postSchema(schemaDTO);
 		Assertions.assertNotNull(response);
@@ -84,13 +82,16 @@ class DataUnitSchemaControllerTest {
 		final GenericValidatedResponse<DataUnitSchemaDTO> responseBody = response.getBody();
 		Assertions.assertNotNull(responseBody);
 
+		final ValidationResult validationResult = new ValidationResult();
+		validationResult.setType(ValidationResultType.FAILURE);
+		validationResult.addError("'dataUnitSchema.id' should be null");
 		checkValidationResultsEquality(validationResult, responseBody.getValidationResult());
 
 		Assertions.assertNull(responseBody.getBody());
 	}
 
 	@Test
-	void postNotValidSchemaTest() {
+	void postNameIsNullTest() {
 		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
 		schemaDTO.setId(null);
 		schemaDTO.setName(null);
@@ -210,6 +211,7 @@ class DataUnitSchemaControllerTest {
 		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
 		final Long id = schemaDTO.getId();
 		schemaDTO.setId(null);
+		Mockito.when(validator.validate(schemaDTO)).thenReturn(new ValidationResult());
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> response = controller.
 				putSchema(id, schemaDTO);
@@ -230,6 +232,7 @@ class DataUnitSchemaControllerTest {
 	@Test
 	void putValidSchemaIncorrectIdTest() {
 		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
+		Mockito.when(validator.validate(schemaDTO)).thenReturn(new ValidationResult());
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> response = controller.
 				putSchema(INCORRECT_LONG_ID, schemaDTO);

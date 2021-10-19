@@ -1,7 +1,7 @@
 package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.model.GenericValidatedResponse;
-import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
+import com.hurynovich.data_storage.model.dto.DataUnitDTO;
 import com.hurynovich.data_storage.service.dto_service.DTOService;
 import com.hurynovich.data_storage.validator.DTOValidator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
@@ -20,30 +20,30 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-public class DataUnitSchemaController {
+public class DataUnitController {
 
-	private final DTOValidator<DataUnitSchemaDTO> validator;
+	private final DTOValidator<DataUnitDTO> validator;
 
-	private final DTOService<DataUnitSchemaDTO, Long> service;
+	private final DTOService<DataUnitDTO, String> service;
 
-	public DataUnitSchemaController(final DTOValidator<DataUnitSchemaDTO> validator,
-									final DTOService<DataUnitSchemaDTO, Long> service) {
+	public DataUnitController(final DTOValidator<DataUnitDTO> validator,
+							  final DTOService<DataUnitDTO, String> service) {
 		this.validator = validator;
 		this.service = service;
 	}
 
-	@PostMapping("/schema")
-	public ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> postSchema(final @RequestBody DataUnitSchemaDTO dataUnitSchema) {
-		final ValidationResult validationResult = validator.validate(dataUnitSchema);
-		if (dataUnitSchema != null && dataUnitSchema.getId() != null) {
+	@PostMapping("/dataUnit")
+	public ResponseEntity<GenericValidatedResponse<DataUnitDTO>> postDataUnit(final @RequestBody DataUnitDTO dataUnit) {
+		final ValidationResult validationResult = validator.validate(dataUnit);
+		if (dataUnit != null && dataUnit.getId() != null) {
 			validationResult.setType(ValidationResultType.FAILURE);
-			validationResult.addError("'dataUnitSchema.id' should be null");
+			validationResult.addError("'dataUnit.id' should be null");
 		}
 
-		final DataUnitSchemaDTO body;
+		final DataUnitDTO body;
 		final HttpStatus status;
 		if (validationResult.getType() == ValidationResultType.SUCCESS) {
-			body = service.save(dataUnitSchema);
+			body = service.save(dataUnit);
 			status = HttpStatus.CREATED;
 		} else {
 			body = null;
@@ -53,20 +53,20 @@ public class DataUnitSchemaController {
 		return new ResponseEntity<>(new GenericValidatedResponse<>(validationResult, body), status);
 	}
 
-	@GetMapping("/schema/{id}")
-	public ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> getSchemaById(final @PathVariable Long id) {
+	@GetMapping("/dataUnit/{id}")
+	public ResponseEntity<GenericValidatedResponse<DataUnitDTO>> getDataUnitById(final @PathVariable String id) {
 		final ValidationResult validationResult;
-		final DataUnitSchemaDTO body;
+		final DataUnitDTO body;
 		final HttpStatus status;
-		final Optional<DataUnitSchemaDTO> dataUnitSchemaOptional = service.findById(id);
-		if (dataUnitSchemaOptional.isPresent()) {
+		final Optional<DataUnitDTO> dataUnitOptional = service.findById(id);
+		if (dataUnitOptional.isPresent()) {
 			validationResult = new ValidationResult();
-			body = dataUnitSchemaOptional.get();
+			body = dataUnitOptional.get();
 			status = HttpStatus.OK;
 		} else {
 			validationResult = new ValidationResult();
 			validationResult.setType(ValidationResultType.FAILURE);
-			validationResult.addError("'dataUnitSchema' with id = " + id + " not found");
+			validationResult.addError("'dataUnit' with id = " + id + " not found");
 
 			body = null;
 			status = HttpStatus.NOT_FOUND;
@@ -75,24 +75,24 @@ public class DataUnitSchemaController {
 		return new ResponseEntity<>(new GenericValidatedResponse<>(validationResult, body), status);
 	}
 
-	@GetMapping("/schemas")
-	public ResponseEntity<GenericValidatedResponse<List<DataUnitSchemaDTO>>> getSchemas() {
+	@GetMapping("/dataUnits")
+	public ResponseEntity<GenericValidatedResponse<List<DataUnitDTO>>> getDataUnits() {
 		return ResponseEntity.ok(new GenericValidatedResponse<>(new ValidationResult(), service.findAll()));
 	}
 
-	@PutMapping("/schema/{id}")
-	public ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> putSchema(final @PathVariable Long id,
-																				 final @RequestBody DataUnitSchemaDTO dataUnitSchema) {
-		final ValidationResult validationResult = validator.validate(dataUnitSchema);
-		final DataUnitSchemaDTO body;
+	@PutMapping("/dataUnit/{id}")
+	public ResponseEntity<GenericValidatedResponse<DataUnitDTO>> putDataUnit(final @PathVariable String id,
+																			 final @RequestBody DataUnitDTO dataUnit) {
+		final ValidationResult validationResult = validator.validate(dataUnit);
+		final DataUnitDTO body;
 		final HttpStatus status;
-		if (dataUnitSchema != null && !id.equals(dataUnitSchema.getId())) {
+		if (dataUnit != null && !id.equals(dataUnit.getId())) {
 			validationResult.setType(ValidationResultType.FAILURE);
-			validationResult.addError("'dataUnitSchema.id' should be equal to path variable 'id'");
+			validationResult.addError("'dataUnit.id' should be equal to path variable 'id'");
 		}
 
 		if (validationResult.getType() == ValidationResultType.SUCCESS) {
-			body = service.save(dataUnitSchema);
+			body = service.save(dataUnit);
 			status = HttpStatus.OK;
 		} else {
 			body = null;
@@ -102,8 +102,8 @@ public class DataUnitSchemaController {
 		return new ResponseEntity<>(new GenericValidatedResponse<>(validationResult, body), status);
 	}
 
-	@DeleteMapping("/schema/{id}")
-	public ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> deleteSchemaById(final @PathVariable Long id) {
+	@DeleteMapping("/dataUnit/{id}")
+	public ResponseEntity<GenericValidatedResponse<DataUnitDTO>> deleteDataUnitById(final @PathVariable String id) {
 		service.deleteById(id);
 
 		return new ResponseEntity<>(new GenericValidatedResponse<>(new ValidationResult(), null), HttpStatus.OK);
