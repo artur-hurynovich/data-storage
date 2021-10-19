@@ -3,6 +3,7 @@ package com.hurynovich.data_storage.dao.impl;
 import com.hurynovich.data_storage.dao.DAO;
 import com.hurynovich.data_storage.model.document.DataUnitDocument;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,17 +14,17 @@ public class DataUnitDAO implements DAO<DataUnitDocument, String> {
 
 	private final MongoRepository<DataUnitDocument, String> repository;
 
-	public DataUnitDAO(final MongoRepository<DataUnitDocument, String> repository) {
+	public DataUnitDAO(final @NonNull MongoRepository<DataUnitDocument, String> repository) {
 		this.repository = repository;
 	}
 
 	@Override
-	public DataUnitDocument save(final DataUnitDocument dataUnit) {
+	public DataUnitDocument save(final @NonNull DataUnitDocument dataUnit) {
 		return repository.save(dataUnit);
 	}
 
 	@Override
-	public Optional<DataUnitDocument> findById(final String id) {
+	public Optional<DataUnitDocument> findById(final @NonNull String id) {
 		return repository.findById(id);
 	}
 
@@ -33,7 +34,7 @@ public class DataUnitDAO implements DAO<DataUnitDocument, String> {
 	}
 
 	@Override
-	public void deleteById(final String id) {
+	public void deleteById(final @NonNull String id) {
 		repository.deleteById(id);
 	}
 
