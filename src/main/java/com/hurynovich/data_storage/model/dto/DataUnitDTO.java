@@ -24,7 +24,7 @@ public class DataUnitDTO extends AbstractDTO<String> {
 		this.properties = properties;
 	}
 
-	public class DataUnitPropertyDTO {
+	public static class DataUnitPropertyDTO {
 
 		private Long schemaId;
 
