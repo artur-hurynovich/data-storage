@@ -13,14 +13,14 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class DataUnitSchemaService implements DTOService<DataUnitSchemaDTO, Long> {
+public class DataUnitSchemaDTOService implements DTOService<DataUnitSchemaDTO, Long> {
 
 	private final DAO<DataUnitSchemaEntity, Long> dao;
 
 	private final DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter;
 
-	public DataUnitSchemaService(final DAO<DataUnitSchemaEntity, Long> dao,
-								 final DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter) {
+	public DataUnitSchemaDTOService(final DAO<DataUnitSchemaEntity, Long> dao,
+									final DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter) {
 		this.dao = dao;
 		this.converter = converter;
 	}

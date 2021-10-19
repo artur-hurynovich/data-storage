@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_LONG_ID;
+
 @ExtendWith(MockitoExtension.class)
 class DataUnitSchemaControllerTest {
-
-	private final Long incorrectId = 1L;
 
 	@Mock
 	private DTOValidator<DataUnitSchemaDTO> validator;
@@ -73,9 +73,7 @@ class DataUnitSchemaControllerTest {
 	@Test
 	void postValidSchemaNotNullIdTest() {
 		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
-		final ValidationResult validationResult = new ValidationResult();
-		validationResult.setType(ValidationResultType.FAILURE);
-		validationResult.addError("'dataUnitSchema.id' should be null");
+		Mockito.when(validator.validate(schemaDTO)).thenReturn(new ValidationResult());
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> response = controller.postSchema(schemaDTO);
 		Assertions.assertNotNull(response);
@@ -84,13 +82,16 @@ class DataUnitSchemaControllerTest {
 		final GenericValidatedResponse<DataUnitSchemaDTO> responseBody = response.getBody();
 		Assertions.assertNotNull(responseBody);
 
+		final ValidationResult validationResult = new ValidationResult();
+		validationResult.setType(ValidationResultType.FAILURE);
+		validationResult.addError("'dataUnitSchema.id' should be null");
 		checkValidationResultsEquality(validationResult, responseBody.getValidationResult());
 
 		Assertions.assertNull(responseBody.getBody());
 	}
 
 	@Test
-	void postNotValidSchemaTest() {
+	void postNameIsNullTest() {
 		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
 		schemaDTO.setId(null);
 		schemaDTO.setName(null);
@@ -132,15 +133,15 @@ class DataUnitSchemaControllerTest {
 
 	@Test
 	void getSchemaByIdNotFoundTest() {
-		Mockito.when(service.findById(incorrectId)).thenReturn(Optional.empty());
+		Mockito.when(service.findById(INCORRECT_LONG_ID)).thenReturn(Optional.empty());
 
-		final ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> response = controller.getSchemaById(incorrectId);
+		final ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> response = controller.getSchemaById(INCORRECT_LONG_ID);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
-		validationResult.addError("'dataUnitSchema' with id = " + incorrectId + " not found");
+		validationResult.addError("'dataUnitSchema' with id = " + INCORRECT_LONG_ID + " not found");
 
 		final GenericValidatedResponse<DataUnitSchemaDTO> responseBody = response.getBody();
 		Assertions.assertNotNull(responseBody);
@@ -210,6 +211,7 @@ class DataUnitSchemaControllerTest {
 		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
 		final Long id = schemaDTO.getId();
 		schemaDTO.setId(null);
+		Mockito.when(validator.validate(schemaDTO)).thenReturn(new ValidationResult());
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> response = controller.
 				putSchema(id, schemaDTO);
@@ -230,9 +232,10 @@ class DataUnitSchemaControllerTest {
 	@Test
 	void putValidSchemaIncorrectIdTest() {
 		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
+		Mockito.when(validator.validate(schemaDTO)).thenReturn(new ValidationResult());
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> response = controller.
-				putSchema(incorrectId, schemaDTO);
+				putSchema(INCORRECT_LONG_ID, schemaDTO);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 

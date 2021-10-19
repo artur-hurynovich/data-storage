@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class DataUnitSchemaDAOImpl implements DAO<DataUnitSchemaEntity, Long> {
+public class DataUnitSchemaDAO implements DAO<DataUnitSchemaEntity, Long> {
 
 	private final JpaRepository<DataUnitSchemaEntity, Long> repository;
 
-	public DataUnitSchemaDAOImpl(final JpaRepository<DataUnitSchemaEntity, Long> repository) {
+	public DataUnitSchemaDAO(final JpaRepository<DataUnitSchemaEntity, Long> repository) {
 		this.repository = repository;
 	}
 
