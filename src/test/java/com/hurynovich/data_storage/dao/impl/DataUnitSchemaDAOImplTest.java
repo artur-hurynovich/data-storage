@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.dao.impl;
 
-import com.hurynovich.data_storage.dao.DAO;
+import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
 import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaEntityGenerator;
@@ -19,21 +19,21 @@ import java.util.Objects;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-class DataUnitSchemaDAOTest {
+class DataUnitSchemaDAOImplTest {
 
 	private final Long incorrectId = 1L;
 
 	@Mock
 	private JpaRepository<DataUnitSchemaEntity, Long> repository;
 
-	private DAO<DataUnitSchemaEntity, Long> dao;
+	private DataUnitSchemaDAO dao;
 
 	private final TestObjectGenerator<DataUnitSchemaEntity> entityGenerator =
 			new TestDataUnitSchemaEntityGenerator();
 
 	@BeforeEach
 	public void initDAO() {
-		dao = new DataUnitSchemaDAO(repository);
+		dao = new DataUnitSchemaDAOImpl(repository);
 	}
 
 	@Test
@@ -94,6 +94,20 @@ class DataUnitSchemaDAOTest {
 		dao.deleteById(id);
 
 		Mockito.verify(repository).deleteById(id);
+	}
+
+	@Test
+	void existsByIdTrueTest() {
+		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
+		final Long id = schemaEntity.getId();
+		Mockito.when(repository.existsById(id)).thenReturn(true);
+		Assertions.assertTrue(dao.existsById(id));
+	}
+
+	@Test
+	void existsByIdTrueFalse() {
+		Mockito.when(repository.existsById(incorrectId)).thenReturn(false);
+		Assertions.assertFalse(dao.existsById(incorrectId));
 	}
 
 }

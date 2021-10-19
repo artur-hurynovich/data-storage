@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class DataUnitService implements DTOService<DataUnitDTO, String> {
+public class DataUnitDTOService implements DTOService<DataUnitDTO, String> {
 
 	private final DAO<DataUnitDocument, String> dao;
 
 	private final DTOConverter<DataUnitDTO, DataUnitDocument> converter;
 
-	public DataUnitService(final DAO<DataUnitDocument, String> dao,
-						   final DTOConverter<DataUnitDTO, DataUnitDocument> converter) {
+	public DataUnitDTOService(final DAO<DataUnitDocument, String> dao,
+							  final DTOConverter<DataUnitDTO, DataUnitDocument> converter) {
 		this.dao = dao;
 		this.converter = converter;
 	}

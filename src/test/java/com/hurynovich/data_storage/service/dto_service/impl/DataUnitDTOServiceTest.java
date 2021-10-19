@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-class DataUnitServiceTest {
+class DataUnitDTOServiceTest {
 
 	private final String incorrectId = "1";
 
@@ -42,7 +42,7 @@ class DataUnitServiceTest {
 
 	@BeforeEach
 	public void initService() {
-		service = new DataUnitService(dao, converter);
+		service = new DataUnitDTOService(dao, converter);
 	}
 
 	@Test
