@@ -42,8 +42,12 @@ class DataUnitSchemaDTOValidatorTest {
 
 	@Test
 	void validateSchemaNameIsNullTest() {
+		processValidateSchemaNameTest(null);
+	}
+
+	private void processValidateSchemaNameTest(final String schemaName) {
 		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
-		dataUnitSchema.setName(null);
+		dataUnitSchema.setName(schemaName);
 		final ValidationResult result = validator.validate(dataUnitSchema);
 		Assertions.assertNotNull(result);
 		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
@@ -55,28 +59,12 @@ class DataUnitSchemaDTOValidatorTest {
 
 	@Test
 	void validateSchemaNameIsEmptyTest() {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
-		dataUnitSchema.setName("");
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
-
-		final Set<String> errors = result.getErrors();
-		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema.name' can't be null, empty or blank"));
+		processValidateSchemaNameTest("");
 	}
 
 	@Test
 	void validateSchemaNameIsBlankTest() {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
-		dataUnitSchema.setName(" ");
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
-
-		final Set<String> errors = result.getErrors();
-		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema.name' can't be null, empty or blank"));
+		processValidateSchemaNameTest(" ");
 	}
 
 	@Test
@@ -133,8 +121,12 @@ class DataUnitSchemaDTOValidatorTest {
 
 	@Test
 	void validatePropertySchemaNameIsNullTest() {
+		processValidatePropertySchemaNameTest(null);
+	}
+
+	private void processValidatePropertySchemaNameTest(final String propertySchemaName) {
 		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
-		dataUnitSchema.getPropertySchemas().iterator().next().setName(null);
+		dataUnitSchema.getPropertySchemas().iterator().next().setName(propertySchemaName);
 		final ValidationResult result = validator.validate(dataUnitSchema);
 		Assertions.assertNotNull(result);
 		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
@@ -146,28 +138,12 @@ class DataUnitSchemaDTOValidatorTest {
 
 	@Test
 	void validatePropertySchemaNameIsEmptyTest() {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
-		dataUnitSchema.getPropertySchemas().iterator().next().setName("");
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
-
-		final Set<String> errors = result.getErrors();
-		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema.propertySchema.name' can't be null, empty or blank"));
+		processValidatePropertySchemaNameTest("");
 	}
 
 	@Test
 	void validatePropertySchemaNameIsBlankTest() {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
-		dataUnitSchema.getPropertySchemas().iterator().next().setName(" ");
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
-
-		final Set<String> errors = result.getErrors();
-		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema.propertySchema.name' can't be null, empty or blank"));
+		processValidatePropertySchemaNameTest(" ");
 	}
 
 	@Test
