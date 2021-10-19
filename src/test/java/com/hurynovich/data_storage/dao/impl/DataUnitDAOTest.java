@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_STRING_ID;
+
 @ExtendWith(MockitoExtension.class)
 class DataUnitDAOTest {
-
-	private final String incorrectId = "1";
 
 	@Mock
 	private MongoRepository<DataUnitDocument, String> repository;
@@ -60,9 +60,9 @@ class DataUnitDAOTest {
 
 	@Test
 	void findByIdEmptyTest() {
-		Mockito.when(dao.findById(incorrectId)).thenReturn(Optional.empty());
+		Mockito.when(dao.findById(INCORRECT_STRING_ID)).thenReturn(Optional.empty());
 
-		final Optional<DataUnitDocument> savedSchemaDocumentOptional = dao.findById(incorrectId);
+		final Optional<DataUnitDocument> savedSchemaDocumentOptional = dao.findById(INCORRECT_STRING_ID);
 		Assertions.assertFalse(savedSchemaDocumentOptional.isPresent());
 	}
 

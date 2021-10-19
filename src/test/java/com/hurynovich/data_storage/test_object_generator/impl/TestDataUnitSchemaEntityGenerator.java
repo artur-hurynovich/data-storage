@@ -8,15 +8,15 @@ import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_PROPERTY_SCHEMA_ID_1;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_PROPERTY_SCHEMA_ID_2;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_PROPERTY_SCHEMA_ID_3;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_PROPERTY_SCHEMA_NAME_1;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_PROPERTY_SCHEMA_NAME_2;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_PROPERTY_SCHEMA_NAME_3;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_PROPERTY_SCHEMA_TYPE_1;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_PROPERTY_SCHEMA_TYPE_2;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_PROPERTY_SCHEMA_TYPE_3;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_INTEGER_PROPERTY_SCHEMA_ID;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_FLOAT_PROPERTY_SCHEMA_ID;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TEXT_PROPERTY_SCHEMA_NAME;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_INTEGER_PROPERTY_SCHEMA_NAME;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_FLOAT_PROPERTY_SCHEMA_NAME;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TEXT_PROPERTY_SCHEMA_TYPE;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_INTEGER_PROPERTY_SCHEMA_TYPE;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_FLOAT_PROPERTY_SCHEMA_TYPE;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_SCHEMA_ID_1;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_SCHEMA_ID_2;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_SCHEMA_ID_3;
@@ -46,11 +46,11 @@ public class TestDataUnitSchemaEntityGenerator implements TestObjectGenerator<Da
 
 	private List<DataUnitPropertySchemaEntity> generatePropertySchemas() {
 		final DataUnitPropertySchemaEntity propertySchema1 =
-				generatePropertySchema(DATA_UNIT_PROPERTY_SCHEMA_ID_1, DATA_UNIT_PROPERTY_SCHEMA_NAME_1, DATA_UNIT_PROPERTY_SCHEMA_TYPE_1);
+				generatePropertySchema(DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID, DATA_UNIT_TEXT_PROPERTY_SCHEMA_NAME, DATA_UNIT_TEXT_PROPERTY_SCHEMA_TYPE);
 		final DataUnitPropertySchemaEntity propertySchema2 =
-				generatePropertySchema(DATA_UNIT_PROPERTY_SCHEMA_ID_2, DATA_UNIT_PROPERTY_SCHEMA_NAME_2, DATA_UNIT_PROPERTY_SCHEMA_TYPE_2);
+				generatePropertySchema(DATA_UNIT_INTEGER_PROPERTY_SCHEMA_ID, DATA_UNIT_INTEGER_PROPERTY_SCHEMA_NAME, DATA_UNIT_INTEGER_PROPERTY_SCHEMA_TYPE);
 		final DataUnitPropertySchemaEntity propertySchema3 =
-				generatePropertySchema(DATA_UNIT_PROPERTY_SCHEMA_ID_3, DATA_UNIT_PROPERTY_SCHEMA_NAME_3, DATA_UNIT_PROPERTY_SCHEMA_TYPE_3);
+				generatePropertySchema(DATA_UNIT_FLOAT_PROPERTY_SCHEMA_ID, DATA_UNIT_FLOAT_PROPERTY_SCHEMA_NAME, DATA_UNIT_FLOAT_PROPERTY_SCHEMA_TYPE);
 
 		return Arrays.asList(propertySchema1, propertySchema2, propertySchema3);
 	}

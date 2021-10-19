@@ -1,7 +1,7 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
 import com.hurynovich.data_storage.converter.DTOConverter;
-import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
+import com.hurynovich.data_storage.dao.DAO;
 import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.service.dto_service.DTOService;
@@ -21,13 +21,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@ExtendWith(MockitoExtension.class)
-class DataUnitSchemaDTOServiceImplTest {
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_LONG_ID;
 
-	private final Long incorrectId = 1L;
+@ExtendWith(MockitoExtension.class)
+class DataUnitSchemaDTOServiceTest {
 
 	@Mock
-	private DataUnitSchemaDAO dao;
+	private DAO<DataUnitSchemaEntity, Long> dao;
 
 	@Mock
 	private DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter;
@@ -42,7 +42,7 @@ class DataUnitSchemaDTOServiceImplTest {
 
 	@BeforeEach
 	public void initService() {
-		service = new DataUnitSchemaDTOServiceImpl(dao, converter);
+		service = new DataUnitSchemaDTOService(dao, converter);
 	}
 
 	@Test
@@ -75,9 +75,9 @@ class DataUnitSchemaDTOServiceImplTest {
 
 	@Test
 	void findByIdEmptyTest() {
-		Mockito.when(dao.findById(incorrectId)).thenReturn(Optional.empty());
+		Mockito.when(dao.findById(INCORRECT_LONG_ID)).thenReturn(Optional.empty());
 
-		final Optional<DataUnitSchemaDTO> savedSchemaDTOOptional = service.findById(incorrectId);
+		final Optional<DataUnitSchemaDTO> savedSchemaDTOOptional = service.findById(INCORRECT_LONG_ID);
 		Assertions.assertFalse(savedSchemaDTOOptional.isPresent());
 	}
 
@@ -113,20 +113,6 @@ class DataUnitSchemaDTOServiceImplTest {
 		service.deleteById(id);
 
 		Mockito.verify(dao).deleteById(id);
-	}
-
-	@Test
-	void existsByIdTrueTest() {
-		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
-		final Long id = schemaDTO.getId();
-		Mockito.when(dao.existsById(id)).thenReturn(true);
-		Assertions.assertTrue(dao.existsById(id));
-	}
-
-	@Test
-	void existsByIdTrueFalse() {
-		Mockito.when(dao.existsById(incorrectId)).thenReturn(false);
-		Assertions.assertFalse(dao.existsById(incorrectId));
 	}
 
 }

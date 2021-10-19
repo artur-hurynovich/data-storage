@@ -1,10 +1,10 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
 import com.hurynovich.data_storage.converter.DTOConverter;
-import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
+import com.hurynovich.data_storage.dao.DAO;
 import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
-import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaDTOService;
+import com.hurynovich.data_storage.service.dto_service.DTOService;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -13,14 +13,14 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
+public class DataUnitSchemaDTOService implements DTOService<DataUnitSchemaDTO, Long> {
 
-	private final DataUnitSchemaDAO dao;
+	private final DAO<DataUnitSchemaEntity, Long> dao;
 
 	private final DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter;
 
-	public DataUnitSchemaDTOServiceImpl(final DataUnitSchemaDAO dao,
-										final DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter) {
+	public DataUnitSchemaDTOService(final DAO<DataUnitSchemaEntity, Long> dao,
+									final DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter) {
 		this.dao = dao;
 		this.converter = converter;
 	}
@@ -47,8 +47,4 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 		dao.deleteById(id);
 	}
 
-	@Override
-	public boolean existsById(final Long id) {
-		return dao.existsById(id);
-	}
 }

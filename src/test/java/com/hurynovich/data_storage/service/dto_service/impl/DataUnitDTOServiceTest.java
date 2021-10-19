@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_STRING_ID;
+
 @ExtendWith(MockitoExtension.class)
 class DataUnitDTOServiceTest {
-
-	private final String incorrectId = "1";
 
 	@Mock
 	private DAO<DataUnitDocument, String> dao;
@@ -75,9 +75,9 @@ class DataUnitDTOServiceTest {
 
 	@Test
 	void findByIdEmptyTest() {
-		Mockito.when(dao.findById(incorrectId)).thenReturn(Optional.empty());
+		Mockito.when(dao.findById(INCORRECT_STRING_ID)).thenReturn(Optional.empty());
 
-		final Optional<DataUnitDTO> savedDataUnitDTOOptional = service.findById(incorrectId);
+		final Optional<DataUnitDTO> savedDataUnitDTOOptional = service.findById(INCORRECT_STRING_ID);
 		Assertions.assertFalse(savedDataUnitDTOOptional.isPresent());
 	}
 

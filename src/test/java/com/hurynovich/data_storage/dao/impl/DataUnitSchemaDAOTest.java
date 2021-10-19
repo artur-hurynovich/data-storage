@@ -1,6 +1,5 @@
 package com.hurynovich.data_storage.dao.impl;
 
-import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
 import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaEntityGenerator;
@@ -18,10 +17,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@ExtendWith(MockitoExtension.class)
-class DataUnitSchemaDAOImplTest {
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_LONG_ID;
 
-	private final Long incorrectId = 1L;
+@ExtendWith(MockitoExtension.class)
+class DataUnitSchemaDAOTest {
 
 	@Mock
 	private JpaRepository<DataUnitSchemaEntity, Long> repository;
@@ -33,7 +32,7 @@ class DataUnitSchemaDAOImplTest {
 
 	@BeforeEach
 	public void initDAO() {
-		dao = new DataUnitSchemaDAOImpl(repository);
+		dao = new DataUnitSchemaDAO(repository);
 	}
 
 	@Test
@@ -60,9 +59,9 @@ class DataUnitSchemaDAOImplTest {
 
 	@Test
 	void findByIdEmptyTest() {
-		Mockito.when(dao.findById(incorrectId)).thenReturn(Optional.empty());
+		Mockito.when(dao.findById(INCORRECT_LONG_ID)).thenReturn(Optional.empty());
 
-		final Optional<DataUnitSchemaEntity> savedSchemaEntityOptional = dao.findById(incorrectId);
+		final Optional<DataUnitSchemaEntity> savedSchemaEntityOptional = dao.findById(INCORRECT_LONG_ID);
 		Assertions.assertFalse(savedSchemaEntityOptional.isPresent());
 	}
 
@@ -94,20 +93,6 @@ class DataUnitSchemaDAOImplTest {
 		dao.deleteById(id);
 
 		Mockito.verify(repository).deleteById(id);
-	}
-
-	@Test
-	void existsByIdTrueTest() {
-		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
-		final Long id = schemaEntity.getId();
-		Mockito.when(repository.existsById(id)).thenReturn(true);
-		Assertions.assertTrue(dao.existsById(id));
-	}
-
-	@Test
-	void existsByIdTrueFalse() {
-		Mockito.when(repository.existsById(incorrectId)).thenReturn(false);
-		Assertions.assertFalse(dao.existsById(incorrectId));
 	}
 
 }
