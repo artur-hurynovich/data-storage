@@ -4,6 +4,7 @@ import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class DataUnitSchemaDTOConverter
 	}
 
 	@Override
-	public List<DataUnitSchemaDTO> convert(final Iterable<DataUnitSchemaEntity> sources) {
+	public List<DataUnitSchemaDTO> convert(final @Nullable Iterable<DataUnitSchemaEntity> sources) {
 		final List<DataUnitSchemaDTO> targets = new ArrayList<>();
 		if (sources != null) {
 			targets.addAll(StreamSupport.stream(sources.spliterator(), false).
@@ -51,7 +52,7 @@ public class DataUnitSchemaDTOConverter
 		return targets;
 	}
 
-	private DataUnitSchemaDTO ignoringConvert(final DataUnitSchemaEntity source) {
+	private DataUnitSchemaDTO ignoringConvert(final @Nullable DataUnitSchemaEntity source) {
 		final DataUnitSchemaDTO target;
 		if (source != null) {
 			target = ignoringModelMapper.map(source, getDTOClass());

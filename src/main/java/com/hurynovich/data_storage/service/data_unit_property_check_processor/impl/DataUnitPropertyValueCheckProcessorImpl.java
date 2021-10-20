@@ -15,24 +15,25 @@ import java.util.Objects;
 @Service
 public class DataUnitPropertyValueCheckProcessorImpl implements DataUnitPropertyValueCheckProcessor {
 
-	private final Map<DataUnitPropertyType, DataUnitPropertyValueTypeChecker> dataUnitPropertyTypeCheckerByType;
+	private final Map<DataUnitPropertyType, DataUnitPropertyValueTypeChecker> dataUnitPropertyValueTypeCheckersByType;
 
-	public DataUnitPropertyValueCheckProcessorImpl(final @NonNull Map<DataUnitPropertyType, DataUnitPropertyValueTypeChecker> dataUnitPropertyTypeCheckerByType) {
-		this.dataUnitPropertyTypeCheckerByType = dataUnitPropertyTypeCheckerByType;
+	public DataUnitPropertyValueCheckProcessorImpl(
+			final @NonNull Map<DataUnitPropertyType, DataUnitPropertyValueTypeChecker> dataUnitPropertyValueTypeCheckersByType) {
+		this.dataUnitPropertyValueTypeCheckersByType = dataUnitPropertyValueTypeCheckersByType;
 	}
 
 	@Override
-	public boolean processCheck(final @NonNull DataUnitPropertySchemaDTO schema, final @Nullable Object value) {
+	public boolean processCheck(final @NonNull DataUnitPropertySchemaDTO propertySchema, final @Nullable Object value) {
 		boolean checkResult;
 
-		final DataUnitPropertyType type = Objects.requireNonNull(schema.getType());
-		final DataUnitPropertyValueTypeChecker dataUnitPropertyValueTypeChecker = dataUnitPropertyTypeCheckerByType.
+		final DataUnitPropertyType type = Objects.requireNonNull(propertySchema.getType());
+		final DataUnitPropertyValueTypeChecker dataUnitPropertyValueTypeChecker = dataUnitPropertyValueTypeCheckersByType.
 				get(type);
 		if (dataUnitPropertyValueTypeChecker != null) {
 			checkResult = value == null || dataUnitPropertyValueTypeChecker.check(value);
 		} else {
-			throw new DataUnitPropertyValueCheckProcessorException("No dataUnitPropertyValueTypeChecker for" +
-					"DataUnitPropertyType=" + type);
+			throw new DataUnitPropertyValueCheckProcessorException("No dataUnitPropertyValueTypeChecker for " +
+					"DataUnitPropertyType = " + type);
 		}
 
 		return checkResult;

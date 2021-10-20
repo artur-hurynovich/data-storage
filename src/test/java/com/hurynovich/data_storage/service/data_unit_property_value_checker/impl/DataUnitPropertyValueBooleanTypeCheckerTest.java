@@ -13,14 +13,12 @@ class DataUnitPropertyValueBooleanTypeCheckerTest {
 
 	@Test
 	void checkTrue() {
-		final boolean result = checker.check(DATA_UNIT_BOOLEAN_PROPERTY_VALUE);
-		Assertions.assertTrue(result);
+		Assertions.assertTrue(checker.check(DATA_UNIT_BOOLEAN_PROPERTY_VALUE));
 	}
 
 	@Test
 	void checkFalse() {
-		final boolean result = checker.check(DATA_UNIT_DATE_PROPERTY_VALUE);
-		Assertions.assertFalse(result);
+		Assertions.assertFalse(checker.check(DATA_UNIT_DATE_PROPERTY_VALUE));
 	}
 
 }

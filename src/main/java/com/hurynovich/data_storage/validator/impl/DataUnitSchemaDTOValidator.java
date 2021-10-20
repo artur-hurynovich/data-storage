@@ -23,41 +23,37 @@ public class DataUnitSchemaDTOValidator implements DTOValidator<DataUnitSchemaDT
 
 	private static final int DATA_UNIT_PROPERTY_SCHEMA_NAME_MAX_LENGTH = DATA_UNIT_SCHEMA_NAME_MAX_LENGTH;
 
-	private final DataUnitSchemaDTOService schemaService;
+	private final DataUnitSchemaDTOService service;
 
-	public DataUnitSchemaDTOValidator(final @NonNull DataUnitSchemaDTOService schemaService) {
-		this.schemaService = schemaService;
+	public DataUnitSchemaDTOValidator(final @NonNull DataUnitSchemaDTOService service) {
+		this.service = service;
 	}
 
 	@Override
-	public ValidationResult validate(final @Nullable DataUnitSchemaDTO dataUnitSchema) {
+	public ValidationResult validate(final @Nullable DataUnitSchemaDTO schema) {
 		final ValidationResult result = new ValidationResult();
 
-		if (dataUnitSchema == null) {
+		if (schema == null) {
 			result.setType(ValidationResultType.FAILURE);
-
 			result.addError("'dataUnitSchema' can't be null");
 		} else {
-			final String name = dataUnitSchema.getName();
+			final String name = schema.getName();
 			if (StringUtils.isBlank(name)) {
 				result.setType(ValidationResultType.FAILURE);
-
 				result.addError("'dataUnitSchema.name' can't be null, empty or blank");
 			} else {
 				if (name.length() > DATA_UNIT_SCHEMA_NAME_MAX_LENGTH) {
 					result.setType(ValidationResultType.FAILURE);
-
 					result.addError("'dataUnitSchema.name' can't exceed " +
 							DATA_UNIT_SCHEMA_NAME_MAX_LENGTH + " characters");
 				}
 
-				checkSchemaNameForDuplicates(dataUnitSchema.getId(), name, result);
+				checkNameForDuplicates(schema.getId(), name, result);
 			}
 
-			final List<DataUnitPropertySchemaDTO> propertySchemas = dataUnitSchema.getPropertySchemas();
+			final List<DataUnitPropertySchemaDTO> propertySchemas = schema.getPropertySchemas();
 			if (CollectionUtils.isEmpty(propertySchemas)) {
 				result.setType(ValidationResultType.FAILURE);
-
 				result.addError("'dataUnitSchema.propertySchemas' can't be null or empty");
 			} else {
 				validatePropertySchemas(propertySchemas, result);
@@ -67,14 +63,12 @@ public class DataUnitSchemaDTOValidator implements DTOValidator<DataUnitSchemaDT
 		return result;
 	}
 
-	private void checkSchemaNameForDuplicates(final @Nullable Long schemaId, final @NonNull String schemaName,
-											  final @NonNull ValidationResult result) {
-		if ((schemaId == null && schemaService.existsByName(schemaName))
-				|| (schemaId != null && schemaService.existsByNameAndNotId(schemaName, schemaId))) {
+	private void checkNameForDuplicates(final @Nullable Long id, final @NonNull String name,
+										final @NonNull ValidationResult result) {
+		if ((id == null && service.existsByName(name))
+				|| (id != null && service.existsByNameAndNotId(name, id))) {
 			result.setType(ValidationResultType.FAILURE);
-
-			result.addError("'dataUnitSchema.name' found duplicate '" +
-					schemaName + "'");
+			result.addError("Found duplicate '" + name + "' for 'dataUnitSchema.name'");
 		}
 	}
 
@@ -91,33 +85,27 @@ public class DataUnitSchemaDTOValidator implements DTOValidator<DataUnitSchemaDT
 										final @NonNull ValidationResult result) {
 		if (propertySchema == null) {
 			result.setType(ValidationResultType.FAILURE);
-
 			result.addError("'dataUnitSchema.propertySchema' can't be null");
 		} else {
 			final String name = propertySchema.getName();
 			if (StringUtils.isBlank(name)) {
 				result.setType(ValidationResultType.FAILURE);
-
 				result.addError("'dataUnitSchema.propertySchema.name' can't be null, empty or blank");
 			} else {
 				if (name.length() > DATA_UNIT_PROPERTY_SCHEMA_NAME_MAX_LENGTH) {
 					result.setType(ValidationResultType.FAILURE);
-
 					result.addError("'dataUnitSchema.propertySchema.name' can't exceed " +
 							DATA_UNIT_PROPERTY_SCHEMA_NAME_MAX_LENGTH + " characters");
 				}
 
 				if (!uniquePropertySchemaNames.add(name)) {
 					result.setType(ValidationResultType.FAILURE);
-
-					result.addError("'dataUnitSchema.propertySchema.name' found duplicate '" +
-							name + "'");
+					result.addError("Found duplicate '" + name + "' for 'dataUnitSchema.propertySchema.name'");
 				}
 			}
 
 			if (propertySchema.getType() == null) {
 				result.setType(ValidationResultType.FAILURE);
-
 				result.addError("'dataUnitSchema.propertySchema.type' can't be null");
 			}
 		}

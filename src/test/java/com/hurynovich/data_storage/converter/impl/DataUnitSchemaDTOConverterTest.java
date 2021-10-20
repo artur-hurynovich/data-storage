@@ -25,25 +25,25 @@ class DataUnitSchemaDTOConverterTest {
 			new TestDataUnitSchemaEntityGenerator();
 
 	@Test
-	void convertFromDTONullTest() {
+	void convertDTONullTest() {
 		final DataUnitSchemaEntity schemaEntity = converter.convert((DataUnitSchemaDTO) null);
 		Assertions.assertNull(schemaEntity);
 	}
 
 	@Test
-	void convertFromDTONotNullTest() {
-		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
-		final DataUnitSchemaEntity schemaEntity = converter.convert(schemaDTO);
-		checkDTOToEntityConversion(schemaDTO, schemaEntity);
+	void convertDTONotNullTest() {
+		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
+		final DataUnitSchemaEntity entity = converter.convert(dto);
+		checkDTOConversion(dto, entity);
 	}
 
-	private void checkDTOToEntityConversion(final DataUnitSchemaDTO schemaDTO, final DataUnitSchemaEntity schemaEntity) {
-		Assertions.assertNotNull(schemaEntity);
-		Assertions.assertEquals(schemaDTO.getId(), schemaEntity.getId());
-		Assertions.assertEquals(schemaDTO.getName(), schemaEntity.getName());
+	private void checkDTOConversion(final DataUnitSchemaDTO dto, final DataUnitSchemaEntity entity) {
+		Assertions.assertNotNull(entity);
+		Assertions.assertEquals(dto.getId(), entity.getId());
+		Assertions.assertEquals(dto.getName(), entity.getName());
 
-		final List<DataUnitPropertySchemaDTO> propertySchemaDTOs = schemaDTO.getPropertySchemas();
-		final List<DataUnitPropertySchemaEntity> propertySchemaEntities = schemaEntity.getPropertySchemas();
+		final List<DataUnitPropertySchemaDTO> propertySchemaDTOs = dto.getPropertySchemas();
+		final List<DataUnitPropertySchemaEntity> propertySchemaEntities = entity.getPropertySchemas();
 		Assertions.assertNotNull(propertySchemaDTOs);
 		Assertions.assertNotNull(propertySchemaEntities);
 		Assertions.assertEquals(propertySchemaDTOs.size(), propertySchemaEntities.size());
@@ -59,27 +59,27 @@ class DataUnitSchemaDTOConverterTest {
 	}
 
 	@Test
-	void convertToDTONullTest() {
+	void convertEntityNullTest() {
 		final DataUnitSchemaDTO schemaDTO = converter.convert((DataUnitSchemaEntity) null);
 		Assertions.assertNull(schemaDTO);
 	}
 
 	@Test
-	void convertToDTONotNullTest() {
-		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
-		final DataUnitSchemaDTO schemaDTO = converter.convert(schemaEntity);
-		checkEntityToDTOConversion(schemaEntity, schemaDTO, false);
+	void convertEntityNotNullTest() {
+		final DataUnitSchemaEntity entity = entityGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dto = converter.convert(entity);
+		checkEntityConversion(entity, dto, false);
 	}
 
-	private void checkEntityToDTOConversion(final DataUnitSchemaEntity schemaEntity,
-											final DataUnitSchemaDTO schemaDTO,
-											boolean ignorePropertySchemas) {
-		Assertions.assertNotNull(schemaDTO);
-		Assertions.assertEquals(schemaEntity.getId(), schemaDTO.getId());
-		Assertions.assertEquals(schemaEntity.getName(), schemaDTO.getName());
+	private void checkEntityConversion(final DataUnitSchemaEntity entity,
+									   final DataUnitSchemaDTO dto,
+									   boolean ignorePropertySchemas) {
+		Assertions.assertNotNull(dto);
+		Assertions.assertEquals(entity.getId(), dto.getId());
+		Assertions.assertEquals(entity.getName(), dto.getName());
 
-		final List<DataUnitPropertySchemaEntity> propertySchemaEntities = schemaEntity.getPropertySchemas();
-		final List<DataUnitPropertySchemaDTO> propertySchemaDTOs = schemaDTO.getPropertySchemas();
+		final List<DataUnitPropertySchemaEntity> propertySchemaEntities = entity.getPropertySchemas();
+		final List<DataUnitPropertySchemaDTO> propertySchemaDTOs = dto.getPropertySchemas();
 		if (ignorePropertySchemas) {
 			Assertions.assertNull(propertySchemaDTOs);
 		} else {
@@ -98,14 +98,14 @@ class DataUnitSchemaDTOConverterTest {
 	}
 
 	@Test
-	void convertAllToDTOsNullTest() {
-		final List<DataUnitSchemaDTO> schemaDTOs = converter.convert((Iterable<DataUnitSchemaEntity>) null);
-		Assertions.assertNotNull(schemaDTOs);
-		Assertions.assertTrue(schemaDTOs.isEmpty());
+	void convertEntitiesNullTest() {
+		final List<DataUnitSchemaDTO> dtos = converter.convert((Iterable<DataUnitSchemaEntity>) null);
+		Assertions.assertNotNull(dtos);
+		Assertions.assertTrue(dtos.isEmpty());
 	}
 
 	@Test
-	void convertAllToDTOsNotNullTest() {
+	void convertEntitiesNotNullTest() {
 		final List<DataUnitSchemaEntity> schemaEntities = entityGenerator.generateMultipleObjects();
 		final List<DataUnitSchemaDTO> schemaDTOs = converter.convert(schemaEntities);
 		Assertions.assertNotNull(schemaDTOs);
@@ -114,7 +114,7 @@ class DataUnitSchemaDTOConverterTest {
 		for (int i = 0; i < schemaEntities.size(); i++) {
 			final DataUnitSchemaEntity schemaEntity = schemaEntities.get(i);
 			final DataUnitSchemaDTO schemaDTO = schemaDTOs.get(i);
-			checkEntityToDTOConversion(schemaEntity, schemaDTO, true);
+			checkEntityConversion(schemaEntity, schemaDTO, true);
 		}
 	}
 

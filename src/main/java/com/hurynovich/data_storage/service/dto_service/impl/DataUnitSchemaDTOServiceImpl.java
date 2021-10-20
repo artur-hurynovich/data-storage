@@ -33,12 +33,12 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 
 	@Override
 	public DataUnitSchemaDTO save(final @NonNull DataUnitSchemaDTO dataUnitSchema) {
-		final DataUnitSchemaDTO storedDataUnitSchema = converter.convert(
+		final DataUnitSchemaDTO savedDataUnitSchema = converter.convert(
 				dao.save(converter.convert(dataUnitSchema)));
 
-		cache.store(storedDataUnitSchema.getId(), dataUnitSchema);
+		cache.store(savedDataUnitSchema.getId(), savedDataUnitSchema);
 
-		return dataUnitSchema;
+		return savedDataUnitSchema;
 	}
 
 	@Override

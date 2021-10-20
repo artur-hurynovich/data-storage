@@ -1,5 +1,7 @@
 package com.hurynovich.data_storage.validator.model;
 
+import org.springframework.lang.NonNull;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,7 +15,7 @@ public class ValidationResult {
 		return errors;
 	}
 
-	public void addError(final String error) {
+	public void addError(final @NonNull String error) {
 		errors.add(error);
 	}
 
@@ -21,7 +23,7 @@ public class ValidationResult {
 		return type;
 	}
 
-	public void setType(final ValidationResultType type) {
+	public void setType(final @NonNull ValidationResultType type) {
 		this.type = type;
 	}
 

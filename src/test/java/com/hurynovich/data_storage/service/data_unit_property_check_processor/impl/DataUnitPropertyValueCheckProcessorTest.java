@@ -15,18 +15,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Map;
 
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TEXT_PROPERTY_VALUE;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_INTEGER_PROPERTY_VALUE;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_FLOAT_PROPERTY_VALUE;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_BOOLEAN_PROPERTY_VALUE;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_DATE_PROPERTY_VALUE;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_FLOAT_PROPERTY_VALUE;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_INTEGER_PROPERTY_VALUE;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TEXT_PROPERTY_VALUE;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TIME_PROPERTY_VALUE;
 
 @ExtendWith(MockitoExtension.class)
 class DataUnitPropertyValueCheckProcessorTest {
 
 	@Mock
-	private Map<DataUnitPropertyType, DataUnitPropertyValueTypeChecker> dataUnitPropertyTypeCheckerByType;
+	private Map<DataUnitPropertyType, DataUnitPropertyValueTypeChecker> checkersByType;
 
 	@Mock
 	private DataUnitPropertyValueTypeChecker checker;
@@ -35,16 +35,15 @@ class DataUnitPropertyValueCheckProcessorTest {
 
 	@BeforeEach
 	public void initProcessor() {
-		processor = new DataUnitPropertyValueCheckProcessorImpl(dataUnitPropertyTypeCheckerByType);
+		processor = new DataUnitPropertyValueCheckProcessorImpl(checkersByType);
 	}
 
 	@Test
 	void textTypeNullTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.TEXT);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
 
-		final boolean checkResult = processor.processCheck(propertySchema, null);
-		Assertions.assertTrue(checkResult);
+		Assertions.assertTrue(processor.processCheck(propertySchema, null));
 	}
 
 	private DataUnitPropertySchemaDTO buildPropertySchema(final DataUnitPropertyType type) {
@@ -58,201 +57,160 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void textTypeNotNullTrueTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.TEXT);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checker.check(DATA_UNIT_TEXT_PROPERTY_VALUE)).thenReturn(true);
 
-		final Object value = DATA_UNIT_TEXT_PROPERTY_VALUE;
-		Mockito.when(checker.check(value)).thenReturn(true);
-
-		final boolean checkResult = processor.processCheck(propertySchema, value);
-		Assertions.assertTrue(checkResult);
+		Assertions.assertTrue(processor.processCheck(propertySchema, DATA_UNIT_TEXT_PROPERTY_VALUE));
 	}
 
 	@Test
 	void textTypeNotNullFalseTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.TEXT);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checker.check(DATA_UNIT_INTEGER_PROPERTY_VALUE)).thenReturn(false);
 
-		final Object value = DATA_UNIT_INTEGER_PROPERTY_VALUE;
-		Mockito.when(checker.check(value)).thenReturn(false);
-
-		final boolean checkResult = processor.processCheck(propertySchema, value);
-		Assertions.assertFalse(checkResult);
+		Assertions.assertFalse(processor.processCheck(propertySchema, DATA_UNIT_INTEGER_PROPERTY_VALUE));
 	}
 
 	@Test
 	void integerTypeNullTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.INTEGER);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
 
-		final boolean checkResult = processor.processCheck(propertySchema, null);
-		Assertions.assertTrue(checkResult);
+		Assertions.assertTrue(processor.processCheck(propertySchema, null));
 	}
 
 	@Test
 	void integerTypeNotNullTrueTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.INTEGER);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checker.check(DATA_UNIT_INTEGER_PROPERTY_VALUE)).thenReturn(true);
 
-		final Object value = DATA_UNIT_INTEGER_PROPERTY_VALUE;
-		Mockito.when(checker.check(value)).thenReturn(true);
-
-		final boolean checkResult = processor.processCheck(propertySchema, value);
-		Assertions.assertTrue(checkResult);
+		Assertions.assertTrue(processor.processCheck(propertySchema, DATA_UNIT_INTEGER_PROPERTY_VALUE));
 	}
 
 	@Test
 	void integerTypeNotNullFalseTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.INTEGER);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checker.check(DATA_UNIT_FLOAT_PROPERTY_VALUE)).thenReturn(false);
 
-		final Object value = DATA_UNIT_FLOAT_PROPERTY_VALUE;
-		Mockito.when(checker.check(value)).thenReturn(false);
-
-		final boolean checkResult = processor.processCheck(propertySchema, value);
-		Assertions.assertFalse(checkResult);
+		Assertions.assertFalse(processor.processCheck(propertySchema, DATA_UNIT_FLOAT_PROPERTY_VALUE));
 	}
 
 	@Test
 	void floatTypeNullTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.FLOAT);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
 
-		final boolean checkResult = processor.processCheck(propertySchema, null);
-		Assertions.assertTrue(checkResult);
+		Assertions.assertTrue(processor.processCheck(propertySchema, null));
 	}
 
 	@Test
 	void floatTypeNotNullTrueTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.FLOAT);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checker.check(DATA_UNIT_FLOAT_PROPERTY_VALUE)).thenReturn(true);
 
-		final Object value = DATA_UNIT_FLOAT_PROPERTY_VALUE;
-		Mockito.when(checker.check(value)).thenReturn(true);
-
-		final boolean checkResult = processor.processCheck(propertySchema, value);
-		Assertions.assertTrue(checkResult);
+		Assertions.assertTrue(processor.processCheck(propertySchema, DATA_UNIT_FLOAT_PROPERTY_VALUE));
 	}
 
 	@Test
 	void floatTypeNotNullFalseTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.FLOAT);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checker.check(DATA_UNIT_BOOLEAN_PROPERTY_VALUE)).thenReturn(false);
 
-		final Object value = DATA_UNIT_BOOLEAN_PROPERTY_VALUE;
-		Mockito.when(checker.check(value)).thenReturn(false);
-
-		final boolean checkResult = processor.processCheck(propertySchema, value);
-		Assertions.assertFalse(checkResult);
+		Assertions.assertFalse(processor.processCheck(propertySchema, DATA_UNIT_BOOLEAN_PROPERTY_VALUE));
 	}
 
 	@Test
 	void booleanTypeNullTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.BOOLEAN);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
 
-		final boolean checkResult = processor.processCheck(propertySchema, null);
-		Assertions.assertTrue(checkResult);
+		Assertions.assertTrue(processor.processCheck(propertySchema, null));
 	}
 
 	@Test
 	void booleanTypeNotNullTrueTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.BOOLEAN);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checker.check(DATA_UNIT_BOOLEAN_PROPERTY_VALUE)).thenReturn(true);
 
-		final Object value = DATA_UNIT_BOOLEAN_PROPERTY_VALUE;
-		Mockito.when(checker.check(value)).thenReturn(true);
-
-		final boolean checkResult = processor.processCheck(propertySchema, value);
-		Assertions.assertTrue(checkResult);
+		Assertions.assertTrue(processor.processCheck(propertySchema, DATA_UNIT_BOOLEAN_PROPERTY_VALUE));
 	}
 
 	@Test
 	void booleanTypeNotNullFalseTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.BOOLEAN);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checker.check(DATA_UNIT_DATE_PROPERTY_VALUE)).thenReturn(false);
 
-		final Object value = DATA_UNIT_DATE_PROPERTY_VALUE;
-		Mockito.when(checker.check(value)).thenReturn(false);
-
-		final boolean checkResult = processor.processCheck(propertySchema, value);
-		Assertions.assertFalse(checkResult);
+		Assertions.assertFalse(processor.processCheck(propertySchema, DATA_UNIT_DATE_PROPERTY_VALUE));
 	}
 
 	@Test
 	void dateTypeNullTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.DATE);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
 
-		final boolean checkResult = processor.processCheck(propertySchema, null);
-		Assertions.assertTrue(checkResult);
+		Assertions.assertTrue(processor.processCheck(propertySchema, null));
 	}
 
 	@Test
 	void dateTypeNotNullTrueTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.DATE);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checker.check(DATA_UNIT_DATE_PROPERTY_VALUE)).thenReturn(true);
 
-		final Object value = DATA_UNIT_DATE_PROPERTY_VALUE;
-		Mockito.when(checker.check(value)).thenReturn(true);
-
-		final boolean checkResult = processor.processCheck(propertySchema, value);
-		Assertions.assertTrue(checkResult);
+		Assertions.assertTrue(processor.processCheck(propertySchema, DATA_UNIT_DATE_PROPERTY_VALUE));
 	}
 
 	@Test
 	void dateTypeNotNullFalseTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.DATE);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checker.check(DATA_UNIT_TIME_PROPERTY_VALUE)).thenReturn(false);
 
-		final Object value = DATA_UNIT_TIME_PROPERTY_VALUE;
-		Mockito.when(checker.check(value)).thenReturn(false);
-
-		final boolean checkResult = processor.processCheck(propertySchema, value);
-		Assertions.assertFalse(checkResult);
+		Assertions.assertFalse(processor.processCheck(propertySchema, DATA_UNIT_TIME_PROPERTY_VALUE));
 	}
 
 	@Test
 	void timeTypeNullTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.TIME);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
 
-		final boolean checkResult = processor.processCheck(propertySchema, null);
-		Assertions.assertTrue(checkResult);
+		Assertions.assertTrue(processor.processCheck(propertySchema, null));
 	}
 
 	@Test
 	void timeTypeNotNullTrueTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.TIME);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checker.check(DATA_UNIT_TIME_PROPERTY_VALUE)).thenReturn(true);
 
-		final Object value = DATA_UNIT_TIME_PROPERTY_VALUE;
-		Mockito.when(checker.check(value)).thenReturn(true);
-
-		final boolean checkResult = processor.processCheck(propertySchema, value);
-		Assertions.assertTrue(checkResult);
+		Assertions.assertTrue(processor.processCheck(propertySchema, DATA_UNIT_TIME_PROPERTY_VALUE));
 	}
 
 	@Test
 	void timeTypeNotNullFalseTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.TIME);
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
+		Mockito.when(checker.check(DATA_UNIT_TEXT_PROPERTY_VALUE)).thenReturn(false);
 
-		final Object value = DATA_UNIT_TEXT_PROPERTY_VALUE;
-		Mockito.when(checker.check(value)).thenReturn(false);
-
-		final boolean checkResult = processor.processCheck(propertySchema, value);
-		Assertions.assertFalse(checkResult);
+		Assertions.assertFalse(processor.processCheck(propertySchema, DATA_UNIT_TEXT_PROPERTY_VALUE));
 	}
 
 	@Test
 	void checkerNotFoundExceptionTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.TIME);
 		final DataUnitPropertyType type = propertySchema.getType();
-		Mockito.when(dataUnitPropertyTypeCheckerByType.get(type)).thenReturn(null);
+		Mockito.when(checkersByType.get(type)).thenReturn(null);
 
 		Assertions.assertThrows(DataUnitPropertyValueCheckProcessorException.class,
-				() -> processor.processCheck(propertySchema, null), "No dataUnitPropertyValueTypeChecker for" +
-						"DataUnitPropertyType=" + type);
+				() -> processor.processCheck(propertySchema, null),
+				"No dataUnitPropertyValueTypeChecker for DataUnitPropertyType = " + type);
 	}
 
 }

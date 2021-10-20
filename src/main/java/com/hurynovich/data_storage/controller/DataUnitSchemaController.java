@@ -8,6 +8,7 @@ import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,8 +27,8 @@ public class DataUnitSchemaController {
 
 	private final DTOService<DataUnitSchemaDTO, Long> service;
 
-	public DataUnitSchemaController(final DTOValidator<DataUnitSchemaDTO> validator,
-									final DTOService<DataUnitSchemaDTO, Long> service) {
+	public DataUnitSchemaController(final @NonNull DTOValidator<DataUnitSchemaDTO> validator,
+									final @NonNull DTOService<DataUnitSchemaDTO, Long> service) {
 		this.validator = validator;
 		this.service = service;
 	}
@@ -67,7 +68,6 @@ public class DataUnitSchemaController {
 			validationResult = new ValidationResult();
 			validationResult.setType(ValidationResultType.FAILURE);
 			validationResult.addError("'dataUnitSchema' with id = " + id + " not found");
-
 			body = null;
 			status = HttpStatus.NOT_FOUND;
 		}

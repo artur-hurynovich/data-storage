@@ -14,26 +14,26 @@ class DataUnitSchemaDTOCacheTest {
 	private final Cache<Long, DataUnitSchemaDTO> cache =
 			new DataUnitSchemaDTOCache();
 
-	private final TestObjectGenerator<DataUnitSchemaDTO> dtoGenerator =
+	private final TestObjectGenerator<DataUnitSchemaDTO> schemaGenerator =
 			new TestDataUnitSchemaDTOGenerator();
 
 	@Test
 	void test() {
-		final DataUnitSchemaDTO dataUnitSchema = dtoGenerator.generateSingleObject();
-		final Long id = dataUnitSchema.getId();
-		cache.store(id, dataUnitSchema);
+		final DataUnitSchemaDTO schema = schemaGenerator.generateSingleObject();
+		final Long id = schema.getId();
+		cache.store(id, schema);
 		Assertions.assertTrue(cache.contains(id));
 
-		Optional<DataUnitSchemaDTO> dataUnitSchemaOptional = cache.get(id);
-		Assertions.assertNotNull(dataUnitSchemaOptional);
-		Assertions.assertTrue(dataUnitSchemaOptional.isPresent());
-		Assertions.assertEquals(dataUnitSchema, dataUnitSchemaOptional.get());
+		Optional<DataUnitSchemaDTO> schemaOptional = cache.get(id);
+		Assertions.assertNotNull(schemaOptional);
+		Assertions.assertTrue(schemaOptional.isPresent());
+		Assertions.assertEquals(schema, schemaOptional.get());
 
 		cache.invalidate(id);
 		Assertions.assertFalse(cache.contains(id));
-		dataUnitSchemaOptional = cache.get(id);
-		Assertions.assertNotNull(dataUnitSchemaOptional);
-		Assertions.assertTrue(dataUnitSchemaOptional.isEmpty());
+		schemaOptional = cache.get(id);
+		Assertions.assertNotNull(schemaOptional);
+		Assertions.assertTrue(schemaOptional.isEmpty());
 	}
 
 }

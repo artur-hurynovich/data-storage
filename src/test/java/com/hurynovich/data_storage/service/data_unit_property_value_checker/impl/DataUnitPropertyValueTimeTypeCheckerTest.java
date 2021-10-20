@@ -13,14 +13,12 @@ class DataUnitPropertyValueTimeTypeCheckerTest {
 
 	@Test
 	void checkTrue() {
-		final boolean result = checker.check(DATA_UNIT_TIME_PROPERTY_VALUE);
-		Assertions.assertTrue(result);
+		Assertions.assertTrue(checker.check(DATA_UNIT_TIME_PROPERTY_VALUE));
 	}
 
 	@Test
 	void checkFalse() {
-		final boolean result = checker.check(DATA_UNIT_TEXT_PROPERTY_VALUE);
-		Assertions.assertFalse(result);
+		Assertions.assertFalse(checker.check(DATA_UNIT_TEXT_PROPERTY_VALUE));
 	}
 
 }

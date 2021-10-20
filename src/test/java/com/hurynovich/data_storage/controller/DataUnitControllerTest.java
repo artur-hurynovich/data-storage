@@ -26,7 +26,7 @@ import java.util.Optional;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_STRING_ID;
 
 @ExtendWith(MockitoExtension.class)
-class DataUnitControllerTest {
+class DataUnitControllerTest extends AbstractControllerTest {
 
 	@Mock
 	private DTOValidator<DataUnitDTO> validator;
@@ -36,7 +36,7 @@ class DataUnitControllerTest {
 
 	private DataUnitController controller;
 
-	private final TestObjectGenerator<DataUnitDTO> dtoGenerator =
+	private final TestObjectGenerator<DataUnitDTO> dataUnitGenerator =
 			new TestDataUnitDTOGenerator();
 
 	@BeforeEach
@@ -46,14 +46,14 @@ class DataUnitControllerTest {
 
 	@Test
 	void postValidDataUnitTest() {
-		final DataUnitDTO dataUnitDTO = dtoGenerator.generateSingleObject();
-		dataUnitDTO.setId(null);
+		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
+		dataUnit.setId(null);
 
 		final ValidationResult validationResult = new ValidationResult();
-		Mockito.when(validator.validate(dataUnitDTO)).thenReturn(validationResult);
-		Mockito.when(service.save(dataUnitDTO)).thenReturn(dataUnitDTO);
+		Mockito.when(validator.validate(dataUnit)).thenReturn(validationResult);
+		Mockito.when(service.save(dataUnit)).thenReturn(dataUnit);
 
-		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.postDataUnit(dataUnitDTO);
+		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.postDataUnit(dataUnit);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
@@ -62,20 +62,15 @@ class DataUnitControllerTest {
 
 		checkValidationResultsEquality(validationResult, responseBody.getValidationResult());
 
-		Assertions.assertEquals(dataUnitDTO, responseBody.getBody());
-	}
-
-	private void checkValidationResultsEquality(final ValidationResult expected, final ValidationResult actual) {
-		Assertions.assertEquals(expected.getType(), actual.getType());
-		Assertions.assertEquals(expected.getErrors(), actual.getErrors());
+		Assertions.assertEquals(dataUnit, responseBody.getBody());
 	}
 
 	@Test
-	void postValidDataUnitNotNullIdTest() {
-		final DataUnitDTO dataUnitDTO = dtoGenerator.generateSingleObject();
-		Mockito.when(validator.validate(dataUnitDTO)).thenReturn(new ValidationResult());
+	void postValidDataUnitIdIsNotNullTest() {
+		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
+		Mockito.when(validator.validate(dataUnit)).thenReturn(new ValidationResult());
 
-		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.postDataUnit(dataUnitDTO);
+		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.postDataUnit(dataUnit);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
@@ -92,16 +87,39 @@ class DataUnitControllerTest {
 
 	@Test
 	void postValidDataUnitSchemaIdIsNullTest() {
-		final DataUnitDTO dataUnitDTO = dtoGenerator.generateSingleObject();
-		dataUnitDTO.setId(null);
-		dataUnitDTO.setSchemaId(null);
+		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
+		dataUnit.setId(null);
+		dataUnit.setSchemaId(null);
 
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
 		validationResult.addError("'dataUnit.schemaId' can't be null");
-		Mockito.when(validator.validate(dataUnitDTO)).thenReturn(validationResult);
+		Mockito.when(validator.validate(dataUnit)).thenReturn(validationResult);
 
-		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.postDataUnit(dataUnitDTO);
+		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.postDataUnit(dataUnit);
+		Assertions.assertNotNull(response);
+		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+		final GenericValidatedResponse<DataUnitDTO> responseBody = response.getBody();
+		Assertions.assertNotNull(responseBody);
+
+		checkValidationResultsEquality(validationResult, responseBody.getValidationResult());
+
+		Assertions.assertNull(responseBody.getBody());
+	}
+
+	@Test
+	void postNotValidDataUnitTest() {
+		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
+		dataUnit.setProperties(new ArrayList<>());
+
+		final ValidationResult validationResult = new ValidationResult();
+		validationResult.setType(ValidationResultType.FAILURE);
+		validationResult.addError("'dataUnit.properties' can't be null or empty");
+		Mockito.when(validator.validate(dataUnit)).thenReturn(validationResult);
+
+		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.
+				putDataUnit(dataUnit.getId(), dataUnit);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
@@ -115,9 +133,9 @@ class DataUnitControllerTest {
 
 	@Test
 	void getDataUnitByIdTest() {
-		final DataUnitDTO dataUnitDTO = dtoGenerator.generateSingleObject();
-		final String id = dataUnitDTO.getId();
-		Mockito.when(service.findById(id)).thenReturn(Optional.of(dataUnitDTO));
+		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
+		final String id = dataUnit.getId();
+		Mockito.when(service.findById(id)).thenReturn(Optional.of(dataUnit));
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.getDataUnitById(id);
 		Assertions.assertNotNull(response);
@@ -128,14 +146,15 @@ class DataUnitControllerTest {
 
 		checkValidationResultsEquality(new ValidationResult(), responseBody.getValidationResult());
 
-		Assertions.assertEquals(dataUnitDTO, responseBody.getBody());
+		Assertions.assertEquals(dataUnit, responseBody.getBody());
 	}
 
 	@Test
 	void getDataUnitByIdNotFoundTest() {
 		Mockito.when(service.findById(INCORRECT_STRING_ID)).thenReturn(Optional.empty());
 
-		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.getDataUnitById(INCORRECT_STRING_ID);
+		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.
+				getDataUnitById(INCORRECT_STRING_ID);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 
@@ -153,8 +172,8 @@ class DataUnitControllerTest {
 
 	@Test
 	void getDataUnitsTest() {
-		final List<DataUnitDTO> dataUnitDTOs = dtoGenerator.generateMultipleObjects();
-		Mockito.when(service.findAll()).thenReturn(dataUnitDTOs);
+		final List<DataUnitDTO> dataUnits = dataUnitGenerator.generateMultipleObjects();
+		Mockito.when(service.findAll()).thenReturn(dataUnits);
 
 		final ResponseEntity<GenericValidatedResponse<List<DataUnitDTO>>> response = controller.getDataUnits();
 		Assertions.assertNotNull(response);
@@ -165,11 +184,11 @@ class DataUnitControllerTest {
 
 		checkValidationResultsEquality(new ValidationResult(), responseBody.getValidationResult());
 
-		Assertions.assertTrue(Objects.deepEquals(dataUnitDTOs, responseBody.getBody()));
+		Assertions.assertTrue(Objects.deepEquals(dataUnits, responseBody.getBody()));
 	}
 
 	@Test
-	void getDataUnitEmptyTest() {
+	void getDataUnitsEmptyTest() {
 		Mockito.when(service.findAll()).thenReturn(new ArrayList<>());
 
 		final ResponseEntity<GenericValidatedResponse<List<DataUnitDTO>>> response = controller.getDataUnits();
@@ -188,13 +207,13 @@ class DataUnitControllerTest {
 
 	@Test
 	void putValidDataUnitTest() {
-		final DataUnitDTO dataUnitDTO = dtoGenerator.generateSingleObject();
+		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
 		final ValidationResult validationResult = new ValidationResult();
-		Mockito.when(validator.validate(dataUnitDTO)).thenReturn(validationResult);
-		Mockito.when(service.save(dataUnitDTO)).thenReturn(dataUnitDTO);
+		Mockito.when(validator.validate(dataUnit)).thenReturn(validationResult);
+		Mockito.when(service.save(dataUnit)).thenReturn(dataUnit);
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.
-				putDataUnit(dataUnitDTO.getId(), dataUnitDTO);
+				putDataUnit(dataUnit.getId(), dataUnit);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -203,18 +222,18 @@ class DataUnitControllerTest {
 
 		checkValidationResultsEquality(validationResult, responseBody.getValidationResult());
 
-		Assertions.assertEquals(dataUnitDTO, responseBody.getBody());
+		Assertions.assertEquals(dataUnit, responseBody.getBody());
 	}
 
 	@Test
-	void putValidDataUnitNullIdTest() {
-		final DataUnitDTO dataUnitDTO = dtoGenerator.generateSingleObject();
-		final String id = dataUnitDTO.getId();
-		dataUnitDTO.setId(null);
-		Mockito.when(validator.validate(dataUnitDTO)).thenReturn(new ValidationResult());
+	void putValidDataUnitIdIsNullTest() {
+		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
+		final String id = dataUnit.getId();
+		dataUnit.setId(null);
+		Mockito.when(validator.validate(dataUnit)).thenReturn(new ValidationResult());
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.
-				putDataUnit(id, dataUnitDTO);
+				putDataUnit(id, dataUnit);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
@@ -231,11 +250,11 @@ class DataUnitControllerTest {
 
 	@Test
 	void putValidDataUnitIncorrectIdTest() {
-		final DataUnitDTO dataUnitDTO = dtoGenerator.generateSingleObject();
-		Mockito.when(validator.validate(dataUnitDTO)).thenReturn(new ValidationResult());
+		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
+		Mockito.when(validator.validate(dataUnit)).thenReturn(new ValidationResult());
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.
-				putDataUnit(INCORRECT_STRING_ID, dataUnitDTO);
+				putDataUnit(INCORRECT_STRING_ID, dataUnit);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
@@ -252,16 +271,16 @@ class DataUnitControllerTest {
 
 	@Test
 	void putNotValidDataUnitTest() {
-		final DataUnitDTO dataUnitDTO = dtoGenerator.generateSingleObject();
-		dataUnitDTO.setProperties(null);
+		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
+		dataUnit.setProperties(null);
 
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
 		validationResult.addError("'dataUnit.properties' can't be null or empty");
-		Mockito.when(validator.validate(dataUnitDTO)).thenReturn(validationResult);
+		Mockito.when(validator.validate(dataUnit)).thenReturn(validationResult);
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.
-				putDataUnit(dataUnitDTO.getId(), dataUnitDTO);
+				putDataUnit(dataUnit.getId(), dataUnit);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
@@ -275,8 +294,8 @@ class DataUnitControllerTest {
 
 	@Test
 	void deleteDataUnitByIdTest() {
-		final DataUnitDTO dataUnitDTO = dtoGenerator.generateSingleObject();
-		final String id = dataUnitDTO.getId();
+		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
+		final String id = dataUnit.getId();
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.deleteDataUnitById(id);
 		Mockito.verify(service).deleteById(id);

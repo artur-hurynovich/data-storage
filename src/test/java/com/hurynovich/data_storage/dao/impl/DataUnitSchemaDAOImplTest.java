@@ -27,7 +27,7 @@ class DataUnitSchemaDAOImplTest {
 
 	private DataUnitSchemaDAOImpl dao;
 
-	private final TestObjectGenerator<DataUnitSchemaEntity> entityGenerator =
+	private final TestObjectGenerator<DataUnitSchemaEntity> schemaGenerator =
 			new TestDataUnitSchemaEntityGenerator();
 
 	@BeforeEach
@@ -37,59 +37,57 @@ class DataUnitSchemaDAOImplTest {
 
 	@Test
 	void saveTest() {
-		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
-		Mockito.when(repository.save(schemaEntity)).thenReturn(schemaEntity);
+		final DataUnitSchemaEntity schema = schemaGenerator.generateSingleObject();
+		Mockito.when(repository.save(schema)).thenReturn(schema);
 
-		final DataUnitSchemaEntity savedSchemaEntity = dao.save(schemaEntity);
-		Assertions.assertTrue(Objects.deepEquals(schemaEntity, savedSchemaEntity));
+		final DataUnitSchemaEntity savedSchema = dao.save(schema);
+		Assertions.assertTrue(Objects.deepEquals(schema, savedSchema));
 	}
 
 	@Test
 	void findByIdTest() {
-		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
+		final DataUnitSchemaEntity schema = schemaGenerator.generateSingleObject();
+		final Long id = schema.getId();
+		Mockito.when(repository.findById(id)).thenReturn(Optional.of(schema));
 
-		final Long id = schemaEntity.getId();
-		Mockito.when(repository.findById(id)).thenReturn(Optional.of(schemaEntity));
-
-		final Optional<DataUnitSchemaEntity> savedSchemaEntityOptional = dao.findById(id);
-		Assertions.assertTrue(savedSchemaEntityOptional.isPresent());
-
-		Assertions.assertTrue(Objects.deepEquals(schemaEntity, savedSchemaEntityOptional.get()));
+		final Optional<DataUnitSchemaEntity> savedSchemaOptional = dao.findById(id);
+		Assertions.assertTrue(savedSchemaOptional.isPresent());
+		Assertions.assertTrue(Objects.deepEquals(schema, savedSchemaOptional.get()));
 	}
 
 	@Test
 	void findByIdEmptyTest() {
 		Mockito.when(dao.findById(INCORRECT_LONG_ID)).thenReturn(Optional.empty());
 
-		final Optional<DataUnitSchemaEntity> savedSchemaEntityOptional = dao.findById(INCORRECT_LONG_ID);
-		Assertions.assertFalse(savedSchemaEntityOptional.isPresent());
+		final Optional<DataUnitSchemaEntity> savedSchemaOptional = dao.findById(INCORRECT_LONG_ID);
+		Assertions.assertFalse(savedSchemaOptional.isPresent());
 	}
 
 	@Test
 	void findAllTest() {
-		final List<DataUnitSchemaEntity> schemaEntities = entityGenerator.generateMultipleObjects();
-		Mockito.when(dao.findAll()).thenReturn(schemaEntities);
+		final List<DataUnitSchemaEntity> schemas = schemaGenerator.generateMultipleObjects();
+		Mockito.when(dao.findAll()).thenReturn(schemas);
 
-		final List<DataUnitSchemaEntity> savedSchemaEntities = dao.findAll();
-		Assertions.assertNotNull(savedSchemaEntities);
-		Assertions.assertFalse(savedSchemaEntities.isEmpty());
-		Assertions.assertTrue(Objects.deepEquals(schemaEntities, savedSchemaEntities));
+		final List<DataUnitSchemaEntity> savedSchemas = dao.findAll();
+		Assertions.assertNotNull(savedSchemas);
+		Assertions.assertFalse(savedSchemas.isEmpty());
+		Assertions.assertTrue(Objects.deepEquals(schemas, savedSchemas));
 	}
 
 	@Test
 	void findAllEmptyTest() {
-		final List<DataUnitSchemaEntity> schemaEntities = new ArrayList<>();
-		Mockito.when(dao.findAll()).thenReturn(schemaEntities);
+		final List<DataUnitSchemaEntity> schemas = new ArrayList<>();
+		Mockito.when(dao.findAll()).thenReturn(schemas);
 
-		final List<DataUnitSchemaEntity> savedSchemaEntities = dao.findAll();
-		Assertions.assertNotNull(savedSchemaEntities);
-		Assertions.assertTrue(savedSchemaEntities.isEmpty());
+		final List<DataUnitSchemaEntity> savedSchemas = dao.findAll();
+		Assertions.assertNotNull(savedSchemas);
+		Assertions.assertTrue(savedSchemas.isEmpty());
 	}
 
 	@Test
 	void deleteByIdTest() {
-		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
-		final Long id = schemaEntity.getId();
+		final DataUnitSchemaEntity schema = schemaGenerator.generateSingleObject();
+		final Long id = schema.getId();
 		dao.deleteById(id);
 
 		Mockito.verify(repository).deleteById(id);
@@ -97,8 +95,8 @@ class DataUnitSchemaDAOImplTest {
 
 	@Test
 	void existsByNameTrueTest() {
-		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
-		final String name = schemaEntity.getName();
+		final DataUnitSchemaEntity schema = schemaGenerator.generateSingleObject();
+		final String name = schema.getName();
 		Mockito.when(repository.existsByName(name)).thenReturn(true);
 
 		Assertions.assertTrue(dao.existsByName(name));
@@ -106,8 +104,8 @@ class DataUnitSchemaDAOImplTest {
 
 	@Test
 	void existsByNameFalseTest() {
-		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
-		final String name = schemaEntity.getName();
+		final DataUnitSchemaEntity schema = schemaGenerator.generateSingleObject();
+		final String name = schema.getName();
 		Mockito.when(repository.existsByName(name)).thenReturn(false);
 
 		Assertions.assertFalse(dao.existsByName(name));
@@ -115,9 +113,9 @@ class DataUnitSchemaDAOImplTest {
 
 	@Test
 	void existsByNameAndNotIdTrueTest() {
-		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
-		final String name = schemaEntity.getName();
-		final Long id = schemaEntity.getId();
+		final DataUnitSchemaEntity schema = schemaGenerator.generateSingleObject();
+		final String name = schema.getName();
+		final Long id = schema.getId();
 		Mockito.when(repository.existsByNameAndIdNot(name, id)).thenReturn(true);
 
 		Assertions.assertTrue(dao.existsByNameAndNotId(name, id));
@@ -125,7 +123,7 @@ class DataUnitSchemaDAOImplTest {
 
 	@Test
 	void existsByNameAndNotIdFalseTest() {
-		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
+		final DataUnitSchemaEntity schemaEntity = schemaGenerator.generateSingleObject();
 		final String name = schemaEntity.getName();
 		final Long id = schemaEntity.getId();
 		Mockito.when(repository.existsByNameAndIdNot(name, id)).thenReturn(false);

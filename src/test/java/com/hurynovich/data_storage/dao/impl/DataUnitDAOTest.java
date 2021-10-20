@@ -28,7 +28,7 @@ class DataUnitDAOTest {
 
 	private DAO<DataUnitDocument, String> dao;
 
-	private final TestObjectGenerator<DataUnitDocument> documentGenerator =
+	private final TestObjectGenerator<DataUnitDocument> dataUnitGenerator =
 			new TestDataUnitDocumentGenerator();
 
 	@BeforeEach
@@ -38,59 +38,57 @@ class DataUnitDAOTest {
 
 	@Test
 	void saveTest() {
-		final DataUnitDocument schemaDocument = documentGenerator.generateSingleObject();
-		Mockito.when(repository.save(schemaDocument)).thenReturn(schemaDocument);
+		final DataUnitDocument dataUnit = dataUnitGenerator.generateSingleObject();
+		Mockito.when(repository.save(dataUnit)).thenReturn(dataUnit);
 
-		final DataUnitDocument savedSchemaDocument = dao.save(schemaDocument);
-		Assertions.assertTrue(Objects.deepEquals(schemaDocument, savedSchemaDocument));
+		final DataUnitDocument savedDataUnit = dao.save(dataUnit);
+		Assertions.assertTrue(Objects.deepEquals(dataUnit, savedDataUnit));
 	}
 
 	@Test
 	void findByIdTest() {
-		final DataUnitDocument schemaDocument = documentGenerator.generateSingleObject();
+		final DataUnitDocument dataUnit = dataUnitGenerator.generateSingleObject();
+		final String id = dataUnit.getId();
+		Mockito.when(repository.findById(id)).thenReturn(Optional.of(dataUnit));
 
-		final String id = schemaDocument.getId();
-		Mockito.when(repository.findById(id)).thenReturn(Optional.of(schemaDocument));
-
-		final Optional<DataUnitDocument> savedSchemaDocumentOptional = dao.findById(id);
-		Assertions.assertTrue(savedSchemaDocumentOptional.isPresent());
-
-		Assertions.assertTrue(Objects.deepEquals(schemaDocument, savedSchemaDocumentOptional.get()));
+		final Optional<DataUnitDocument> savedDataUnitOptional = dao.findById(id);
+		Assertions.assertTrue(savedDataUnitOptional.isPresent());
+		Assertions.assertTrue(Objects.deepEquals(dataUnit, savedDataUnitOptional.get()));
 	}
 
 	@Test
 	void findByIdEmptyTest() {
 		Mockito.when(dao.findById(INCORRECT_STRING_ID)).thenReturn(Optional.empty());
 
-		final Optional<DataUnitDocument> savedSchemaDocumentOptional = dao.findById(INCORRECT_STRING_ID);
-		Assertions.assertFalse(savedSchemaDocumentOptional.isPresent());
+		final Optional<DataUnitDocument> savedDataUnitOptional = dao.findById(INCORRECT_STRING_ID);
+		Assertions.assertFalse(savedDataUnitOptional.isPresent());
 	}
 
 	@Test
 	void findAllTest() {
-		final List<DataUnitDocument> schemaDocuments = documentGenerator.generateMultipleObjects();
-		Mockito.when(dao.findAll()).thenReturn(schemaDocuments);
+		final List<DataUnitDocument> dataUnits = dataUnitGenerator.generateMultipleObjects();
+		Mockito.when(dao.findAll()).thenReturn(dataUnits);
 
-		final List<DataUnitDocument> savedSchemaDocuments = dao.findAll();
-		Assertions.assertNotNull(savedSchemaDocuments);
-		Assertions.assertFalse(savedSchemaDocuments.isEmpty());
-		Assertions.assertTrue(Objects.deepEquals(schemaDocuments, savedSchemaDocuments));
+		final List<DataUnitDocument> savedDataUnits = dao.findAll();
+		Assertions.assertNotNull(savedDataUnits);
+		Assertions.assertFalse(savedDataUnits.isEmpty());
+		Assertions.assertTrue(Objects.deepEquals(dataUnits, savedDataUnits));
 	}
 
 	@Test
 	void findAllEmptyTest() {
-		final List<DataUnitDocument> schemaDocuments = new ArrayList<>();
-		Mockito.when(dao.findAll()).thenReturn(schemaDocuments);
+		final List<DataUnitDocument> dataUnits = new ArrayList<>();
+		Mockito.when(dao.findAll()).thenReturn(dataUnits);
 
-		final List<DataUnitDocument> savedSchemaDocuments = dao.findAll();
-		Assertions.assertNotNull(savedSchemaDocuments);
-		Assertions.assertTrue(savedSchemaDocuments.isEmpty());
+		final List<DataUnitDocument> savedDataUnits = dao.findAll();
+		Assertions.assertNotNull(savedDataUnits);
+		Assertions.assertTrue(savedDataUnits.isEmpty());
 	}
 
 	@Test
 	void deleteByIdTest() {
-		final DataUnitDocument schemaDocument = documentGenerator.generateSingleObject();
-		final String id = schemaDocument.getId();
+		final DataUnitDocument dataUnit = dataUnitGenerator.generateSingleObject();
+		final String id = dataUnit.getId();
 		dao.deleteById(id);
 
 		Mockito.verify(repository).deleteById(id);
