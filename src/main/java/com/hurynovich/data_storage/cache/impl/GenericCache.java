@@ -22,12 +22,12 @@ public class GenericCache<K, V> implements Cache<K, V> {
 	}
 
 	@Override
-	public boolean contains(final K key) {
+	public boolean contains(final @NonNull K key) {
 		return underlying.asMap().containsKey(key);
 	}
 
 	@Override
-	public void invalidate(final K key) {
+	public void invalidate(final @NonNull K key) {
 		underlying.invalidate(key);
 	}
 
