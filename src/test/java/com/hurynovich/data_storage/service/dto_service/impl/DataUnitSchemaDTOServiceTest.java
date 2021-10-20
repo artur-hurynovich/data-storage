@@ -1,5 +1,6 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
+import com.hurynovich.data_storage.cache.Cache;
 import com.hurynovich.data_storage.converter.DTOConverter;
 import com.hurynovich.data_storage.dao.DAO;
 import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
@@ -32,6 +33,9 @@ class DataUnitSchemaDTOServiceTest {
 	@Mock
 	private DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter;
 
+	@Mock
+	private Cache<Long, DataUnitSchemaDTO> cache;
+
 	private DTOService<DataUnitSchemaDTO, Long> service;
 
 	private final TestObjectGenerator<DataUnitSchemaDTO> dtoGenerator =
@@ -42,7 +46,7 @@ class DataUnitSchemaDTOServiceTest {
 
 	@BeforeEach
 	public void initService() {
-		service = new DataUnitSchemaDTOService(dao, converter);
+		service = new DataUnitSchemaDTOService(dao, converter, cache);
 	}
 
 	@Test
@@ -54,31 +58,48 @@ class DataUnitSchemaDTOServiceTest {
 		Mockito.when(converter.convertToDTO(schemaEntity)).thenReturn(schemaDTO);
 
 		final DataUnitSchemaDTO savedSchemaDTO = service.save(schemaDTO);
+		Mockito.verify(cache).store(schemaDTO.getId(), schemaDTO);
 		Assertions.assertTrue(Objects.deepEquals(schemaDTO, savedSchemaDTO));
 	}
 
 	@Test
-	void findByIdTest() {
+	void findByIdNotInCacheTest() {
 		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
-
 		final Long id = schemaEntity.getId();
+		Mockito.when(cache.contains(id)).thenReturn(false);
 		Mockito.when(dao.findById(id)).thenReturn(Optional.of(schemaEntity));
 
 		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
 		Mockito.when(converter.convertToDTO(schemaEntity)).thenReturn(schemaDTO);
+		Mockito.when(cache.get(id)).thenReturn(Optional.of(schemaDTO));
 
 		final Optional<DataUnitSchemaDTO> savedSchemaDTOOptional = service.findById(id);
+		Mockito.verify(cache).store(id, schemaDTO);
 		Assertions.assertTrue(savedSchemaDTOOptional.isPresent());
 
 		Assertions.assertTrue(Objects.deepEquals(schemaDTO, savedSchemaDTOOptional.get()));
 	}
 
 	@Test
+	void findByIdInCacheTest() {
+		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
+		final Long id = schemaDTO.getId();
+		Mockito.when(cache.contains(id)).thenReturn(true);
+		Mockito.when(cache.get(id)).thenReturn(Optional.of(schemaDTO));
+
+		final Optional<DataUnitSchemaDTO> savedSchemaDTOOptional = service.findById(id);
+		Assertions.assertTrue(savedSchemaDTOOptional.isPresent());
+		Assertions.assertTrue(Objects.deepEquals(schemaDTO, savedSchemaDTOOptional.get()));
+	}
+
+	@Test
 	void findByIdEmptyTest() {
-		Mockito.when(dao.findById(INCORRECT_LONG_ID)).thenReturn(Optional.empty());
+		Mockito.when(cache.contains(INCORRECT_LONG_ID)).thenReturn(false);
+		Mockito.when(cache.get(INCORRECT_LONG_ID)).thenReturn(Optional.empty());
+		Mockito.when(cache.get(INCORRECT_LONG_ID)).thenReturn(Optional.empty());
 
 		final Optional<DataUnitSchemaDTO> savedSchemaDTOOptional = service.findById(INCORRECT_LONG_ID);
-		Assertions.assertFalse(savedSchemaDTOOptional.isPresent());
+		Assertions.assertTrue(savedSchemaDTOOptional.isEmpty());
 	}
 
 	@Test
@@ -107,12 +128,24 @@ class DataUnitSchemaDTOServiceTest {
 	}
 
 	@Test
-	void deleteByIdTest() {
+	void deleteByIdNotInCacheTest() {
 		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
 		final Long id = schemaDTO.getId();
+		Mockito.when(cache.contains(id)).thenReturn(false);
 		service.deleteById(id);
 
 		Mockito.verify(dao).deleteById(id);
+	}
+
+	@Test
+	void deleteByIdInCacheTest() {
+		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
+		final Long id = schemaDTO.getId();
+		Mockito.when(cache.contains(id)).thenReturn(true);
+		service.deleteById(id);
+
+		Mockito.verify(dao).deleteById(id);
+		Mockito.verify(cache).invalidate(id);
 	}
 
 }

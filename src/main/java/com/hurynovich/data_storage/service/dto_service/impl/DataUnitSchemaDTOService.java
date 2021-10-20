@@ -1,5 +1,6 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
+import com.hurynovich.data_storage.cache.Cache;
 import com.hurynovich.data_storage.converter.DTOConverter;
 import com.hurynovich.data_storage.dao.DAO;
 import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
@@ -20,24 +21,46 @@ public class DataUnitSchemaDTOService implements DTOService<DataUnitSchemaDTO, L
 
 	private final DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter;
 
+	private final Cache<Long, DataUnitSchemaDTO> cache;
+
 	public DataUnitSchemaDTOService(final @NonNull DAO<DataUnitSchemaEntity, Long> dao,
-									final @NonNull DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter) {
+									final @NonNull DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter,
+									final @NonNull Cache<Long, DataUnitSchemaDTO> cache) {
 		this.dao = dao;
 		this.converter = converter;
+		this.cache = cache;
 	}
 
 	@Override
 	public DataUnitSchemaDTO save(final @NonNull DataUnitSchemaDTO dataUnitSchema) {
-		return converter.convertToDTO(dao.save(converter.convertFromDTO(dataUnitSchema)));
+		final DataUnitSchemaDTO storedDataUnitSchema = converter.convertToDTO(
+				dao.save(converter.convertFromDTO(dataUnitSchema)));
+
+		cache.store(storedDataUnitSchema.getId(), dataUnitSchema);
+
+		return dataUnitSchema;
 	}
 
 	@Override
 	public Optional<DataUnitSchemaDTO> findById(final @NonNull Long id) {
-		final Optional<DataUnitSchemaEntity> optionalResult = dao.findById(id);
+		if (!cache.contains(id)) {
+			final Optional<DataUnitSchemaEntity> dataUnitSchemaEntityOptional = dao.findById(id);
+			if (dataUnitSchemaEntityOptional.isPresent()) {
+				final DataUnitSchemaEntity dataUnitSchemaEntity = dataUnitSchemaEntityOptional.get();
+				final DataUnitSchemaDTO dataUnitSchemaDTO = converter.convertToDTO(dataUnitSchemaEntity);
 
-		return optionalResult.map(converter::convertToDTO);
+				cache.store(id, dataUnitSchemaDTO);
+			}
+		}
+
+		return cache.get(id);
 	}
 
+	/*
+	 * We don't use cache in findAll method due to incompatibility of the cache with pagination.
+	 * The main reason of using cache - are frequent calls of findById method while validating DataUnitDTO,
+	 * as this method is called every time we save or update DataUnitDTO.
+	 */
 	@Override
 	public List<DataUnitSchemaDTO> findAll() {
 		return converter.convertAllToDTOs(dao.findAll());
@@ -46,6 +69,10 @@ public class DataUnitSchemaDTOService implements DTOService<DataUnitSchemaDTO, L
 	@Override
 	public void deleteById(final @NonNull Long id) {
 		dao.deleteById(id);
+
+		if (cache.contains(id)) {
+			cache.invalidate(id);
+		}
 	}
 
 }
