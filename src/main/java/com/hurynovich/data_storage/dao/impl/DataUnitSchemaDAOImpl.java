@@ -46,7 +46,7 @@ public class DataUnitSchemaDAOImpl implements DataUnitSchemaDAO {
 
 	@Override
 	public boolean existsByNameAndNotId(final @NonNull String name, final @NonNull Long id) {
-		return repository.existsByNameAndNotId(name, id);
+		return repository.existsByNameAndIdNot(name, id);
 	}
 
 }

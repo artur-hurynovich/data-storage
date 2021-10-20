@@ -118,7 +118,7 @@ class DataUnitSchemaDAOImplTest {
 		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
 		final String name = schemaEntity.getName();
 		final Long id = schemaEntity.getId();
-		Mockito.when(repository.existsByNameAndNotId(name, id)).thenReturn(true);
+		Mockito.when(repository.existsByNameAndIdNot(name, id)).thenReturn(true);
 
 		Assertions.assertTrue(dao.existsByNameAndNotId(name, id));
 	}
@@ -128,7 +128,7 @@ class DataUnitSchemaDAOImplTest {
 		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
 		final String name = schemaEntity.getName();
 		final Long id = schemaEntity.getId();
-		Mockito.when(repository.existsByNameAndNotId(name, id)).thenReturn(false);
+		Mockito.when(repository.existsByNameAndIdNot(name, id)).thenReturn(false);
 
 		Assertions.assertFalse(dao.existsByNameAndNotId(name, id));
 	}
