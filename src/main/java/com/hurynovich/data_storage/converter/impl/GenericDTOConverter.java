@@ -19,7 +19,7 @@ public abstract class GenericDTOConverter<T extends AbstractDTO<? extends Serial
 	private final ModelMapper modelMapper = new ModelMapper();
 
 	@Override
-	public U convertFromDTO(final @Nullable T source) {
+	public U convert(final @Nullable T source) {
 		final U target;
 		if (source != null) {
 			target = modelMapper.map(source, getTargetClass());
@@ -33,7 +33,7 @@ public abstract class GenericDTOConverter<T extends AbstractDTO<? extends Serial
 	protected abstract Class<U> getTargetClass();
 
 	@Override
-	public T convertToDTO(final @Nullable U source) {
+	public T convert(final @Nullable U source) {
 		final T target;
 		if (source != null) {
 			target = modelMapper.map(source, getDTOClass());
@@ -47,25 +47,12 @@ public abstract class GenericDTOConverter<T extends AbstractDTO<? extends Serial
 	protected abstract Class<T> getDTOClass();
 
 	@Override
-	public List<U> convertAllFromDTOs(final @Nullable Iterable<T> sources) {
-		final List<U> targets = new ArrayList<>();
-		if (sources != null) {
-			targets.addAll(StreamSupport.stream(sources.spliterator(), false).
-					filter(Objects::nonNull).
-					map(this::convertFromDTO).
-					collect(Collectors.toList()));
-		}
-
-		return targets;
-	}
-
-	@Override
-	public List<T> convertAllToDTOs(final @Nullable Iterable<U> sources) {
+	public List<T> convert(final @Nullable Iterable<U> sources) {
 		final List<T> targets = new ArrayList<>();
 		if (sources != null) {
 			targets.addAll(StreamSupport.stream(sources.spliterator(), false).
 					filter(Objects::nonNull).
-					map(this::convertToDTO).
+					map(this::convert).
 					collect(Collectors.toList()));
 		}
 

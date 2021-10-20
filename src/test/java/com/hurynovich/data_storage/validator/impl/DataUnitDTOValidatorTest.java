@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TEXT_PROPERTY_VALUE;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_LONG_ID;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,21 +58,21 @@ class DataUnitDTOValidatorTest {
 		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
 				thenReturn(true);
 
-		final ValidationResult result = validator.validate(dataUnit);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.SUCCESS, result.getType());
-		Assertions.assertTrue(result.getErrors().isEmpty());
+		final ValidationResult validationResult = validator.validate(dataUnit);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.SUCCESS, validationResult.getType());
+		Assertions.assertTrue(validationResult.getErrors().isEmpty());
 	}
 
 	@Test
 	void validateDataUnitIsNullTest() {
-		final ValidationResult result = validator.validate(null);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
+		final ValidationResult validationResult = validator.validate(null);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
 
-		final Set<String> errors = result.getErrors();
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnit' can't be null"));
+		Assertions.assertEquals("'dataUnit' can't be null", errors.iterator().next());
 	}
 
 	@Test
@@ -79,13 +80,13 @@ class DataUnitDTOValidatorTest {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
 		dataUnit.setSchemaId(null);
 
-		final ValidationResult result = validator.validate(dataUnit);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
+		final ValidationResult validationResult = validator.validate(dataUnit);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
 
-		final Set<String> errors = result.getErrors();
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnit.schemaId' can't be null"));
+		Assertions.assertEquals("'dataUnit.schemaId' can't be null", errors.iterator().next());
 	}
 
 	@Test
@@ -94,85 +95,82 @@ class DataUnitDTOValidatorTest {
 		dataUnit.setSchemaId(INCORRECT_LONG_ID);
 		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.empty());
 
-		final ValidationResult result = validator.validate(dataUnit);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
+		final ValidationResult validationResult = validator.validate(dataUnit);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
 
-		final Set<String> errors = result.getErrors();
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema' with id=" + INCORRECT_LONG_ID + " not found"));
+		Assertions.assertEquals("'dataUnitSchema' with id = " + INCORRECT_LONG_ID + " not found",
+				errors.iterator().next());
 	}
 
 	@Test
 	void validatePropertiesIsNullTest() {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
 		dataUnit.setProperties(null);
-
 		final DataUnitSchemaDTO dataUnitSchema = dataUnitSchemaGenerator.generateSingleObject();
 		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.of(dataUnitSchema));
 
-		final ValidationResult result = validator.validate(dataUnit);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
+		final ValidationResult validationResult = validator.validate(dataUnit);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
 
-		final Set<String> errors = result.getErrors();
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnit.properties' can't be null or empty"));
+		Assertions.assertEquals("'dataUnit.properties' can't be null or empty", errors.iterator().next());
 	}
 
 	@Test
 	void validatePropertiesIsEmptyTest() {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
 		dataUnit.setProperties(new ArrayList<>());
-
 		final DataUnitSchemaDTO dataUnitSchema = dataUnitSchemaGenerator.generateSingleObject();
 		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.of(dataUnitSchema));
 
-		final ValidationResult result = validator.validate(dataUnit);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
+		final ValidationResult validationResult = validator.validate(dataUnit);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
 
-		final Set<String> errors = result.getErrors();
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnit.properties' can't be null or empty"));
+		Assertions.assertEquals("'dataUnit.properties' can't be null or empty", errors.iterator().next());
 	}
 
 	@Test
 	void validatePropertyIsNullTest() {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
 		dataUnit.getProperties().set(0, null);
-
 		final DataUnitSchemaDTO dataUnitSchema = dataUnitSchemaGenerator.generateSingleObject();
 		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.of(dataUnitSchema));
 		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
 				thenReturn(true);
 
-		final ValidationResult result = validator.validate(dataUnit);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
+		final ValidationResult validationResult = validator.validate(dataUnit);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
 
-		final Set<String> errors = result.getErrors();
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnit.property' can't be null"));
+		Assertions.assertEquals("'dataUnit.property' can't be null", errors.iterator().next());
 	}
 
 	@Test
 	void validatePropertySchemaIdIsNullTest() {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
 		dataUnit.getProperties().get(0).setSchemaId(null);
-
 		final DataUnitSchemaDTO dataUnitSchema = dataUnitSchemaGenerator.generateSingleObject();
 		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.of(dataUnitSchema));
 		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
 				thenReturn(true);
 
-		final ValidationResult result = validator.validate(dataUnit);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
+		final ValidationResult validationResult = validator.validate(dataUnit);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
 
-		final Set<String> errors = result.getErrors();
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnit.property.schemaId' can't be null"));
+		Assertions.assertEquals("'dataUnit.property.schemaId' can't be null", errors.iterator().next());
 	}
 
 	@Test
@@ -186,13 +184,14 @@ class DataUnitDTOValidatorTest {
 		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
 				thenReturn(true);
 
-		final ValidationResult result = validator.validate(dataUnit);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
+		final ValidationResult validationResult = validator.validate(dataUnit);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
 
-		final Set<String> errors = result.getErrors();
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitPropertySchema' with id=" + DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID + " not found"));
+		Assertions.assertEquals("'dataUnitPropertySchema' with id = " + DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID +
+				" not found", errors.iterator().next());
 	}
 
 	@Test
@@ -215,14 +214,15 @@ class DataUnitDTOValidatorTest {
 					return result;
 				});
 
-		final ValidationResult result = validator.validate(dataUnit);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
+		final ValidationResult validationResult = validator.validate(dataUnit);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
 
-		final Set<String> errors = result.getErrors();
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnit.property.value' is incorrect for dataUnitProperty with id=" +
-				DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID));
+		Assertions.assertEquals("'dataUnit.property.value' '" + DATA_UNIT_TEXT_PROPERTY_VALUE +
+						"' is incorrect for dataUnitProperty with schemaId = " + DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID,
+				errors.iterator().next());
 	}
 
 }

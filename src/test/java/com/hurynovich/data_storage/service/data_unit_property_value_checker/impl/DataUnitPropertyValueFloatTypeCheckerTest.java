@@ -4,8 +4,8 @@ import com.hurynovich.data_storage.service.data_unit_property_value_checker.Data
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_FLOAT_PROPERTY_VALUE;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_BOOLEAN_PROPERTY_VALUE;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_FLOAT_PROPERTY_VALUE;
 
 class DataUnitPropertyValueFloatTypeCheckerTest {
 
@@ -13,14 +13,12 @@ class DataUnitPropertyValueFloatTypeCheckerTest {
 
 	@Test
 	void checkTrue() {
-		final boolean result = checker.check(DATA_UNIT_FLOAT_PROPERTY_VALUE);
-		Assertions.assertTrue(result);
+		Assertions.assertTrue(checker.check(DATA_UNIT_FLOAT_PROPERTY_VALUE));
 	}
 
 	@Test
 	void checkFalse() {
-		final boolean result = checker.check(DATA_UNIT_BOOLEAN_PROPERTY_VALUE);
-		Assertions.assertFalse(result);
+		Assertions.assertFalse(checker.check(DATA_UNIT_BOOLEAN_PROPERTY_VALUE));
 	}
 
 }

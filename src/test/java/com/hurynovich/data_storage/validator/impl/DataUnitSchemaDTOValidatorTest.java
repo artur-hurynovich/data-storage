@@ -27,7 +27,7 @@ class DataUnitSchemaDTOValidatorTest {
 
 	private DTOValidator<DataUnitSchemaDTO> validator;
 
-	private final TestObjectGenerator<DataUnitSchemaDTO> testObjectGenerator =
+	private final TestObjectGenerator<DataUnitSchemaDTO> schemaGenerator =
 			new TestDataUnitSchemaDTOGenerator();
 
 	@BeforeEach
@@ -37,23 +37,24 @@ class DataUnitSchemaDTOValidatorTest {
 
 	@Test
 	void validateTest() {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
-		Mockito.when(service.existsByNameAndNotId(dataUnitSchema.getName(), dataUnitSchema.getId())).thenReturn(false);
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.SUCCESS, result.getType());
-		Assertions.assertTrue(result.getErrors().isEmpty());
+		final DataUnitSchemaDTO schema = schemaGenerator.generateSingleObject();
+		Mockito.when(service.existsByNameAndNotId(schema.getName(), schema.getId())).thenReturn(false);
+
+		final ValidationResult validationResult = validator.validate(schema);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.SUCCESS, validationResult.getType());
+		Assertions.assertTrue(validationResult.getErrors().isEmpty());
 	}
 
 	@Test
 	void validateSchemaIsNullTest() {
-		final ValidationResult result = validator.validate(null);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
+		final ValidationResult validationResult = validator.validate(null);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
 
-		final Set<String> errors = result.getErrors();
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema' can't be null"));
+		Assertions.assertEquals("'dataUnitSchema' can't be null", errors.iterator().next());
 	}
 
 	@Test
@@ -62,15 +63,17 @@ class DataUnitSchemaDTOValidatorTest {
 	}
 
 	private void processValidateSchemaNameTest(final String schemaName) {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dataUnitSchema = schemaGenerator.generateSingleObject();
 		dataUnitSchema.setName(schemaName);
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
 
-		final Set<String> errors = result.getErrors();
+		final ValidationResult validationResult = validator.validate(dataUnitSchema);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
+
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema.name' can't be null, empty or blank"));
+		Assertions.assertEquals("'dataUnitSchema.name' can't be null, empty or blank",
+				errors.iterator().next());
 	}
 
 	@Test
@@ -85,88 +88,98 @@ class DataUnitSchemaDTOValidatorTest {
 
 	@Test
 	void validateSchemaNameExceedsMaxLengthTest() {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
-		dataUnitSchema.setName(RandomStringUtils.randomAlphabetic(26));
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
+		final DataUnitSchemaDTO dataUnit = schemaGenerator.generateSingleObject();
+		dataUnit.setName(RandomStringUtils.randomAlphabetic(26));
 
-		final Set<String> errors = result.getErrors();
+		final ValidationResult validationResult = validator.validate(dataUnit);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
+
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema.name' can't exceed 25 characters"));
+		Assertions.assertEquals("'dataUnitSchema.name' can't exceed 25 characters",
+				errors.iterator().next());
 	}
 
 	@Test
 	void validateSchemaNameExistsIdIsNull() {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dataUnitSchema = schemaGenerator.generateSingleObject();
 		dataUnitSchema.setId(null);
 		final String name = dataUnitSchema.getName();
 		Mockito.when(service.existsByName(name)).thenReturn(true);
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
 
-		final Set<String> errors = result.getErrors();
+		final ValidationResult validationResult = validator.validate(dataUnitSchema);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
+
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema.name' found duplicate '" +
-				name + "'"));
+		Assertions.assertEquals("Found duplicate '" + name + "' for 'dataUnitSchema.name'",
+				errors.iterator().next());
 	}
 
 	@Test
 	void validateSchemaNameExistsIdIsNotNull() {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dataUnitSchema = schemaGenerator.generateSingleObject();
 		final String name = dataUnitSchema.getName();
 		Mockito.when(service.existsByNameAndNotId(name, dataUnitSchema.getId())).thenReturn(true);
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
 
-		final Set<String> errors = result.getErrors();
+		final ValidationResult validationResult = validator.validate(dataUnitSchema);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
+
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema.name' found duplicate '" +
-				name + "'"));
+		Assertions.assertEquals("Found duplicate '" + name + "' for 'dataUnitSchema.name'",
+				errors.iterator().next());
 	}
 
 	@Test
 	void validatePropertySchemasIsNullTest() {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dataUnitSchema = schemaGenerator.generateSingleObject();
 		dataUnitSchema.setPropertySchemas(null);
 		Mockito.when(service.existsByNameAndNotId(dataUnitSchema.getName(), dataUnitSchema.getId())).thenReturn(false);
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
 
-		final Set<String> errors = result.getErrors();
+		final ValidationResult validationResult = validator.validate(dataUnitSchema);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
+
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema.propertySchemas' can't be null or empty"));
+		Assertions.assertEquals("'dataUnitSchema.propertySchemas' can't be null or empty",
+				errors.iterator().next());
 	}
 
 	@Test
 	void validatePropertySchemasIsEmptyTest() {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dataUnitSchema = schemaGenerator.generateSingleObject();
 		dataUnitSchema.setPropertySchemas(new ArrayList<>());
 		Mockito.when(service.existsByNameAndNotId(dataUnitSchema.getName(), dataUnitSchema.getId())).thenReturn(false);
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
 
-		final Set<String> errors = result.getErrors();
+		final ValidationResult validationResult = validator.validate(dataUnitSchema);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
+
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema.propertySchemas' can't be null or empty"));
+		Assertions.assertEquals("'dataUnitSchema.propertySchemas' can't be null or empty",
+				errors.iterator().next());
 	}
 
 	@Test
 	void validatePropertySchemaIsNullTest() {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dataUnitSchema = schemaGenerator.generateSingleObject();
 		dataUnitSchema.getPropertySchemas().set(0, null);
 		Mockito.when(service.existsByNameAndNotId(dataUnitSchema.getName(), dataUnitSchema.getId())).thenReturn(false);
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
 
-		final Set<String> errors = result.getErrors();
+		final ValidationResult validationResult = validator.validate(dataUnitSchema);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
+
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema.propertySchema' can't be null"));
+		Assertions.assertEquals("'dataUnitSchema.propertySchema' can't be null",
+				errors.iterator().next());
 	}
 
 	@Test
@@ -175,16 +188,18 @@ class DataUnitSchemaDTOValidatorTest {
 	}
 
 	private void processValidatePropertySchemaNameTest(final String propertySchemaName) {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dataUnitSchema = schemaGenerator.generateSingleObject();
 		dataUnitSchema.getPropertySchemas().iterator().next().setName(propertySchemaName);
 		Mockito.when(service.existsByNameAndNotId(dataUnitSchema.getName(), dataUnitSchema.getId())).thenReturn(false);
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
 
-		final Set<String> errors = result.getErrors();
+		final ValidationResult validationResult = validator.validate(dataUnitSchema);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
+
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema.propertySchema.name' can't be null, empty or blank"));
+		Assertions.assertEquals("'dataUnitSchema.propertySchema.name' can't be null, empty or blank",
+				errors.iterator().next());
 	}
 
 	@Test
@@ -199,47 +214,52 @@ class DataUnitSchemaDTOValidatorTest {
 
 	@Test
 	void validatePropertySchemaNameExceedsMaxLengthTest() {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dataUnitSchema = schemaGenerator.generateSingleObject();
 		dataUnitSchema.getPropertySchemas().iterator().next().setName(
 				RandomStringUtils.randomAlphabetic(26));
 		Mockito.when(service.existsByNameAndNotId(dataUnitSchema.getName(), dataUnitSchema.getId())).thenReturn(false);
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
 
-		final Set<String> errors = result.getErrors();
+		final ValidationResult validationResult = validator.validate(dataUnitSchema);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
+
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema.propertySchema.name' can't exceed 25 characters"));
+		Assertions.assertEquals("'dataUnitSchema.propertySchema.name' can't exceed 25 characters",
+				errors.iterator().next());
 	}
 
 	@Test
 	void validatePropertySchemaNameDuplicateTest() {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dataUnitSchema = schemaGenerator.generateSingleObject();
 		final String name = dataUnitSchema.getPropertySchemas().get(0).getName();
 		dataUnitSchema.getPropertySchemas().get(1).setName(name);
 		Mockito.when(service.existsByNameAndNotId(dataUnitSchema.getName(), dataUnitSchema.getId())).thenReturn(false);
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
 
-		final Set<String> errors = result.getErrors();
+		final ValidationResult validationResult = validator.validate(dataUnitSchema);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
+
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema.propertySchema.name' found duplicate '" +
-				name + "'"));
+		Assertions.assertEquals("Found duplicate '" + name + "' for 'dataUnitSchema.propertySchema.name'",
+				errors.iterator().next());
 	}
 
 	@Test
 	void validatePropertySchemaTypeIsNullTest() {
-		final DataUnitSchemaDTO dataUnitSchema = testObjectGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dataUnitSchema = schemaGenerator.generateSingleObject();
 		dataUnitSchema.getPropertySchemas().iterator().next().setType(null);
 		Mockito.when(service.existsByNameAndNotId(dataUnitSchema.getName(), dataUnitSchema.getId())).thenReturn(false);
-		final ValidationResult result = validator.validate(dataUnitSchema);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(ValidationResultType.FAILURE, result.getType());
 
-		final Set<String> errors = result.getErrors();
+		final ValidationResult validationResult = validator.validate(dataUnitSchema);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
+
+		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertTrue(errors.contains("'dataUnitSchema.propertySchema.type' can't be null"));
+		Assertions.assertEquals("'dataUnitSchema.propertySchema.type' can't be null",
+				errors.iterator().next());
 	}
 
 }

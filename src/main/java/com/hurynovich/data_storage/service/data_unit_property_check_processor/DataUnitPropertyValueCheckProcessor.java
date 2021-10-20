@@ -6,6 +6,6 @@ import org.springframework.lang.Nullable;
 
 public interface DataUnitPropertyValueCheckProcessor {
 
-	boolean processCheck(@NonNull DataUnitPropertySchemaDTO schema, @Nullable Object value);
+	boolean processCheck(@NonNull DataUnitPropertySchemaDTO propertySchema, @Nullable Object value);
 
 }

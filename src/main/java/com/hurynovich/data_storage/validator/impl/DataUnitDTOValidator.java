@@ -23,13 +23,13 @@ import java.util.stream.Collectors;
 @Service
 public class DataUnitDTOValidator implements DTOValidator<DataUnitDTO> {
 
-	private final DTOService<DataUnitSchemaDTO, Long> dataUnitSchemaService;
+	private final DTOService<DataUnitSchemaDTO, Long> service;
 
 	private final DataUnitPropertyValueCheckProcessor valueCheckProcessor;
 
-	public DataUnitDTOValidator(final @NonNull DTOService<DataUnitSchemaDTO, Long> dataUnitSchemaService,
+	public DataUnitDTOValidator(final @NonNull DTOService<DataUnitSchemaDTO, Long> service,
 								final @NonNull DataUnitPropertyValueCheckProcessor valueCheckProcessor) {
-		this.dataUnitSchemaService = dataUnitSchemaService;
+		this.service = service;
 		this.valueCheckProcessor = valueCheckProcessor;
 	}
 
@@ -39,25 +39,21 @@ public class DataUnitDTOValidator implements DTOValidator<DataUnitDTO> {
 
 		if (dataUnit == null) {
 			result.setType(ValidationResultType.FAILURE);
-
 			result.addError("'dataUnit' can't be null");
 		} else {
 			final Long schemaId = dataUnit.getSchemaId();
 			if (schemaId == null) {
 				result.setType(ValidationResultType.FAILURE);
-
 				result.addError("'dataUnit.schemaId' can't be null");
 			} else {
-				final Optional<DataUnitSchemaDTO> schemaOptional = dataUnitSchemaService.findById(schemaId);
+				final Optional<DataUnitSchemaDTO> schemaOptional = service.findById(schemaId);
 				if (schemaOptional.isEmpty()) {
 					result.setType(ValidationResultType.FAILURE);
-
-					result.addError("'dataUnitSchema' with id=" + schemaId + " not found");
+					result.addError("'dataUnitSchema' with id = " + schemaId + " not found");
 				} else {
 					final List<DataUnitPropertyDTO> properties = dataUnit.getProperties();
 					if (CollectionUtils.isEmpty(properties)) {
 						result.setType(ValidationResultType.FAILURE);
-
 						result.addError("'dataUnit.properties' can't be null or empty");
 					} else {
 						validateProperties(properties, schemaOptional.get(), result);
@@ -83,7 +79,6 @@ public class DataUnitDTOValidator implements DTOValidator<DataUnitDTO> {
 								  final @NonNull ValidationResult result) {
 		if (property == null) {
 			result.setType(ValidationResultType.FAILURE);
-
 			result.addError("'dataUnit.property' can't be null");
 		} else {
 			validateNotNullProperty(property, propertySchemasById, result);
@@ -96,19 +91,19 @@ public class DataUnitDTOValidator implements DTOValidator<DataUnitDTO> {
 		final Long schemaId = property.getSchemaId();
 		if (schemaId == null) {
 			result.setType(ValidationResultType.FAILURE);
-
 			result.addError("'dataUnit.property.schemaId' can't be null");
 		} else {
 			final DataUnitPropertySchemaDTO propertySchema = propertySchemasById.get(schemaId);
 			if (propertySchema == null) {
 				result.setType(ValidationResultType.FAILURE);
-
-				result.addError("'dataUnitPropertySchema' with id=" + schemaId + " not found");
-			} else if (!valueCheckProcessor.processCheck(propertySchema, property.getValue())) {
-				result.setType(ValidationResultType.FAILURE);
-
-				result.addError("'dataUnit.property.value' is incorrect for dataUnitProperty with id=" +
-						propertySchema.getId());
+				result.addError("'dataUnitPropertySchema' with id = " + schemaId + " not found");
+			} else {
+				final Object value = property.getValue();
+				if (!valueCheckProcessor.processCheck(propertySchema, value)) {
+					result.setType(ValidationResultType.FAILURE);
+					result.addError("'dataUnit.property.value' '" + value + "' is incorrect " +
+							"for dataUnitProperty with schemaId = " + propertySchema.getId());
+				}
 			}
 		}
 	}

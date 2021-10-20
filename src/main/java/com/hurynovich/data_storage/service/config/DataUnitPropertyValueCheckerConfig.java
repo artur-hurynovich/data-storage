@@ -19,7 +19,7 @@ import java.util.Map;
 public class DataUnitPropertyValueCheckerConfig {
 
 	@Bean
-	public Map<DataUnitPropertyType, DataUnitPropertyValueTypeChecker> dataUnitPropertyTypeCheckerByType() {
+	public Map<DataUnitPropertyType, DataUnitPropertyValueTypeChecker> dataUnitPropertyValueTypeCheckersByType() {
 		final EnumMap<DataUnitPropertyType, DataUnitPropertyValueTypeChecker> dataUnitPropertyTypeCheckerByType =
 				new EnumMap<>(DataUnitPropertyType.class);
 

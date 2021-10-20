@@ -10,6 +10,6 @@ public interface DataUnitSchemaRepository extends JpaRepository<DataUnitSchemaEn
 
 	boolean existsByName(@NonNull String name);
 
-	boolean existsByNameAndNotId(@NonNull String name, @NonNull Long id);
+	boolean existsByNameAndIdNot(@NonNull String name, @NonNull Long id);
 
 }

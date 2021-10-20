@@ -25,25 +25,25 @@ class DataUnitDTOConverterTest {
 			new TestDataUnitDocumentGenerator();
 
 	@Test
-	void convertFromDTONullTest() {
-		final DataUnitDocument dataUnitDocument = converter.convertFromDTO(null);
-		Assertions.assertNull(dataUnitDocument);
+	void convertDTONullTest() {
+		final DataUnitDocument document = converter.convert((DataUnitDTO) null);
+		Assertions.assertNull(document);
 	}
 
 	@Test
-	void convertFromDTONotNullTest() {
-		final DataUnitDTO dataUnitDTO = dtoGenerator.generateSingleObject();
-		final DataUnitDocument dataUnitDocument = converter.convertFromDTO(dataUnitDTO);
-		checkDTOToDocumentConversion(dataUnitDTO, dataUnitDocument);
+	void convertDTONotNullTest() {
+		final DataUnitDTO dto = dtoGenerator.generateSingleObject();
+		final DataUnitDocument document = converter.convert(dto);
+		checkDTOConversion(dto, document);
 	}
 
-	private void checkDTOToDocumentConversion(final DataUnitDTO dataUnitDTO, final DataUnitDocument dataUnitDocument) {
-		Assertions.assertNotNull(dataUnitDocument);
-		Assertions.assertEquals(dataUnitDTO.getId(), dataUnitDocument.getId());
-		Assertions.assertEquals(dataUnitDTO.getSchemaId(), dataUnitDocument.getSchemaId());
+	private void checkDTOConversion(final DataUnitDTO dto, final DataUnitDocument document) {
+		Assertions.assertNotNull(document);
+		Assertions.assertEquals(dto.getId(), document.getId());
+		Assertions.assertEquals(dto.getSchemaId(), document.getSchemaId());
 
-		final List<DataUnitPropertyDTO> propertyDTOs = dataUnitDTO.getProperties();
-		final List<DataUnitPropertyDocument> propertyDocuments = dataUnitDocument.getProperties();
+		final List<DataUnitPropertyDTO> propertyDTOs = dto.getProperties();
+		final List<DataUnitPropertyDocument> propertyDocuments = document.getProperties();
 		Assertions.assertNotNull(propertyDTOs);
 		Assertions.assertNotNull(propertyDocuments);
 		Assertions.assertEquals(propertyDTOs.size(), propertyDocuments.size());
@@ -58,46 +58,25 @@ class DataUnitDTOConverterTest {
 	}
 
 	@Test
-	void convertAllFromDTOsNullTest() {
-		final List<DataUnitDocument> dataUnitDocuments = converter.convertAllFromDTOs(null);
-		Assertions.assertNotNull(dataUnitDocuments);
-		Assertions.assertTrue(dataUnitDocuments.isEmpty());
+	void convertDocumentNullTest() {
+		final DataUnitDTO dto = converter.convert((DataUnitDocument) null);
+		Assertions.assertNull(dto);
 	}
 
 	@Test
-	void convertAllFromDTOsNotNullTest() {
-		final List<DataUnitDTO> dataUnitDTOs = dtoGenerator.generateMultipleObjects();
-		final List<DataUnitDocument> dataUnitDocuments = converter.convertAllFromDTOs(dataUnitDTOs);
-		Assertions.assertNotNull(dataUnitDocuments);
-		Assertions.assertEquals(dataUnitDTOs.size(), dataUnitDocuments.size());
-
-		for (int i = 0; i < dataUnitDTOs.size(); i++) {
-			final DataUnitDTO dataUnitDTO = dataUnitDTOs.get(i);
-			final DataUnitDocument dataUnitDocument = dataUnitDocuments.get(i);
-			checkDTOToDocumentConversion(dataUnitDTO, dataUnitDocument);
-		}
+	void convertDocumentNotNullTest() {
+		final DataUnitDocument document = documentGenerator.generateSingleObject();
+		final DataUnitDTO dto = converter.convert(document);
+		checkDocumentConversion(document, dto);
 	}
 
-	@Test
-	void convertToDTONullTest() {
-		final DataUnitDTO dataUnitDTO = converter.convertToDTO(null);
-		Assertions.assertNull(dataUnitDTO);
-	}
+	private void checkDocumentConversion(final DataUnitDocument document, final DataUnitDTO dto) {
+		Assertions.assertNotNull(dto);
+		Assertions.assertEquals(document.getId(), dto.getId());
+		Assertions.assertEquals(document.getSchemaId(), dto.getSchemaId());
 
-	@Test
-	void convertToDTONotNullTest() {
-		final DataUnitDocument dataUnitDocument = documentGenerator.generateSingleObject();
-		final DataUnitDTO dataUnitDTO = converter.convertToDTO(dataUnitDocument);
-		checkDocumentToDTOConversion(dataUnitDocument, dataUnitDTO);
-	}
-
-	private void checkDocumentToDTOConversion(final DataUnitDocument dataUnitDocument, final DataUnitDTO dataUnitDTO) {
-		Assertions.assertNotNull(dataUnitDTO);
-		Assertions.assertEquals(dataUnitDocument.getId(), dataUnitDTO.getId());
-		Assertions.assertEquals(dataUnitDocument.getSchemaId(), dataUnitDTO.getSchemaId());
-
-		final List<DataUnitPropertyDocument> propertyDocuments = dataUnitDocument.getProperties();
-		final List<DataUnitPropertyDTO> propertyDTOs = dataUnitDTO.getProperties();
+		final List<DataUnitPropertyDocument> propertyDocuments = document.getProperties();
+		final List<DataUnitPropertyDTO> propertyDTOs = dto.getProperties();
 		Assertions.assertNotNull(propertyDTOs);
 		Assertions.assertNotNull(propertyDTOs);
 		Assertions.assertEquals(propertyDocuments.size(), propertyDTOs.size());
@@ -113,23 +92,23 @@ class DataUnitDTOConverterTest {
 	}
 
 	@Test
-	void convertAllToDTOsNullTest() {
-		final List<DataUnitDTO> dataUnitDTOs = converter.convertAllToDTOs(null);
-		Assertions.assertNotNull(dataUnitDTOs);
-		Assertions.assertTrue(dataUnitDTOs.isEmpty());
+	void convertDocumentsNullTest() {
+		final List<DataUnitDTO> dtos = converter.convert((Iterable<DataUnitDocument>) null);
+		Assertions.assertNotNull(dtos);
+		Assertions.assertTrue(dtos.isEmpty());
 	}
 
 	@Test
-	void convertAllToDTOsNotNullTest() {
-		final List<DataUnitDocument> dataUnitDocuments = documentGenerator.generateMultipleObjects();
-		final List<DataUnitDTO> dataUnitDTOs = converter.convertAllToDTOs(dataUnitDocuments);
-		Assertions.assertNotNull(dataUnitDTOs);
-		Assertions.assertEquals(dataUnitDocuments.size(), dataUnitDTOs.size());
+	void convertDocumentsNotNullTest() {
+		final List<DataUnitDocument> documents = documentGenerator.generateMultipleObjects();
+		final List<DataUnitDTO> dtos = converter.convert(documents);
+		Assertions.assertNotNull(dtos);
+		Assertions.assertEquals(documents.size(), dtos.size());
 
-		for (int i = 0; i < dataUnitDocuments.size(); i++) {
-			final DataUnitDocument dataUnitDocument = dataUnitDocuments.get(i);
-			final DataUnitDTO dataUnitDTO = dataUnitDTOs.get(i);
-			checkDocumentToDTOConversion(dataUnitDocument, dataUnitDTO);
+		for (int i = 0; i < documents.size(); i++) {
+			final DataUnitDocument dataUnitDocument = documents.get(i);
+			final DataUnitDTO dataUnitDTO = dtos.get(i);
+			checkDocumentConversion(dataUnitDocument, dataUnitDTO);
 		}
 	}
 
