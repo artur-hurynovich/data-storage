@@ -2,10 +2,10 @@ package com.hurynovich.data_storage.service.dto_service.impl;
 
 import com.hurynovich.data_storage.cache.Cache;
 import com.hurynovich.data_storage.converter.DTOConverter;
-import com.hurynovich.data_storage.dao.DAO;
+import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
 import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
-import com.hurynovich.data_storage.service.dto_service.DTOService;
+import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaDTOService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -15,17 +15,17 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class DataUnitSchemaDTOService implements DTOService<DataUnitSchemaDTO, Long> {
+public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 
-	private final DAO<DataUnitSchemaEntity, Long> dao;
+	private final DataUnitSchemaDAO dao;
 
 	private final DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter;
 
 	private final Cache<Long, DataUnitSchemaDTO> cache;
 
-	public DataUnitSchemaDTOService(final @NonNull DAO<DataUnitSchemaEntity, Long> dao,
-									final @NonNull DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter,
-									final @NonNull Cache<Long, DataUnitSchemaDTO> cache) {
+	public DataUnitSchemaDTOServiceImpl(final @NonNull DataUnitSchemaDAO dao,
+										final @NonNull DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter,
+										final @NonNull Cache<Long, DataUnitSchemaDTO> cache) {
 		this.dao = dao;
 		this.converter = converter;
 		this.cache = cache;
@@ -73,6 +73,16 @@ public class DataUnitSchemaDTOService implements DTOService<DataUnitSchemaDTO, L
 		if (cache.contains(id)) {
 			cache.invalidate(id);
 		}
+	}
+
+	@Override
+	public boolean existsByName(final @NonNull String name) {
+		return dao.existsByName(name);
+	}
+
+	@Override
+	public boolean existsByNameAndNotId(final @NonNull String name, final @NonNull Long id) {
+		return dao.existsByNameAndNotId(name, id);
 	}
 
 }

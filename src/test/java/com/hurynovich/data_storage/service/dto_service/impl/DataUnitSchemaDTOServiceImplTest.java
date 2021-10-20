@@ -2,10 +2,10 @@ package com.hurynovich.data_storage.service.dto_service.impl;
 
 import com.hurynovich.data_storage.cache.Cache;
 import com.hurynovich.data_storage.converter.DTOConverter;
-import com.hurynovich.data_storage.dao.DAO;
+import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
 import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
-import com.hurynovich.data_storage.service.dto_service.DTOService;
+import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaDTOService;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaEntityGenerator;
@@ -25,10 +25,10 @@ import java.util.Optional;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_LONG_ID;
 
 @ExtendWith(MockitoExtension.class)
-class DataUnitSchemaDTOServiceTest {
+class DataUnitSchemaDTOServiceImplTest {
 
 	@Mock
-	private DAO<DataUnitSchemaEntity, Long> dao;
+	private DataUnitSchemaDAO dao;
 
 	@Mock
 	private DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter;
@@ -36,7 +36,7 @@ class DataUnitSchemaDTOServiceTest {
 	@Mock
 	private Cache<Long, DataUnitSchemaDTO> cache;
 
-	private DTOService<DataUnitSchemaDTO, Long> service;
+	private DataUnitSchemaDTOService service;
 
 	private final TestObjectGenerator<DataUnitSchemaDTO> dtoGenerator =
 			new TestDataUnitSchemaDTOGenerator();
@@ -46,7 +46,7 @@ class DataUnitSchemaDTOServiceTest {
 
 	@BeforeEach
 	public void initService() {
-		service = new DataUnitSchemaDTOService(dao, converter, cache);
+		service = new DataUnitSchemaDTOServiceImpl(dao, converter, cache);
 	}
 
 	@Test
@@ -146,6 +146,44 @@ class DataUnitSchemaDTOServiceTest {
 
 		Mockito.verify(dao).deleteById(id);
 		Mockito.verify(cache).invalidate(id);
+	}
+
+	@Test
+	void existsByNameTrueTest() {
+		final DataUnitSchemaDTO dataUnitSchema = dtoGenerator.generateSingleObject();
+		final String name = dataUnitSchema.getName();
+		Mockito.when(dao.existsByName(name)).thenReturn(true);
+
+		Assertions.assertTrue(service.existsByName(name));
+	}
+
+	@Test
+	void existsByNameFalseTest() {
+		final DataUnitSchemaDTO dataUnitSchema = dtoGenerator.generateSingleObject();
+		final String name = dataUnitSchema.getName();
+		Mockito.when(dao.existsByName(name)).thenReturn(false);
+
+		Assertions.assertFalse(service.existsByName(name));
+	}
+
+	@Test
+	void existsByNameAndNotIdTrueTest() {
+		final DataUnitSchemaDTO dataUnitSchema = dtoGenerator.generateSingleObject();
+		final String name = dataUnitSchema.getName();
+		final Long id = dataUnitSchema.getId();
+		Mockito.when(dao.existsByNameAndNotId(name, id)).thenReturn(true);
+
+		Assertions.assertTrue(service.existsByNameAndNotId(name, id));
+	}
+
+	@Test
+	void existsByNameAndNotIdFalseTest() {
+		final DataUnitSchemaDTO dataUnitSchema = dtoGenerator.generateSingleObject();
+		final String name = dataUnitSchema.getName();
+		final Long id = dataUnitSchema.getId();
+		Mockito.when(dao.existsByNameAndNotId(name, id)).thenReturn(false);
+
+		Assertions.assertFalse(service.existsByNameAndNotId(name, id));
 	}
 
 }
