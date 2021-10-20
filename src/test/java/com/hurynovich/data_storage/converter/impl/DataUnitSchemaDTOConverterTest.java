@@ -68,27 +68,32 @@ class DataUnitSchemaDTOConverterTest {
 	void convertToDTONotNullTest() {
 		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
 		final DataUnitSchemaDTO schemaDTO = converter.convert(schemaEntity);
-		checkEntityToDTOConversion(schemaEntity, schemaDTO);
+		checkEntityToDTOConversion(schemaEntity, schemaDTO, false);
 	}
 
-	private void checkEntityToDTOConversion(final DataUnitSchemaEntity schemaEntity, final DataUnitSchemaDTO schemaDTO) {
+	private void checkEntityToDTOConversion(final DataUnitSchemaEntity schemaEntity,
+											final DataUnitSchemaDTO schemaDTO,
+											boolean ignorePropertySchemas) {
 		Assertions.assertNotNull(schemaDTO);
 		Assertions.assertEquals(schemaEntity.getId(), schemaDTO.getId());
 		Assertions.assertEquals(schemaEntity.getName(), schemaDTO.getName());
 
 		final List<DataUnitPropertySchemaEntity> propertySchemaEntities = schemaEntity.getPropertySchemas();
 		final List<DataUnitPropertySchemaDTO> propertySchemaDTOs = schemaDTO.getPropertySchemas();
-		Assertions.assertNotNull(propertySchemaDTOs);
-		Assertions.assertNotNull(propertySchemaDTOs);
-		Assertions.assertEquals(propertySchemaEntities.size(), propertySchemaDTOs.size());
+		if (ignorePropertySchemas) {
+			Assertions.assertNull(propertySchemaDTOs);
+		} else {
+			Assertions.assertNotNull(propertySchemaDTOs);
+			Assertions.assertEquals(propertySchemaEntities.size(), propertySchemaDTOs.size());
 
-		for (int i = 0; i < propertySchemaEntities.size(); i++) {
-			final DataUnitPropertySchemaEntity propertySchemaEntity = propertySchemaEntities.get(i);
-			final DataUnitPropertySchemaDTO propertySchemaDTO = propertySchemaDTOs.get(i);
-			Assertions.assertNotNull(propertySchemaDTO);
-			Assertions.assertEquals(propertySchemaEntity.getId(), propertySchemaDTO.getId());
-			Assertions.assertEquals(propertySchemaEntity.getName(), propertySchemaDTO.getName());
-			Assertions.assertEquals(propertySchemaEntity.getType(), propertySchemaDTO.getType());
+			for (int i = 0; i < propertySchemaEntities.size(); i++) {
+				final DataUnitPropertySchemaEntity propertySchemaEntity = propertySchemaEntities.get(i);
+				final DataUnitPropertySchemaDTO propertySchemaDTO = propertySchemaDTOs.get(i);
+				Assertions.assertNotNull(propertySchemaDTO);
+				Assertions.assertEquals(propertySchemaEntity.getId(), propertySchemaDTO.getId());
+				Assertions.assertEquals(propertySchemaEntity.getName(), propertySchemaDTO.getName());
+				Assertions.assertEquals(propertySchemaEntity.getType(), propertySchemaDTO.getType());
+			}
 		}
 	}
 
@@ -109,7 +114,7 @@ class DataUnitSchemaDTOConverterTest {
 		for (int i = 0; i < schemaEntities.size(); i++) {
 			final DataUnitSchemaEntity schemaEntity = schemaEntities.get(i);
 			final DataUnitSchemaDTO schemaDTO = schemaDTOs.get(i);
-			checkEntityToDTOConversion(schemaEntity, schemaDTO);
+			checkEntityToDTOConversion(schemaEntity, schemaDTO, true);
 		}
 	}
 
