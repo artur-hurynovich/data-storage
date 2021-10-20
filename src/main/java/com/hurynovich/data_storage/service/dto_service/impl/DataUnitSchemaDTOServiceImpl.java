@@ -33,8 +33,8 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 
 	@Override
 	public DataUnitSchemaDTO save(final @NonNull DataUnitSchemaDTO dataUnitSchema) {
-		final DataUnitSchemaDTO storedDataUnitSchema = converter.convertToDTO(
-				dao.save(converter.convertFromDTO(dataUnitSchema)));
+		final DataUnitSchemaDTO storedDataUnitSchema = converter.convert(
+				dao.save(converter.convert(dataUnitSchema)));
 
 		cache.store(storedDataUnitSchema.getId(), dataUnitSchema);
 
@@ -47,7 +47,7 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 			final Optional<DataUnitSchemaEntity> dataUnitSchemaEntityOptional = dao.findById(id);
 			if (dataUnitSchemaEntityOptional.isPresent()) {
 				final DataUnitSchemaEntity dataUnitSchemaEntity = dataUnitSchemaEntityOptional.get();
-				final DataUnitSchemaDTO dataUnitSchemaDTO = converter.convertToDTO(dataUnitSchemaEntity);
+				final DataUnitSchemaDTO dataUnitSchemaDTO = converter.convert(dataUnitSchemaEntity);
 
 				cache.store(id, dataUnitSchemaDTO);
 			}
@@ -63,7 +63,7 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 	 */
 	@Override
 	public List<DataUnitSchemaDTO> findAll() {
-		return converter.convertAllToDTOs(dao.findAll());
+		return converter.convert(dao.findAll());
 	}
 
 	@Override

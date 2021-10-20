@@ -26,14 +26,14 @@ class DataUnitDTOConverterTest {
 
 	@Test
 	void convertFromDTONullTest() {
-		final DataUnitDocument dataUnitDocument = converter.convertFromDTO(null);
+		final DataUnitDocument dataUnitDocument = converter.convert((DataUnitDTO) null);
 		Assertions.assertNull(dataUnitDocument);
 	}
 
 	@Test
 	void convertFromDTONotNullTest() {
 		final DataUnitDTO dataUnitDTO = dtoGenerator.generateSingleObject();
-		final DataUnitDocument dataUnitDocument = converter.convertFromDTO(dataUnitDTO);
+		final DataUnitDocument dataUnitDocument = converter.convert(dataUnitDTO);
 		checkDTOToDocumentConversion(dataUnitDTO, dataUnitDocument);
 	}
 
@@ -58,36 +58,15 @@ class DataUnitDTOConverterTest {
 	}
 
 	@Test
-	void convertAllFromDTOsNullTest() {
-		final List<DataUnitDocument> dataUnitDocuments = converter.convertAllFromDTOs(null);
-		Assertions.assertNotNull(dataUnitDocuments);
-		Assertions.assertTrue(dataUnitDocuments.isEmpty());
-	}
-
-	@Test
-	void convertAllFromDTOsNotNullTest() {
-		final List<DataUnitDTO> dataUnitDTOs = dtoGenerator.generateMultipleObjects();
-		final List<DataUnitDocument> dataUnitDocuments = converter.convertAllFromDTOs(dataUnitDTOs);
-		Assertions.assertNotNull(dataUnitDocuments);
-		Assertions.assertEquals(dataUnitDTOs.size(), dataUnitDocuments.size());
-
-		for (int i = 0; i < dataUnitDTOs.size(); i++) {
-			final DataUnitDTO dataUnitDTO = dataUnitDTOs.get(i);
-			final DataUnitDocument dataUnitDocument = dataUnitDocuments.get(i);
-			checkDTOToDocumentConversion(dataUnitDTO, dataUnitDocument);
-		}
-	}
-
-	@Test
 	void convertToDTONullTest() {
-		final DataUnitDTO dataUnitDTO = converter.convertToDTO(null);
+		final DataUnitDTO dataUnitDTO = converter.convert((DataUnitDocument) null);
 		Assertions.assertNull(dataUnitDTO);
 	}
 
 	@Test
 	void convertToDTONotNullTest() {
 		final DataUnitDocument dataUnitDocument = documentGenerator.generateSingleObject();
-		final DataUnitDTO dataUnitDTO = converter.convertToDTO(dataUnitDocument);
+		final DataUnitDTO dataUnitDTO = converter.convert(dataUnitDocument);
 		checkDocumentToDTOConversion(dataUnitDocument, dataUnitDTO);
 	}
 
@@ -114,7 +93,7 @@ class DataUnitDTOConverterTest {
 
 	@Test
 	void convertAllToDTOsNullTest() {
-		final List<DataUnitDTO> dataUnitDTOs = converter.convertAllToDTOs(null);
+		final List<DataUnitDTO> dataUnitDTOs = converter.convert((Iterable<DataUnitDocument>) null);
 		Assertions.assertNotNull(dataUnitDTOs);
 		Assertions.assertTrue(dataUnitDTOs.isEmpty());
 	}
@@ -122,7 +101,7 @@ class DataUnitDTOConverterTest {
 	@Test
 	void convertAllToDTOsNotNullTest() {
 		final List<DataUnitDocument> dataUnitDocuments = documentGenerator.generateMultipleObjects();
-		final List<DataUnitDTO> dataUnitDTOs = converter.convertAllToDTOs(dataUnitDocuments);
+		final List<DataUnitDTO> dataUnitDTOs = converter.convert(dataUnitDocuments);
 		Assertions.assertNotNull(dataUnitDTOs);
 		Assertions.assertEquals(dataUnitDocuments.size(), dataUnitDTOs.size());
 

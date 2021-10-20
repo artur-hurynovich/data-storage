@@ -53,9 +53,9 @@ class DataUnitSchemaDTOServiceImplTest {
 	void saveTest() {
 		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
 		final DataUnitSchemaEntity schemaEntity = entityGenerator.generateSingleObject();
-		Mockito.when(converter.convertFromDTO(schemaDTO)).thenReturn(schemaEntity);
+		Mockito.when(converter.convert(schemaDTO)).thenReturn(schemaEntity);
 		Mockito.when(dao.save(schemaEntity)).thenReturn(schemaEntity);
-		Mockito.when(converter.convertToDTO(schemaEntity)).thenReturn(schemaDTO);
+		Mockito.when(converter.convert(schemaEntity)).thenReturn(schemaDTO);
 
 		final DataUnitSchemaDTO savedSchemaDTO = service.save(schemaDTO);
 		Mockito.verify(cache).store(schemaDTO.getId(), schemaDTO);
@@ -70,7 +70,7 @@ class DataUnitSchemaDTOServiceImplTest {
 		Mockito.when(dao.findById(id)).thenReturn(Optional.of(schemaEntity));
 
 		final DataUnitSchemaDTO schemaDTO = dtoGenerator.generateSingleObject();
-		Mockito.when(converter.convertToDTO(schemaEntity)).thenReturn(schemaDTO);
+		Mockito.when(converter.convert(schemaEntity)).thenReturn(schemaDTO);
 		Mockito.when(cache.get(id)).thenReturn(Optional.of(schemaDTO));
 
 		final Optional<DataUnitSchemaDTO> savedSchemaDTOOptional = service.findById(id);
@@ -108,7 +108,7 @@ class DataUnitSchemaDTOServiceImplTest {
 		Mockito.when(dao.findAll()).thenReturn(schemaEntities);
 
 		final List<DataUnitSchemaDTO> schemaDTOs = dtoGenerator.generateMultipleObjects();
-		Mockito.when(converter.convertAllToDTOs(schemaEntities)).thenReturn(schemaDTOs);
+		Mockito.when(converter.convert(schemaEntities)).thenReturn(schemaDTOs);
 
 		final List<DataUnitSchemaDTO> savedSchemaDTOs = service.findAll();
 		Assertions.assertNotNull(savedSchemaDTOs);
@@ -120,7 +120,7 @@ class DataUnitSchemaDTOServiceImplTest {
 	void findAllEmptyTest() {
 		final List<DataUnitSchemaEntity> schemaEntities = new ArrayList<>();
 		Mockito.when(dao.findAll()).thenReturn(schemaEntities);
-		Mockito.when(converter.convertAllToDTOs(schemaEntities)).thenReturn(new ArrayList<>());
+		Mockito.when(converter.convert(schemaEntities)).thenReturn(new ArrayList<>());
 
 		final List<DataUnitSchemaDTO> savedSchemaDTOs = service.findAll();
 		Assertions.assertNotNull(savedSchemaDTOs);

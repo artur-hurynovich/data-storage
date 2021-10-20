@@ -26,19 +26,19 @@ public class DataUnitDTOService implements DTOService<DataUnitDTO, String> {
 
 	@Override
 	public DataUnitDTO save(final @NonNull DataUnitDTO dataUnit) {
-		return converter.convertToDTO(dao.save(converter.convertFromDTO(dataUnit)));
+		return converter.convert(dao.save(converter.convert(dataUnit)));
 	}
 
 	@Override
 	public Optional<DataUnitDTO> findById(final @NonNull String id) {
 		final Optional<DataUnitDocument> optionalResult = dao.findById(id);
 
-		return optionalResult.map(converter::convertToDTO);
+		return optionalResult.map(converter::convert);
 	}
 
 	@Override
 	public List<DataUnitDTO> findAll() {
-		return converter.convertAllToDTOs(dao.findAll());
+		return converter.convert(dao.findAll());
 	}
 
 	@Override

@@ -49,9 +49,9 @@ class DataUnitDTOServiceTest {
 	void saveTest() {
 		final DataUnitDTO dataUnitDTO = dtoGenerator.generateSingleObject();
 		final DataUnitDocument dataUnitDocument = entityGenerator.generateSingleObject();
-		Mockito.when(converter.convertFromDTO(dataUnitDTO)).thenReturn(dataUnitDocument);
+		Mockito.when(converter.convert(dataUnitDTO)).thenReturn(dataUnitDocument);
 		Mockito.when(dao.save(dataUnitDocument)).thenReturn(dataUnitDocument);
-		Mockito.when(converter.convertToDTO(dataUnitDocument)).thenReturn(dataUnitDTO);
+		Mockito.when(converter.convert(dataUnitDocument)).thenReturn(dataUnitDTO);
 
 		final DataUnitDTO savedDataUnitDTO = service.save(dataUnitDTO);
 		Assertions.assertTrue(Objects.deepEquals(dataUnitDTO, savedDataUnitDTO));
@@ -65,7 +65,7 @@ class DataUnitDTOServiceTest {
 		Mockito.when(dao.findById(id)).thenReturn(Optional.of(dataUnitDocument));
 
 		final DataUnitDTO dataUnitDTO = dtoGenerator.generateSingleObject();
-		Mockito.when(converter.convertToDTO(dataUnitDocument)).thenReturn(dataUnitDTO);
+		Mockito.when(converter.convert(dataUnitDocument)).thenReturn(dataUnitDTO);
 
 		final Optional<DataUnitDTO> savedDataUnitDTOOptional = service.findById(id);
 		Assertions.assertTrue(savedDataUnitDTOOptional.isPresent());
@@ -87,7 +87,7 @@ class DataUnitDTOServiceTest {
 		Mockito.when(dao.findAll()).thenReturn(dataUnitDocuments);
 
 		final List<DataUnitDTO> dataUnitDTOs = dtoGenerator.generateMultipleObjects();
-		Mockito.when(converter.convertAllToDTOs(dataUnitDocuments)).thenReturn(dataUnitDTOs);
+		Mockito.when(converter.convert(dataUnitDocuments)).thenReturn(dataUnitDTOs);
 
 		final List<DataUnitDTO> savedDataUnitDTOs = service.findAll();
 		Assertions.assertNotNull(savedDataUnitDTOs);
@@ -99,7 +99,7 @@ class DataUnitDTOServiceTest {
 	void findAllEmptyTest() {
 		final List<DataUnitDocument> dataUnitDocuments = new ArrayList<>();
 		Mockito.when(dao.findAll()).thenReturn(dataUnitDocuments);
-		Mockito.when(converter.convertAllToDTOs(dataUnitDocuments)).thenReturn(new ArrayList<>());
+		Mockito.when(converter.convert(dataUnitDocuments)).thenReturn(new ArrayList<>());
 
 		final List<DataUnitDTO> savedDataUnitDTOs = service.findAll();
 		Assertions.assertNotNull(savedDataUnitDTOs);
