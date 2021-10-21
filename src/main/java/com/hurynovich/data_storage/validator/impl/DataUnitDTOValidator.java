@@ -1,10 +1,10 @@
 package com.hurynovich.data_storage.validator.impl;
 
-import com.hurynovich.data_storage.model.dto.AbstractDTO;
-import com.hurynovich.data_storage.model.dto.DataUnitDTO;
-import com.hurynovich.data_storage.model.dto.DataUnitDTO.DataUnitPropertyDTO;
-import com.hurynovich.data_storage.model.dto.DataUnitPropertySchemaDTO;
-import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
+import com.hurynovich.data_storage.model.AbstractDTO;
+import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
+import com.hurynovich.data_storage.model.data_unit.DataUnitDTO.DataUnitPropertyDTO;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
 import com.hurynovich.data_storage.service.dto_service.DTOService;
 import com.hurynovich.data_storage.validator.DTOValidator;

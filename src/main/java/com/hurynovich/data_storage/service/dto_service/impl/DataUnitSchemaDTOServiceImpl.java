@@ -1,11 +1,12 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
 import com.hurynovich.data_storage.cache.Cache;
-import com.hurynovich.data_storage.converter.DTOConverter;
+import com.hurynovich.data_storage.converter.Converter;
 import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
-import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
-import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaDTOService;
+import com.hurynovich.data_storage.utils.MassProcessingUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -19,22 +20,26 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 
 	private final DataUnitSchemaDAO dao;
 
-	private final DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter;
+	private final Converter<DataUnitSchemaDTO, DataUnitSchemaEntity> dtoConverter;
+
+	private final Converter<DataUnitSchemaEntity, DataUnitSchemaDTO> entityConverter;
 
 	private final Cache<Long, DataUnitSchemaDTO> cache;
 
 	public DataUnitSchemaDTOServiceImpl(final @NonNull DataUnitSchemaDAO dao,
-										final @NonNull DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> converter,
+										final @NonNull Converter<DataUnitSchemaDTO, DataUnitSchemaEntity> dtoConverter,
+										final @NonNull Converter<DataUnitSchemaEntity, DataUnitSchemaDTO> entityConverter,
 										final @NonNull Cache<Long, DataUnitSchemaDTO> cache) {
 		this.dao = dao;
-		this.converter = converter;
+		this.dtoConverter = dtoConverter;
+		this.entityConverter = entityConverter;
 		this.cache = cache;
 	}
 
 	@Override
 	public DataUnitSchemaDTO save(final @NonNull DataUnitSchemaDTO dataUnitSchema) {
-		final DataUnitSchemaDTO savedDataUnitSchema = converter.convert(
-				dao.save(converter.convert(dataUnitSchema)));
+		final DataUnitSchemaDTO savedDataUnitSchema = entityConverter.convert(
+				dao.save(dtoConverter.convert(dataUnitSchema)));
 
 		cache.store(savedDataUnitSchema.getId(), savedDataUnitSchema);
 
@@ -47,7 +52,7 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 			final Optional<DataUnitSchemaEntity> dataUnitSchemaEntityOptional = dao.findById(id);
 			if (dataUnitSchemaEntityOptional.isPresent()) {
 				final DataUnitSchemaEntity dataUnitSchemaEntity = dataUnitSchemaEntityOptional.get();
-				final DataUnitSchemaDTO dataUnitSchemaDTO = converter.convert(dataUnitSchemaEntity);
+				final DataUnitSchemaDTO dataUnitSchemaDTO = entityConverter.convert(dataUnitSchemaEntity);
 
 				cache.store(id, dataUnitSchemaDTO);
 			}
@@ -63,7 +68,8 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 	 */
 	@Override
 	public List<DataUnitSchemaDTO> findAll() {
-		return converter.convert(dao.findAll());
+		return MassProcessingUtils.processQuietly(dao.findAll(),
+				schemaEntity -> entityConverter.convert(schemaEntity, "propertySchemas"));
 	}
 
 	@Override

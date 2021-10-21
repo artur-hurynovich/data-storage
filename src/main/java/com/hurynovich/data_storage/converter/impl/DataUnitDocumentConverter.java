@@ -5,10 +5,10 @@ import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DataUnitDTOConverter extends AbstractConverter<DataUnitDTO, DataUnitDocument> {
+public class DataUnitDocumentConverter extends AbstractConverter<DataUnitDocument, DataUnitDTO> {
 
-	public DataUnitDTOConverter() {
-		super(DataUnitDTO.class, DataUnitDocument.class);
+	public DataUnitDocumentConverter() {
+		super(DataUnitDocument.class, DataUnitDTO.class);
 	}
 
 }

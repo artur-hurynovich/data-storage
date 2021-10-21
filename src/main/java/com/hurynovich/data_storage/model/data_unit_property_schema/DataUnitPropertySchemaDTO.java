@@ -1,5 +1,6 @@
-package com.hurynovich.data_storage.model.dto;
+package com.hurynovich.data_storage.model.data_unit_property_schema;
 
+import com.hurynovich.data_storage.model.AbstractDTO;
 import com.hurynovich.data_storage.model.DataUnitPropertyType;
 
 public class DataUnitPropertySchemaDTO extends AbstractDTO<Long> {

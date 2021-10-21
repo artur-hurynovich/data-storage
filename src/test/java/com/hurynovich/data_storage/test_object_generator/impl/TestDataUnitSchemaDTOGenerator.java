@@ -1,8 +1,8 @@
 package com.hurynovich.data_storage.test_object_generator.impl;
 
 import com.hurynovich.data_storage.model.DataUnitPropertyType;
-import com.hurynovich.data_storage.model.dto.DataUnitPropertySchemaDTO;
-import com.hurynovich.data_storage.model.dto.DataUnitSchemaDTO;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 
 import java.util.Arrays;

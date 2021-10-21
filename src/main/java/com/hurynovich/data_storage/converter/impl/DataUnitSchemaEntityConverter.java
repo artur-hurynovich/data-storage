@@ -5,11 +5,11 @@ import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DataUnitSchemaDTOConverter
-		extends AbstractConverter<DataUnitSchemaDTO, DataUnitSchemaEntity> {
+public class DataUnitSchemaEntityConverter
+		extends AbstractConverter<DataUnitSchemaEntity, DataUnitSchemaDTO> {
 
-	public DataUnitSchemaDTOConverter() {
-		super(DataUnitSchemaDTO.class, DataUnitSchemaEntity.class);
+	public DataUnitSchemaEntityConverter() {
+		super(DataUnitSchemaEntity.class, DataUnitSchemaDTO.class);
 	}
 
 }

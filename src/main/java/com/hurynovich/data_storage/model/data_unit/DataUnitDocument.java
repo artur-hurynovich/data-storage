@@ -1,29 +1,16 @@
-package com.hurynovich.data_storage.model.document;
+package com.hurynovich.data_storage.model.data_unit;
 
-import com.hurynovich.data_storage.model.Identified;
-import org.springframework.data.annotation.Id;
+import com.hurynovich.data_storage.model.AbstractDocument;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
 @Document
-public class DataUnitDocument implements Identified<String> {
-
-	@Id
-	private String id;
+public class DataUnitDocument extends AbstractDocument<String> {
 
 	private Long schemaId;
 
 	private List<DataUnitPropertyDocument> properties;
-
-	@Override
-	public String getId() {
-		return id;
-	}
-
-	public void setId(final String id) {
-		this.id = id;
-	}
 
 	public Long getSchemaId() {
 		return schemaId;
