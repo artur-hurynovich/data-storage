@@ -1,4 +1,7 @@
-package com.hurynovich.data_storage.model.entity;
+package com.hurynovich.data_storage.model.data_unit_schema;
+
+import com.hurynovich.data_storage.model.AbstractEntity;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaEntity;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;

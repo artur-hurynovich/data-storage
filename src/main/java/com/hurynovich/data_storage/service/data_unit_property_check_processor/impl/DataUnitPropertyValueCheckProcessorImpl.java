@@ -1,7 +1,7 @@
 package com.hurynovich.data_storage.service.data_unit_property_check_processor.impl;
 
 import com.hurynovich.data_storage.model.DataUnitPropertyType;
-import com.hurynovich.data_storage.model.dto.DataUnitPropertySchemaDTO;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.exception.DataUnitPropertyValueCheckProcessorException;
 import com.hurynovich.data_storage.service.data_unit_property_value_checker.DataUnitPropertyValueTypeChecker;

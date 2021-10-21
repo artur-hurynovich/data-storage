@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.service.dto_service;
 
-import com.hurynovich.data_storage.model.dto.AbstractDTO;
+import com.hurynovich.data_storage.model.AbstractDTO;
 import org.springframework.lang.NonNull;
 
 import java.io.Serializable;

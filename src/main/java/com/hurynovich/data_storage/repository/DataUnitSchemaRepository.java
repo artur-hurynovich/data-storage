@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.repository;
 
-import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;

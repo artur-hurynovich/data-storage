@@ -1,7 +1,7 @@
 package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.model.GenericValidatedResponse;
-import com.hurynovich.data_storage.model.dto.DataUnitDTO;
+import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.service.dto_service.DTOService;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;

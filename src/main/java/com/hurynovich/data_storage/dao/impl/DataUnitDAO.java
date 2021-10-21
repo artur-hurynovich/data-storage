@@ -1,7 +1,7 @@
 package com.hurynovich.data_storage.dao.impl;
 
 import com.hurynovich.data_storage.dao.DAO;
-import com.hurynovich.data_storage.model.document.DataUnitDocument;
+import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;

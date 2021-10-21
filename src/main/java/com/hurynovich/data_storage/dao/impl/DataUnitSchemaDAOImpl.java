@@ -1,7 +1,7 @@
 package com.hurynovich.data_storage.dao.impl;
 
 import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
-import com.hurynovich.data_storage.model.entity.DataUnitSchemaEntity;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.repository.DataUnitSchemaRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;

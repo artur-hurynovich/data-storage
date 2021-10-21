@@ -1,4 +1,6 @@
-package com.hurynovich.data_storage.model.dto;
+package com.hurynovich.data_storage.model.data_unit;
+
+import com.hurynovich.data_storage.model.AbstractDTO;
 
 import java.util.List;
 

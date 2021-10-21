@@ -1,6 +1,4 @@
-package com.hurynovich.data_storage.model.dto;
-
-import com.hurynovich.data_storage.model.Identified;
+package com.hurynovich.data_storage.model;
 
 import java.io.Serializable;
 
