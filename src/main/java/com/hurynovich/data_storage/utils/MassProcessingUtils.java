@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class MassProcessingUtils {
 
-	public MassProcessingUtils() {
+	private MassProcessingUtils() {
 		throw new AssertionError();
 	}
 
