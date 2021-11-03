@@ -1,5 +1,6 @@
 package com.hurynovich.data_storage.controller;
 
+import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import com.hurynovich.data_storage.model.GenericValidatedResponse;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.service.dto_service.DTOService;
@@ -47,7 +48,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 	@Test
 	void postValidDataUnitTest() {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
-		dataUnit.setId(null);
+		TestReflectionUtils.setField(dataUnit, "id", null);
 
 		final ValidationResult validationResult = new ValidationResult();
 		Mockito.when(validator.validate(dataUnit)).thenReturn(validationResult);
@@ -88,8 +89,8 @@ class DataUnitControllerTest extends AbstractControllerTest {
 	@Test
 	void postValidDataUnitSchemaIdIsNullTest() {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
-		dataUnit.setId(null);
-		dataUnit.setSchemaId(null);
+		TestReflectionUtils.setField(dataUnit, "id", null);
+		TestReflectionUtils.setField(dataUnit, "schemaId", null);
 
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
@@ -111,7 +112,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 	@Test
 	void postNotValidDataUnitTest() {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
-		dataUnit.setProperties(new ArrayList<>());
+		TestReflectionUtils.setField(dataUnit, "properties", new ArrayList<>());
 
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
@@ -229,7 +230,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 	void putValidDataUnitIdIsNullTest() {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
 		final String id = dataUnit.getId();
-		dataUnit.setId(null);
+		TestReflectionUtils.setField(dataUnit, "id", null);
 		Mockito.when(validator.validate(dataUnit)).thenReturn(new ValidationResult());
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.
@@ -272,7 +273,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 	@Test
 	void putNotValidDataUnitTest() {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
-		dataUnit.setProperties(null);
+		TestReflectionUtils.setField(dataUnit, "properties", null);
 
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);

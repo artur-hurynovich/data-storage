@@ -1,5 +1,6 @@
 package com.hurynovich.data_storage.controller;
 
+import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import com.hurynovich.data_storage.model.GenericValidatedResponse;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.dto_service.DTOService;
@@ -47,7 +48,7 @@ class DataUnitSchemaControllerTest extends AbstractControllerTest {
 	@Test
 	void postValidSchemaTest() {
 		final DataUnitSchemaDTO schema = schemaGenerator.generateSingleObject();
-		schema.setId(null);
+		TestReflectionUtils.setField(schema, "id", null);
 
 		final ValidationResult validationResult = new ValidationResult();
 		Mockito.when(validator.validate(schema)).thenReturn(validationResult);
@@ -88,8 +89,8 @@ class DataUnitSchemaControllerTest extends AbstractControllerTest {
 	@Test
 	void postValidSchemaNameIsNullTest() {
 		final DataUnitSchemaDTO schema = schemaGenerator.generateSingleObject();
-		schema.setId(null);
-		schema.setName(null);
+		TestReflectionUtils.setField(schema, "id", null);
+		TestReflectionUtils.setField(schema, "name", null);
 
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
@@ -111,8 +112,8 @@ class DataUnitSchemaControllerTest extends AbstractControllerTest {
 	@Test
 	void postNotValidSchemaTest() {
 		final DataUnitSchemaDTO schema = schemaGenerator.generateSingleObject();
-		schema.setId(null);
-		schema.setPropertySchemas(new ArrayList<>());
+		TestReflectionUtils.setField(schema, "id", null);
+		TestReflectionUtils.setField(schema, "propertySchemas", new ArrayList<>());
 
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
@@ -230,7 +231,7 @@ class DataUnitSchemaControllerTest extends AbstractControllerTest {
 	void putValidSchemaIdIsNullTest() {
 		final DataUnitSchemaDTO schema = schemaGenerator.generateSingleObject();
 		final Long id = schema.getId();
-		schema.setId(null);
+		TestReflectionUtils.setField(schema, "id", null);
 		Mockito.when(validator.validate(schema)).thenReturn(new ValidationResult());
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> response = controller.
@@ -273,7 +274,7 @@ class DataUnitSchemaControllerTest extends AbstractControllerTest {
 	@Test
 	void putNotValidSchemaTest() {
 		final DataUnitSchemaDTO schema = schemaGenerator.generateSingleObject();
-		schema.setPropertySchemas(new ArrayList<>());
+		TestReflectionUtils.setField(schema, "propertySchemas", new ArrayList<>());
 
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);

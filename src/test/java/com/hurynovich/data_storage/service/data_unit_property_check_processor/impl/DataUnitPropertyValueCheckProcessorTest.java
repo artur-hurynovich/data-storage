@@ -47,11 +47,7 @@ class DataUnitPropertyValueCheckProcessorTest {
 	}
 
 	private DataUnitPropertySchemaDTO buildPropertySchema(final DataUnitPropertyType type) {
-		final DataUnitPropertySchemaDTO propertySchema = new DataUnitPropertySchemaDTO();
-
-		propertySchema.setType(type);
-
-		return propertySchema;
+		return new DataUnitPropertySchemaDTO(null, null, type);
 	}
 
 	@Test

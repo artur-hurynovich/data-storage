@@ -1,7 +1,7 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
 import com.hurynovich.data_storage.cache.Cache;
-import com.hurynovich.data_storage.converter.Converter;
+import com.hurynovich.data_storage.converter.DTOConverter;
 import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
@@ -20,26 +20,22 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 
 	private final DataUnitSchemaDAO dao;
 
-	private final Converter<DataUnitSchemaDTO, DataUnitSchemaEntity> dtoConverter;
-
-	private final Converter<DataUnitSchemaEntity, DataUnitSchemaDTO> entityConverter;
+	private final DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity, Long> converter;
 
 	private final Cache<Long, DataUnitSchemaDTO> cache;
 
 	public DataUnitSchemaDTOServiceImpl(final @NonNull DataUnitSchemaDAO dao,
-										final @NonNull Converter<DataUnitSchemaDTO, DataUnitSchemaEntity> dtoConverter,
-										final @NonNull Converter<DataUnitSchemaEntity, DataUnitSchemaDTO> entityConverter,
+										final @NonNull DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity, Long> converter,
 										final @NonNull Cache<Long, DataUnitSchemaDTO> cache) {
 		this.dao = dao;
-		this.dtoConverter = dtoConverter;
-		this.entityConverter = entityConverter;
+		this.converter = converter;
 		this.cache = cache;
 	}
 
 	@Override
 	public DataUnitSchemaDTO save(final @NonNull DataUnitSchemaDTO dataUnitSchema) {
-		final DataUnitSchemaDTO savedDataUnitSchema = entityConverter.convert(
-				dao.save(dtoConverter.convert(dataUnitSchema)));
+		final DataUnitSchemaDTO savedDataUnitSchema = converter.convertFull(
+				dao.save(converter.convert(dataUnitSchema)));
 
 		cache.store(savedDataUnitSchema.getId(), savedDataUnitSchema);
 
@@ -52,7 +48,7 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 			final Optional<DataUnitSchemaEntity> dataUnitSchemaEntityOptional = dao.findById(id);
 			if (dataUnitSchemaEntityOptional.isPresent()) {
 				final DataUnitSchemaEntity dataUnitSchemaEntity = dataUnitSchemaEntityOptional.get();
-				final DataUnitSchemaDTO dataUnitSchemaDTO = entityConverter.convert(dataUnitSchemaEntity);
+				final DataUnitSchemaDTO dataUnitSchemaDTO = converter.convertFull(dataUnitSchemaEntity);
 
 				cache.store(id, dataUnitSchemaDTO);
 			}
@@ -68,8 +64,7 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 	 */
 	@Override
 	public List<DataUnitSchemaDTO> findAll() {
-		return MassProcessingUtils.processQuietly(dao.findAll(),
-				schemaEntity -> entityConverter.convert(schemaEntity, "propertySchemas"));
+		return MassProcessingUtils.processQuietly(dao.findAll(), converter::convertBase);
 	}
 
 	@Override

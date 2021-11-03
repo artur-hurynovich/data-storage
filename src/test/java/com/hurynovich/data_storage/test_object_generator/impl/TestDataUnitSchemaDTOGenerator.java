@@ -43,14 +43,7 @@ public class TestDataUnitSchemaDTOGenerator implements TestObjectGenerator<DataU
 	}
 
 	private DataUnitSchemaDTO generateSchema(final Long id, final String name) {
-		final DataUnitSchemaDTO schema = new DataUnitSchemaDTO();
-
-		schema.setId(id);
-		schema.setName(name);
-
-		schema.setPropertySchemas(generatePropertySchemas());
-
-		return schema;
+		return new DataUnitSchemaDTO(id, name, generatePropertySchemas());
 	}
 
 	private List<DataUnitPropertySchemaDTO> generatePropertySchemas() {
@@ -72,13 +65,7 @@ public class TestDataUnitSchemaDTOGenerator implements TestObjectGenerator<DataU
 
 	private DataUnitPropertySchemaDTO generatePropertySchema(final Long id, final String name,
 															 final DataUnitPropertyType type) {
-		final DataUnitPropertySchemaDTO propertySchema = new DataUnitPropertySchemaDTO();
-
-		propertySchema.setId(id);
-		propertySchema.setName(name);
-		propertySchema.setType(type);
-
-		return propertySchema;
+		return new DataUnitPropertySchemaDTO(id, name, type);
 	}
 
 	@Override

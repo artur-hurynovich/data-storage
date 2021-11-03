@@ -1,7 +1,7 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
 import com.hurynovich.data_storage.cache.Cache;
-import com.hurynovich.data_storage.converter.Converter;
+import com.hurynovich.data_storage.converter.DTOConverter;
 import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
@@ -9,6 +9,7 @@ import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaDTOService;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaEntityGenerator;
+import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,10 +32,7 @@ class DataUnitSchemaDTOServiceImplTest {
 	private DataUnitSchemaDAO dao;
 
 	@Mock
-	private Converter<DataUnitSchemaDTO, DataUnitSchemaEntity> dtoConverter;
-
-	@Mock
-	private Converter<DataUnitSchemaEntity, DataUnitSchemaDTO> entityConverter;
+	private DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity, Long> converter;
 
 	@Mock
 	private Cache<Long, DataUnitSchemaDTO> cache;
@@ -49,16 +47,16 @@ class DataUnitSchemaDTOServiceImplTest {
 
 	@BeforeEach
 	public void initService() {
-		service = new DataUnitSchemaDTOServiceImpl(dao, dtoConverter, entityConverter, cache);
+		service = new DataUnitSchemaDTOServiceImpl(dao, converter, cache);
 	}
 
 	@Test
 	void saveTest() {
 		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
 		final DataUnitSchemaEntity entity = entityGenerator.generateSingleObject();
-		Mockito.when(dtoConverter.convert(dto)).thenReturn(entity);
+		Mockito.when(converter.convert(dto)).thenReturn(entity);
 		Mockito.when(dao.save(entity)).thenReturn(entity);
-		Mockito.when(entityConverter.convert(entity)).thenReturn(dto);
+		Mockito.when(converter.convertFull(entity)).thenReturn(dto);
 
 		final DataUnitSchemaDTO savedDTO = service.save(dto);
 		Mockito.verify(cache).store(dto.getId(), dto);
@@ -73,7 +71,7 @@ class DataUnitSchemaDTOServiceImplTest {
 		Mockito.when(dao.findById(id)).thenReturn(Optional.of(entity));
 
 		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
-		Mockito.when(entityConverter.convert(entity)).thenReturn(dto);
+		Mockito.when(converter.convertFull(entity)).thenReturn(dto);
 		Mockito.when(cache.get(id)).thenReturn(Optional.of(dto));
 
 		final Optional<DataUnitSchemaDTO> savedDTOOptional = service.findById(id);
@@ -111,7 +109,9 @@ class DataUnitSchemaDTOServiceImplTest {
 
 		final List<DataUnitSchemaDTO> dtos = dtoGenerator.generateMultipleObjects();
 		for (int i = 0; i < entities.size(); i++) {
-			Mockito.when(entityConverter.convert(entities.get(i), "propertySchemas")).thenReturn(dtos.get(i));
+			final DataUnitSchemaDTO dto = dtos.get(i);
+			TestReflectionUtils.setField(dto, "propertySchemas", new ArrayList<>());
+			Mockito.when(converter.convertBase(entities.get(i))).thenReturn(dto);
 		}
 
 		final List<DataUnitSchemaDTO> savedDTOs = service.findAll();

@@ -7,24 +7,22 @@ import java.util.List;
 
 public class DataUnitSchemaDTO extends AbstractDTO<Long> {
 
-	private String name;
+	private final String name;
 
-	private List<DataUnitPropertySchemaDTO> propertySchemas;
+	private final List<DataUnitPropertySchemaDTO> propertySchemas;
+
+	public DataUnitSchemaDTO(final Long id, final String name, final List<DataUnitPropertySchemaDTO> propertySchemas) {
+		super(id);
+		this.name = name;
+		this.propertySchemas = propertySchemas;
+	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(final String name) {
-		this.name = name;
-	}
-
 	public List<DataUnitPropertySchemaDTO> getPropertySchemas() {
 		return propertySchemas;
-	}
-
-	public void setPropertySchemas(final List<DataUnitPropertySchemaDTO> propertySchemas) {
-		this.propertySchemas = propertySchemas;
 	}
 
 }

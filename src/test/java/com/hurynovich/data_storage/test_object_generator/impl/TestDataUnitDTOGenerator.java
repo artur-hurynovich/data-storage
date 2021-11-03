@@ -36,14 +36,7 @@ public class TestDataUnitDTOGenerator implements TestObjectGenerator<DataUnitDTO
 	}
 
 	private DataUnitDTO generateDataUnit(final String id, final Long schemaId) {
-		final DataUnitDTO dataUnit = new DataUnitDTO();
-
-		dataUnit.setId(id);
-		dataUnit.setSchemaId(schemaId);
-
-		dataUnit.setProperties(generateProperties());
-
-		return dataUnit;
+		return new DataUnitDTO(id, schemaId, generateProperties());
 	}
 
 	private List<DataUnitPropertyDTO> generateProperties() {
@@ -64,12 +57,7 @@ public class TestDataUnitDTOGenerator implements TestObjectGenerator<DataUnitDTO
 	}
 
 	private DataUnitPropertyDTO generateProperty(final Long schemaId, final Object value) {
-		final DataUnitPropertyDTO property = new DataUnitPropertyDTO();
-
-		property.setSchemaId(schemaId);
-		property.setValue(value);
-
-		return property;
+		return new DataUnitPropertyDTO(schemaId, value);
 	}
 
 	@Override

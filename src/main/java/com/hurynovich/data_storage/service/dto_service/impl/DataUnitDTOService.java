@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
-import com.hurynovich.data_storage.converter.Converter;
+import com.hurynovich.data_storage.converter.DTOConverter;
 import com.hurynovich.data_storage.dao.DAO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
@@ -19,33 +19,29 @@ public class DataUnitDTOService implements DTOService<DataUnitDTO, String> {
 
 	private final DAO<DataUnitDocument, String> dao;
 
-	private final Converter<DataUnitDTO, DataUnitDocument> dtoConverter;
-
-	private final Converter<DataUnitDocument, DataUnitDTO> documentConverter;
+	private final DTOConverter<DataUnitDTO, DataUnitDocument, String> converter;
 
 	public DataUnitDTOService(final @NonNull DAO<DataUnitDocument, String> dao,
-							  final @NonNull Converter<DataUnitDTO, DataUnitDocument> dtoConverter,
-							  final @NonNull Converter<DataUnitDocument, DataUnitDTO> documentConverter) {
+							  final @NonNull DTOConverter<DataUnitDTO, DataUnitDocument, String> converter) {
 		this.dao = dao;
-		this.dtoConverter = dtoConverter;
-		this.documentConverter = documentConverter;
+		this.converter = converter;
 	}
 
 	@Override
 	public DataUnitDTO save(final @NonNull DataUnitDTO dataUnit) {
-		return documentConverter.convert(dao.save(dtoConverter.convert(dataUnit)));
+		return converter.convertFull(dao.save(converter.convert(dataUnit)));
 	}
 
 	@Override
 	public Optional<DataUnitDTO> findById(final @NonNull String id) {
 		final Optional<DataUnitDocument> optionalResult = dao.findById(id);
 
-		return optionalResult.map(documentConverter::convert);
+		return optionalResult.map(converter::convertFull);
 	}
 
 	@Override
 	public List<DataUnitDTO> findAll() {
-		return MassProcessingUtils.processQuietly(dao.findAll(), documentConverter::convert);
+		return MassProcessingUtils.processQuietly(dao.findAll(), converter::convertFull);
 	}
 
 	@Override

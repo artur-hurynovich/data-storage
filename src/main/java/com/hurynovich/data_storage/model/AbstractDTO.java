@@ -4,15 +4,15 @@ import java.io.Serializable;
 
 public abstract class AbstractDTO<T extends Serializable> implements Identified<T> {
 
-	private T id;
+	private final T id;
+
+	protected AbstractDTO(final T id) {
+		this.id = id;
+	}
 
 	@Override
 	public T getId() {
 		return id;
-	}
-
-	public void setId(final T id) {
-		this.id = id;
 	}
 
 }
