@@ -3,6 +3,7 @@ package com.hurynovich.data_storage.controller;
 import com.hurynovich.data_storage.model.GenericValidatedResponse;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.service.dto_service.DTOService;
+import com.hurynovich.data_storage.validator.DTOValidationHelper;
 import com.hurynovich.data_storage.validator.DTOValidator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
@@ -25,31 +26,40 @@ public class DataUnitController {
 
 	private final DTOValidator<DataUnitDTO> validator;
 
+	private final DTOValidationHelper helper;
+
 	private final DTOService<DataUnitDTO, String> service;
 
 	public DataUnitController(final @NonNull DTOValidator<DataUnitDTO> validator,
+							  final @NonNull DTOValidationHelper helper,
 							  final @NonNull DTOService<DataUnitDTO, String> service) {
 		this.validator = validator;
+		this.helper = helper;
 		this.service = service;
 	}
 
 	@PostMapping("/dataUnit")
-	public ResponseEntity<GenericValidatedResponse<DataUnitDTO>> postDataUnit(final @RequestBody DataUnitDTO dataUnit) {
-		final ValidationResult validationResult = validator.validate(dataUnit);
-		if (dataUnit != null && dataUnit.getId() != null) {
-			validationResult.setType(ValidationResultType.FAILURE);
-			validationResult.addError("'dataUnit.id' should be null");
-		}
-
+	public ResponseEntity<GenericValidatedResponse<DataUnitDTO>> postDataUnit(
+			final @RequestBody DataUnitDTO dataUnit) {
+		final ValidationResult validationResult;
 		final DataUnitDTO body;
 		final HttpStatus status;
-		if (validationResult.getType() == ValidationResultType.SUCCESS) {
-			body = service.save(dataUnit);
-			status = HttpStatus.CREATED;
-		} else {
+		if (dataUnit.getId() != null) {
+			validationResult = new ValidationResult();
+			helper.applyIsNotNullError("dataUnit.id", validationResult);
 			body = null;
 			status = HttpStatus.BAD_REQUEST;
+		} else {
+			validationResult = validator.validate(dataUnit);
+			if (validationResult.getType() == ValidationResultType.SUCCESS) {
+				body = service.save(dataUnit);
+				status = HttpStatus.CREATED;
+			} else {
+				body = null;
+				status = HttpStatus.BAD_REQUEST;
+			}
 		}
+
 
 		return new ResponseEntity<>(new GenericValidatedResponse<>(validationResult, body), status);
 	}
@@ -66,8 +76,7 @@ public class DataUnitController {
 			status = HttpStatus.OK;
 		} else {
 			validationResult = new ValidationResult();
-			validationResult.setType(ValidationResultType.FAILURE);
-			validationResult.addError("'dataUnit' with id = " + id + " not found");
+			helper.applyNotFoundByIdError("dataUnit", id, validationResult);
 			body = null;
 			status = HttpStatus.NOT_FOUND;
 		}
@@ -81,23 +90,29 @@ public class DataUnitController {
 	}
 
 	@PutMapping("/dataUnit/{id}")
-	public ResponseEntity<GenericValidatedResponse<DataUnitDTO>> putDataUnit(final @PathVariable String id,
-																			 final @RequestBody DataUnitDTO dataUnit) {
-		final ValidationResult validationResult = validator.validate(dataUnit);
+	public ResponseEntity<GenericValidatedResponse<DataUnitDTO>> putDataUnit(
+			final @PathVariable String id,
+			final @RequestBody DataUnitDTO dataUnit) {
+		final ValidationResult validationResult;
 		final DataUnitDTO body;
 		final HttpStatus status;
-		if (dataUnit != null && !id.equals(dataUnit.getId())) {
+		if (!id.equals(dataUnit.getId())) {
+			validationResult = new ValidationResult();
 			validationResult.setType(ValidationResultType.FAILURE);
 			validationResult.addError("'dataUnit.id' should be equal to path variable 'id'");
-		}
-
-		if (validationResult.getType() == ValidationResultType.SUCCESS) {
-			body = service.save(dataUnit);
-			status = HttpStatus.OK;
-		} else {
 			body = null;
 			status = HttpStatus.BAD_REQUEST;
+		} else {
+			validationResult = validator.validate(dataUnit);
+			if (validationResult.getType() == ValidationResultType.SUCCESS) {
+				body = service.save(dataUnit);
+				status = HttpStatus.OK;
+			} else {
+				body = null;
+				status = HttpStatus.BAD_REQUEST;
+			}
 		}
+
 
 		return new ResponseEntity<>(new GenericValidatedResponse<>(validationResult, body), status);
 	}
@@ -106,7 +121,8 @@ public class DataUnitController {
 	public ResponseEntity<GenericValidatedResponse<DataUnitDTO>> deleteDataUnitById(final @PathVariable String id) {
 		service.deleteById(id);
 
-		return new ResponseEntity<>(new GenericValidatedResponse<>(new ValidationResult(), null), HttpStatus.OK);
+		return new ResponseEntity<>(
+				new GenericValidatedResponse<>(new ValidationResult(), null), HttpStatus.NO_CONTENT);
 	}
 
 }

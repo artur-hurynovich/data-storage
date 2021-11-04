@@ -1,6 +1,5 @@
 package com.hurynovich.data_storage.validator.impl;
 
-import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
@@ -9,6 +8,7 @@ import com.hurynovich.data_storage.service.dto_service.DTOService;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
+import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import com.hurynovich.data_storage.validator.DTOValidator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
@@ -49,7 +49,7 @@ class DataUnitDTOValidatorTest {
 
 	@BeforeEach
 	public void initValidator() {
-		validator = new DataUnitDTOValidator(dataUnitSchemaService, checkProcessor);
+		validator = new DataUnitDTOValidator(dataUnitSchemaService, new DTOValidationHelperImpl(), checkProcessor);
 	}
 
 	@Test
@@ -64,17 +64,6 @@ class DataUnitDTOValidatorTest {
 		Assertions.assertNotNull(validationResult);
 		Assertions.assertEquals(ValidationResultType.SUCCESS, validationResult.getType());
 		Assertions.assertTrue(validationResult.getErrors().isEmpty());
-	}
-
-	@Test
-	void validateDataUnitIsNullTest() {
-		final ValidationResult validationResult = validator.validate(null);
-		Assertions.assertNotNull(validationResult);
-		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
-
-		final Set<String> errors = validationResult.getErrors();
-		Assertions.assertEquals(1, errors.size());
-		Assertions.assertEquals("'dataUnit' can't be null", errors.iterator().next());
 	}
 
 	@Test
@@ -103,7 +92,7 @@ class DataUnitDTOValidatorTest {
 
 		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertEquals("'dataUnitSchema' with id = " + INCORRECT_LONG_ID + " not found",
+		Assertions.assertEquals("'dataUnitSchema' with id = '" + INCORRECT_LONG_ID + "' not found",
 				errors.iterator().next());
 	}
 
@@ -193,8 +182,8 @@ class DataUnitDTOValidatorTest {
 
 		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertEquals("'dataUnitPropertySchema' with id = " + DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID +
-				" not found", errors.iterator().next());
+		Assertions.assertEquals("'dataUnitPropertySchema' with id = '" + DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID +
+				"' not found", errors.iterator().next());
 	}
 
 	@Test

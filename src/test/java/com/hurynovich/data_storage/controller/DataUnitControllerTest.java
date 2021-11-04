@@ -1,12 +1,13 @@
 package com.hurynovich.data_storage.controller;
 
-import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import com.hurynovich.data_storage.model.GenericValidatedResponse;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.service.dto_service.DTOService;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
+import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import com.hurynovich.data_storage.validator.DTOValidator;
+import com.hurynovich.data_storage.validator.impl.DTOValidationHelperImpl;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.junit.jupiter.api.Assertions;
@@ -42,7 +43,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 
 	@BeforeEach
 	public void initController() {
-		controller = new DataUnitController(validator, service);
+		controller = new DataUnitController(validator, new DTOValidationHelperImpl(), service);
 	}
 
 	@Test
@@ -69,8 +70,6 @@ class DataUnitControllerTest extends AbstractControllerTest {
 	@Test
 	void postValidDataUnitIdIsNotNullTest() {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
-		Mockito.when(validator.validate(dataUnit)).thenReturn(new ValidationResult());
-
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.postDataUnit(dataUnit);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -161,7 +160,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
-		validationResult.addError("'dataUnit' with id = " + INCORRECT_STRING_ID + " not found");
+		validationResult.addError("'dataUnit' with id = '" + INCORRECT_STRING_ID + "' not found");
 
 		final GenericValidatedResponse<DataUnitDTO> responseBody = response.getBody();
 		Assertions.assertNotNull(responseBody);
@@ -231,7 +230,6 @@ class DataUnitControllerTest extends AbstractControllerTest {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
 		final String id = dataUnit.getId();
 		TestReflectionUtils.setField(dataUnit, "id", null);
-		Mockito.when(validator.validate(dataUnit)).thenReturn(new ValidationResult());
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.
 				putDataUnit(id, dataUnit);
@@ -252,8 +250,6 @@ class DataUnitControllerTest extends AbstractControllerTest {
 	@Test
 	void putValidDataUnitIncorrectIdTest() {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
-		Mockito.when(validator.validate(dataUnit)).thenReturn(new ValidationResult());
-
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.
 				putDataUnit(INCORRECT_STRING_ID, dataUnit);
 		Assertions.assertNotNull(response);
@@ -301,7 +297,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.deleteDataUnitById(id);
 		Mockito.verify(service).deleteById(id);
 		Assertions.assertNotNull(response);
-		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+		Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
 		final GenericValidatedResponse<DataUnitDTO> responseBody = response.getBody();
 		Assertions.assertNotNull(responseBody);
