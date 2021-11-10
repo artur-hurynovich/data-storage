@@ -3,6 +3,7 @@ package com.hurynovich.data_storage.service.dto_service.impl;
 import com.hurynovich.data_storage.cache.Cache;
 import com.hurynovich.data_storage.converter.DTOConverter;
 import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
+import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaDTOService;
@@ -36,6 +37,9 @@ class DataUnitSchemaDTOServiceImplTest {
 
 	@Mock
 	private Cache<Long, DataUnitSchemaDTO> cache;
+
+	@Mock
+	private PaginationParams params;
 
 	private DataUnitSchemaDTOService service;
 
@@ -105,7 +109,7 @@ class DataUnitSchemaDTOServiceImplTest {
 	@Test
 	void findAllTest() {
 		final List<DataUnitSchemaEntity> entities = entityGenerator.generateMultipleObjects();
-		Mockito.when(dao.findAll()).thenReturn(entities);
+		Mockito.when(dao.findAll(params)).thenReturn(entities);
 
 		final List<DataUnitSchemaDTO> dtos = dtoGenerator.generateMultipleObjects();
 		for (int i = 0; i < entities.size(); i++) {
@@ -114,7 +118,7 @@ class DataUnitSchemaDTOServiceImplTest {
 			Mockito.when(converter.convertBase(entities.get(i))).thenReturn(dto);
 		}
 
-		final List<DataUnitSchemaDTO> savedDTOs = service.findAll();
+		final List<DataUnitSchemaDTO> savedDTOs = service.findAll(params);
 		Assertions.assertNotNull(savedDTOs);
 		Assertions.assertFalse(savedDTOs.isEmpty());
 		Assertions.assertTrue(Objects.deepEquals(dtos, savedDTOs));
@@ -123,9 +127,9 @@ class DataUnitSchemaDTOServiceImplTest {
 	@Test
 	void findAllEmptyTest() {
 		final List<DataUnitSchemaEntity> entities = new ArrayList<>();
-		Mockito.when(dao.findAll()).thenReturn(entities);
+		Mockito.when(dao.findAll(params)).thenReturn(entities);
 
-		final List<DataUnitSchemaDTO> savedDTOs = service.findAll();
+		final List<DataUnitSchemaDTO> savedDTOs = service.findAll(params);
 		Assertions.assertNotNull(savedDTOs);
 		Assertions.assertTrue(savedDTOs.isEmpty());
 	}

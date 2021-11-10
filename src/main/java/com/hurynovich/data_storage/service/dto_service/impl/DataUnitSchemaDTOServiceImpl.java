@@ -3,14 +3,15 @@ package com.hurynovich.data_storage.service.dto_service.impl;
 import com.hurynovich.data_storage.cache.Cache;
 import com.hurynovich.data_storage.converter.DTOConverter;
 import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
+import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaDTOService;
 import com.hurynovich.data_storage.utils.MassProcessingUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +44,7 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Optional<DataUnitSchemaDTO> findById(final @NonNull Long id) {
 		if (!cache.contains(id)) {
 			final Optional<DataUnitSchemaEntity> dataUnitSchemaEntityOptional = dao.findById(id);
@@ -63,11 +65,6 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 	 * as this method is called every time we save or update DataUnitDTO.
 	 */
 	@Override
-	public List<DataUnitSchemaDTO> findAll() {
-		return MassProcessingUtils.processQuietly(dao.findAll(), converter::convertBase);
-	}
-
-	@Override
 	public void deleteById(final @NonNull Long id) {
 		dao.deleteById(id);
 
@@ -77,11 +74,24 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	public List<DataUnitSchemaDTO> findAll(final @NonNull PaginationParams params) {
+		return MassProcessingUtils.processQuietly(dao.findAll(params), converter::convertBase);
+	}
+
+	@Override
+	public long count() {
+		return dao.count();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
 	public boolean existsByName(final @NonNull String name) {
 		return dao.existsByName(name);
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public boolean existsByNameAndNotId(final @NonNull String name, final @NonNull Long id) {
 		return dao.existsByNameAndNotId(name, id);
 	}

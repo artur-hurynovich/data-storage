@@ -2,7 +2,7 @@ package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.model.GenericValidatedResponse;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
-import com.hurynovich.data_storage.service.dto_service.DTOService;
+import com.hurynovich.data_storage.service.dto_service.BaseDTOService;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
@@ -21,8 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_STRING_ID;
@@ -34,7 +32,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 	private DTOValidator<DataUnitDTO> validator;
 
 	@Mock
-	private DTOService<DataUnitDTO, String> service;
+	private BaseDTOService<DataUnitDTO, String> service;
 
 	private DataUnitController controller;
 
@@ -168,41 +166,6 @@ class DataUnitControllerTest extends AbstractControllerTest {
 		checkValidationResultsEquality(validationResult, responseBody.getValidationResult());
 
 		Assertions.assertNull(responseBody.getBody());
-	}
-
-	@Test
-	void getDataUnitsTest() {
-		final List<DataUnitDTO> dataUnits = dataUnitGenerator.generateMultipleObjects();
-		Mockito.when(service.findAll()).thenReturn(dataUnits);
-
-		final ResponseEntity<GenericValidatedResponse<List<DataUnitDTO>>> response = controller.getDataUnits();
-		Assertions.assertNotNull(response);
-		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-
-		final GenericValidatedResponse<List<DataUnitDTO>> responseBody = response.getBody();
-		Assertions.assertNotNull(responseBody);
-
-		checkValidationResultsEquality(new ValidationResult(), responseBody.getValidationResult());
-
-		Assertions.assertTrue(Objects.deepEquals(dataUnits, responseBody.getBody()));
-	}
-
-	@Test
-	void getDataUnitsEmptyTest() {
-		Mockito.when(service.findAll()).thenReturn(new ArrayList<>());
-
-		final ResponseEntity<GenericValidatedResponse<List<DataUnitDTO>>> response = controller.getDataUnits();
-		Assertions.assertNotNull(response);
-		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-
-		final GenericValidatedResponse<List<DataUnitDTO>> responseBody = response.getBody();
-		Assertions.assertNotNull(responseBody);
-
-		checkValidationResultsEquality(new ValidationResult(), responseBody.getValidationResult());
-
-		final List<DataUnitDTO> dataUnitDTOs = responseBody.getBody();
-		Assertions.assertNotNull(dataUnitDTOs);
-		Assertions.assertTrue(dataUnitDTOs.isEmpty());
 	}
 
 	@Test

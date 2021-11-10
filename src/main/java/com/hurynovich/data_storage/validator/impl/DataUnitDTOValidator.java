@@ -6,7 +6,7 @@ import com.hurynovich.data_storage.model.data_unit.DataUnitDTO.DataUnitPropertyD
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
-import com.hurynovich.data_storage.service.dto_service.DTOService;
+import com.hurynovich.data_storage.service.dto_service.BaseDTOService;
 import com.hurynovich.data_storage.validator.DTOValidationHelper;
 import com.hurynovich.data_storage.validator.DTOValidator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
@@ -19,18 +19,19 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 public class DataUnitDTOValidator implements DTOValidator<DataUnitDTO> {
 
-	private final DTOService<DataUnitSchemaDTO, Long> service;
+	private final BaseDTOService<DataUnitSchemaDTO, Long> service;
 
 	private final DTOValidationHelper helper;
 
 	private final DataUnitPropertyValueCheckProcessor valueCheckProcessor;
 
-	public DataUnitDTOValidator(final @NonNull DTOService<DataUnitSchemaDTO, Long> service,
+	public DataUnitDTOValidator(final @NonNull BaseDTOService<DataUnitSchemaDTO, Long> service,
 								final @NonNull DTOValidationHelper helper,
 								final @NonNull DataUnitPropertyValueCheckProcessor valueCheckProcessor) {
 		this.service = service;
@@ -65,7 +66,7 @@ public class DataUnitDTOValidator implements DTOValidator<DataUnitDTO> {
 									final @NonNull List<DataUnitPropertyDTO> properties,
 									final @NonNull ValidationResult result) {
 		final Map<Long, DataUnitPropertySchemaDTO> propertySchemasById = schema.getPropertySchemas().stream().
-				collect(Collectors.toMap(AbstractDTO::getId, propertySchema -> propertySchema));
+				collect(Collectors.toMap(AbstractDTO::getId, Function.identity()));
 
 		properties.forEach(property -> validateProperty(property, propertySchemasById, result));
 	}

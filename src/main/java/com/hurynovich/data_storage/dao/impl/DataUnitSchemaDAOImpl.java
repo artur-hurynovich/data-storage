@@ -1,7 +1,11 @@
 package com.hurynovich.data_storage.dao.impl;
 
 import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
+import com.hurynovich.data_storage.model.AbstractEntity_;
+import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
+import org.hibernate.annotations.QueryHints;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
@@ -18,19 +22,22 @@ public class DataUnitSchemaDAOImpl implements DataUnitSchemaDAO {
 
 	private final EntityManager entityManager;
 
+	/*
+	 * EntityManager is not thread-safe, however Spring injects not EntityManager itself,
+	 * but proxy SharedEntityManagerCreator#SharedEntityManagerInvocationHandler. It
+	 * delegates all calls to the current transactional EntityManager, if any; else, it
+	 * will fall back to a newly created EntityManager per operation. So we don't need
+	 * to care about thread safety. However, if we use DataUnitSchemaDAOImpl out of
+	 * Spring IoC, it's constructor can be used with plain EntityManager, so thread-safety
+	 * might be violated.
+	 */
 	public DataUnitSchemaDAOImpl(final @NonNull EntityManager entityManager) {
 		this.entityManager = entityManager;
 	}
 
 	@Override
 	public DataUnitSchemaEntity save(final @NonNull DataUnitSchemaEntity dataUnitSchema) {
-		if (dataUnitSchema.getId() == null) {
-			entityManager.persist(dataUnitSchema);
-		} else {
-			entityManager.merge(dataUnitSchema);
-		}
-
-		return dataUnitSchema;
+		return entityManager.merge(dataUnitSchema);
 	}
 
 	@Override
@@ -39,26 +46,46 @@ public class DataUnitSchemaDAOImpl implements DataUnitSchemaDAO {
 	}
 
 	@Override
-	public List<DataUnitSchemaEntity> findAll() {
-		final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-		final CriteriaQuery<DataUnitSchemaEntity> criteriaQuery = criteriaBuilder.
-				createQuery(DataUnitSchemaEntity.class);
-		final Root<DataUnitSchemaEntity> root = criteriaQuery.from(DataUnitSchemaEntity.class);
-		criteriaQuery.select(root);
-
-		return entityManager.createQuery(criteriaQuery).getResultList();
-	}
-
-	@Override
 	public void deleteById(final @NonNull Long id) {
-		final Optional<DataUnitSchemaEntity> dataUnitSchemaOptional = findById(id);
-		if (dataUnitSchemaOptional.isPresent()) {
-			entityManager.remove(dataUnitSchemaOptional.get());
+		final DataUnitSchemaEntity dataUnitSchema = entityManager.find(DataUnitSchemaEntity.class, id);
+		if (dataUnitSchema != null) {
+			entityManager.remove(dataUnitSchema);
 		} else {
-			throw new EntityNotFoundException("'DataUnitSchemaEntity' with id = " + id + " not found");
+			throw new EntityNotFoundException("'DataUnitSchemaEntity' with id = '" + id + "' not found");
 		}
 	}
 
+	@Override
+	public List<DataUnitSchemaEntity> findAll(final @NonNull PaginationParams params) {
+		final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		final CriteriaQuery<DataUnitSchemaEntity> criteriaQuery = criteriaBuilder.
+				createQuery(DataUnitSchemaEntity.class);
+		criteriaQuery.
+				select(criteriaQuery.
+						from(DataUnitSchemaEntity.class));
+
+		return entityManager.
+				createQuery(criteriaQuery).
+				setFirstResult(params.getOffset()).
+				setMaxResults(params.getLimit()).
+				setHint(QueryHints.READ_ONLY, true).
+				getResultList();
+	}
+
+	@Override
+	public long count() {
+		final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+		criteriaQuery.
+				select(criteriaBuilder.
+						count(criteriaQuery.
+								from(DataUnitSchemaEntity.class)));
+
+		return entityManager.
+				createQuery(criteriaQuery).
+				setHint(QueryHints.READ_ONLY, true).
+				getSingleResult();
+	}
 
 	@Override
 	public boolean existsByName(final @NonNull String name) {
@@ -67,9 +94,13 @@ public class DataUnitSchemaDAOImpl implements DataUnitSchemaDAO {
 				createQuery(DataUnitSchemaEntity.class);
 		final Root<DataUnitSchemaEntity> root = criteriaQuery.from(DataUnitSchemaEntity.class);
 		criteriaQuery.select(root).
-				where(criteriaBuilder.equal(root.get("name"), name));
+				where(criteriaBuilder.equal(root.get(DataUnitSchemaEntity_.name), name));
 
-		return !entityManager.createQuery(criteriaQuery).getResultList().isEmpty();
+		return !entityManager.
+				createQuery(criteriaQuery).
+				setHint(QueryHints.READ_ONLY, true).
+				getResultList().
+				isEmpty();
 	}
 
 	@Override
@@ -81,10 +112,16 @@ public class DataUnitSchemaDAOImpl implements DataUnitSchemaDAO {
 		criteriaQuery.select(root).
 				where(criteriaBuilder.
 						and(
-								criteriaBuilder.equal(root.get("name"), name),
-								criteriaBuilder.notEqual(root.get("id"), id)));
+								criteriaBuilder.
+										equal(root.get(DataUnitSchemaEntity_.name), name),
+								criteriaBuilder.
+										notEqual(root.get(AbstractEntity_.id), id)));
 
-		return !entityManager.createQuery(criteriaQuery).getResultList().isEmpty();
+		return !entityManager.
+				createQuery(criteriaQuery).
+				setHint(QueryHints.READ_ONLY, true).
+				getResultList().
+				isEmpty();
 	}
 
 }

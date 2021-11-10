@@ -2,7 +2,7 @@ package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.model.GenericValidatedResponse;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
-import com.hurynovich.data_storage.service.dto_service.DTOService;
+import com.hurynovich.data_storage.service.dto_service.BaseDTOService;
 import com.hurynovich.data_storage.validator.DTOValidationHelper;
 import com.hurynovich.data_storage.validator.DTOValidator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -28,11 +27,11 @@ public class DataUnitController {
 
 	private final DTOValidationHelper helper;
 
-	private final DTOService<DataUnitDTO, String> service;
+	private final BaseDTOService<DataUnitDTO, String> service;
 
 	public DataUnitController(final @NonNull DTOValidator<DataUnitDTO> validator,
 							  final @NonNull DTOValidationHelper helper,
-							  final @NonNull DTOService<DataUnitDTO, String> service) {
+							  final @NonNull BaseDTOService<DataUnitDTO, String> service) {
 		this.validator = validator;
 		this.helper = helper;
 		this.service = service;
@@ -82,11 +81,6 @@ public class DataUnitController {
 		}
 
 		return new ResponseEntity<>(new GenericValidatedResponse<>(validationResult, body), status);
-	}
-
-	@GetMapping("/dataUnits")
-	public ResponseEntity<GenericValidatedResponse<List<DataUnitDTO>>> getDataUnits() {
-		return ResponseEntity.ok(new GenericValidatedResponse<>(new ValidationResult(), service.findAll()));
 	}
 
 	@PutMapping("/dataUnit/{id}")

@@ -1,8 +1,11 @@
 package com.hurynovich.data_storage.controller;
 
+import com.hurynovich.data_storage.model.GenericPage;
 import com.hurynovich.data_storage.model.GenericValidatedResponse;
+import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
-import com.hurynovich.data_storage.service.dto_service.DTOService;
+import com.hurynovich.data_storage.service.dto_service.MassReadDTOService;
+import com.hurynovich.data_storage.service.paginator.Paginator;
 import com.hurynovich.data_storage.validator.DTOValidationHelper;
 import com.hurynovich.data_storage.validator.DTOValidator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
@@ -24,18 +27,24 @@ import java.util.Optional;
 @RestController
 public class DataUnitSchemaController {
 
+	private static final int ELEMENTS_PER_PAGE = 20;
+
 	private final DTOValidator<DataUnitSchemaDTO> validator;
 
 	private final DTOValidationHelper helper;
 
-	private final DTOService<DataUnitSchemaDTO, Long> service;
+	private final MassReadDTOService<DataUnitSchemaDTO, Long> service;
+
+	private final Paginator paginator;
 
 	public DataUnitSchemaController(final @NonNull DTOValidator<DataUnitSchemaDTO> validator,
 									final @NonNull DTOValidationHelper helper,
-									final @NonNull DTOService<DataUnitSchemaDTO, Long> service) {
+									final @NonNull MassReadDTOService<DataUnitSchemaDTO, Long> service,
+									final @NonNull Paginator paginator) {
 		this.validator = validator;
 		this.helper = helper;
 		this.service = service;
+		this.paginator = paginator;
 	}
 
 	@PostMapping("/schema")
@@ -84,9 +93,14 @@ public class DataUnitSchemaController {
 		return new ResponseEntity<>(new GenericValidatedResponse<>(validationResult, body), status);
 	}
 
-	@GetMapping("/schemas")
-	public ResponseEntity<GenericValidatedResponse<List<DataUnitSchemaDTO>>> getSchemas() {
-		return ResponseEntity.ok(new GenericValidatedResponse<>(new ValidationResult(), service.findAll()));
+	@GetMapping("/schemas/{pageNumber}")
+	public ResponseEntity<GenericValidatedResponse<GenericPage<DataUnitSchemaDTO>>> getSchemas(
+			final @PathVariable Integer pageNumber) {
+		final PaginationParams params = paginator.buildParams(pageNumber, ELEMENTS_PER_PAGE);
+		final List<DataUnitSchemaDTO> schemas = service.findAll(params);
+		final GenericPage<DataUnitSchemaDTO> page = paginator.buildPage(schemas, service.count(), params);
+
+		return ResponseEntity.ok(new GenericValidatedResponse<>(new ValidationResult(), page));
 	}
 
 	@PutMapping("/schema/{id}")

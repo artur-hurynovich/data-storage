@@ -4,7 +4,7 @@ import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
-import com.hurynovich.data_storage.service.dto_service.DTOService;
+import com.hurynovich.data_storage.service.dto_service.BaseDTOService;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
@@ -34,7 +34,7 @@ import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUni
 class DataUnitDTOValidatorTest {
 
 	@Mock
-	private DTOService<DataUnitSchemaDTO, Long> dataUnitSchemaService;
+	private BaseDTOService<DataUnitSchemaDTO, Long> dataUnitSchemaService;
 
 	@Mock
 	private DataUnitPropertyValueCheckProcessor checkProcessor;

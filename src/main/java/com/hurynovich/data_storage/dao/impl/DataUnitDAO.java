@@ -1,16 +1,15 @@
 package com.hurynovich.data_storage.dao.impl;
 
-import com.hurynovich.data_storage.dao.DAO;
+import com.hurynovich.data_storage.dao.BaseDAO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class DataUnitDAO implements DAO<DataUnitDocument, String> {
+public class DataUnitDAO implements BaseDAO<DataUnitDocument, String> {
 
 	private final MongoRepository<DataUnitDocument, String> repository;
 
@@ -26,11 +25,6 @@ public class DataUnitDAO implements DAO<DataUnitDocument, String> {
 	@Override
 	public Optional<DataUnitDocument> findById(final @NonNull String id) {
 		return repository.findById(id);
-	}
-
-	@Override
-	public List<DataUnitDocument> findAll() {
-		return repository.findAll();
 	}
 
 	@Override

@@ -1,10 +1,10 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
 import com.hurynovich.data_storage.converter.DTOConverter;
-import com.hurynovich.data_storage.dao.DAO;
+import com.hurynovich.data_storage.dao.BaseDAO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
-import com.hurynovich.data_storage.service.dto_service.DTOService;
+import com.hurynovich.data_storage.service.dto_service.BaseDTOService;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDocumentGenerator;
@@ -16,8 +16,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -27,12 +25,12 @@ import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUni
 class DataUnitDTOServiceTest {
 
 	@Mock
-	private DAO<DataUnitDocument, String> dao;
+	private BaseDAO<DataUnitDocument, String> dao;
 
 	@Mock
 	private DTOConverter<DataUnitDTO, DataUnitDocument, String> converter;
 
-	private DTOService<DataUnitDTO, String> service;
+	private BaseDTOService<DataUnitDTO, String> service;
 
 	private final TestObjectGenerator<DataUnitDTO> dtoGenerator =
 			new TestDataUnitDTOGenerator();
@@ -77,32 +75,6 @@ class DataUnitDTOServiceTest {
 
 		final Optional<DataUnitDTO> savedDTOOptional = service.findById(INCORRECT_STRING_ID);
 		Assertions.assertFalse(savedDTOOptional.isPresent());
-	}
-
-	@Test
-	void findAllTest() {
-		final List<DataUnitDocument> documents = entityGenerator.generateMultipleObjects();
-		Mockito.when(dao.findAll()).thenReturn(documents);
-
-		final List<DataUnitDTO> dtos = dtoGenerator.generateMultipleObjects();
-		for (int i = 0; i < documents.size(); i++) {
-			Mockito.when(converter.convertFull(documents.get(i))).thenReturn(dtos.get(i));
-		}
-
-		final List<DataUnitDTO> savedDTOs = service.findAll();
-		Assertions.assertNotNull(savedDTOs);
-		Assertions.assertFalse(savedDTOs.isEmpty());
-		Assertions.assertTrue(Objects.deepEquals(dtos, savedDTOs));
-	}
-
-	@Test
-	void findAllEmptyTest() {
-		final List<DataUnitDocument> documents = new ArrayList<>();
-		Mockito.when(dao.findAll()).thenReturn(documents);
-
-		final List<DataUnitDTO> savedDTOs = service.findAll();
-		Assertions.assertNotNull(savedDTOs);
-		Assertions.assertTrue(savedDTOs.isEmpty());
 	}
 
 	@Test
