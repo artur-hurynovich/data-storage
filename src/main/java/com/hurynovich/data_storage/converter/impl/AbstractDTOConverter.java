@@ -6,6 +6,8 @@ import com.hurynovich.data_storage.converter.model.ArgDescriptor;
 import com.hurynovich.data_storage.model.AbstractDTO;
 import com.hurynovich.data_storage.model.Identified;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
@@ -24,14 +26,22 @@ import java.util.stream.Stream;
 public abstract class AbstractDTOConverter<T extends AbstractDTO<I>, U extends Identified<I>, I extends Serializable>
 		implements DTOConverter<T, U, I> {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDTOConverter.class);
+
 	private final ModelMapper modelMapper = new ModelMapper();
 
 	private final Map<Integer, ArgDescriptor<U, ?>> argDescriptorsByIdx;
+
+	private final Set<String> validPropertyNames;
 
 	private final String[] emptyIgnoreProperties = new String[0];
 
 	protected AbstractDTOConverter(final @NonNull Map<Integer, ArgDescriptor<U, ?>> argDescriptorsByIdx) {
 		this.argDescriptorsByIdx = argDescriptorsByIdx;
+
+		validPropertyNames = argDescriptorsByIdx.values().stream().
+				map(ArgDescriptor::getName).
+				collect(Collectors.toSet());
 	}
 
 	@Override
@@ -58,6 +68,7 @@ public abstract class AbstractDTOConverter<T extends AbstractDTO<I>, U extends I
 		final T target;
 		if (source != null) {
 			final Set<String> ignorePropertiesSet = buildIgnoreProperties(ignoreProperties);
+			validateIgnoreProperties(ignorePropertiesSet);
 			final Class<?>[] argTypes = new Class[argDescriptorsByIdx.size()];
 			final Object[] args = new Object[argDescriptorsByIdx.size()];
 			argDescriptorsByIdx.forEach((idx, argDescriptor) -> {
@@ -97,6 +108,14 @@ public abstract class AbstractDTOConverter<T extends AbstractDTO<I>, U extends I
 	private Set<String> buildIgnoreProperties(final String... ignoreProperties) {
 		return ignoreProperties != null ?
 				Stream.of(ignoreProperties).collect(Collectors.toSet()) : Collections.emptySet();
+	}
+
+	private void validateIgnoreProperties(final @NonNull Set<String> ignoreProperties) {
+		ignoreProperties.forEach(property -> {
+			if (!validPropertyNames.contains(property)) {
+				LOGGER.warn("Unknown ignore property name '{}' for type '{}'", property, getDTOClass());
+			}
+		});
 	}
 
 	protected abstract Class<T> getDTOClass();
