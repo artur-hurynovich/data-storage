@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -93,9 +94,9 @@ public class DataUnitSchemaController {
 		return new ResponseEntity<>(new GenericValidatedResponse<>(validationResult, body), status);
 	}
 
-	@GetMapping("/schemas/{pageNumber}")
+	@GetMapping("/schemas")
 	public ResponseEntity<GenericValidatedResponse<GenericPage<DataUnitSchemaDTO>>> getSchemas(
-			final @PathVariable Integer pageNumber) {
+			final @RequestParam(required = false) Integer pageNumber) {
 		final PaginationParams params = paginator.buildParams(pageNumber, ELEMENTS_PER_PAGE);
 		final List<DataUnitSchemaDTO> schemas = service.findAll(params);
 		final GenericPage<DataUnitSchemaDTO> page = paginator.buildPage(schemas, service.count(), params);

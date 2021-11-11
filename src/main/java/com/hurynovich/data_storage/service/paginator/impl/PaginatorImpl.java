@@ -13,8 +13,10 @@ import java.util.List;
 public class PaginatorImpl implements Paginator {
 
 	@Override
-	public PaginationParams buildParams(final @NonNull Integer pageNumber, final @NonNull Integer elementsPerPage) {
-		return new PaginationParams((pageNumber - 1) * elementsPerPage, elementsPerPage);
+	public PaginationParams buildParams(final @Nullable Integer pageNumber, final @NonNull Integer elementsPerPage) {
+		final int nonNullPageNumber = (pageNumber != null) ? pageNumber : 1;
+
+		return new PaginationParams((nonNullPageNumber - 1) * elementsPerPage, elementsPerPage);
 	}
 
 	@Override

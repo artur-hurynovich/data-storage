@@ -16,7 +16,7 @@ class PaginatorImplTest {
 
 	@Test
 	void buildParamsTest1() {
-		final PaginationParams params = paginator.buildParams(1, ELEMENTS_PER_PAGE);
+		final PaginationParams params = paginator.buildParams(null, ELEMENTS_PER_PAGE);
 
 		Assertions.assertEquals(0, params.getOffset());
 		Assertions.assertEquals(5, params.getLimit());
@@ -24,6 +24,14 @@ class PaginatorImplTest {
 
 	@Test
 	void buildParamsTest2() {
+		final PaginationParams params = paginator.buildParams(1, ELEMENTS_PER_PAGE);
+
+		Assertions.assertEquals(0, params.getOffset());
+		Assertions.assertEquals(5, params.getLimit());
+	}
+
+	@Test
+	void buildParamsTest3() {
 		final PaginationParams params = paginator.buildParams(5, ELEMENTS_PER_PAGE);
 
 		Assertions.assertEquals(20, params.getOffset());
