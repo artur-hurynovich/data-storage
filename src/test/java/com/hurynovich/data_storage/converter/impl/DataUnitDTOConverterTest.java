@@ -25,18 +25,8 @@ class DataUnitDTOConverterTest {
 			new TestDataUnitDocumentGenerator();
 
 	@Test
-	void convertNullTest() {
-		Assertions.assertNull(converter.convert(null));
-	}
-
-	@Test
-	void convertBaseNullTest() {
-		Assertions.assertNull(converter.convertBase(null));
-	}
-
-	@Test
-	void convertFullNullTest() {
-		Assertions.assertNull(converter.convertFull(null));
+	void convertDTONullTest() {
+		Assertions.assertNull(converter.convert((DataUnitDTO) null));
 	}
 
 	@Test
@@ -67,21 +57,26 @@ class DataUnitDTOConverterTest {
 	}
 
 	@Test
-	void convertBaseNotNullTest() {
+	void convertDocumentNullTest() {
+		Assertions.assertNull(converter.convert((DataUnitDocument) null));
+	}
+
+	@Test
+	void convertDocumentNotNullTest() {
 		final DataUnitDocument document = documentGenerator.generateSingleObject();
-		final DataUnitDTO dto = converter.convertBase(document);
+		final DataUnitDTO dto = converter.convert(document);
 		checkConversion(document, dto, false);
 	}
 
 	@Test
-	void convertFullNotNullTest() {
+	void convertDocumentNotNullIgnorePropertiesTest() {
 		final DataUnitDocument document = documentGenerator.generateSingleObject();
-		final DataUnitDTO dto = converter.convertFull(document);
+		final DataUnitDTO dto = converter.convert(document, "properties");
 		checkConversion(document, dto, true);
 	}
 
 	private void checkConversion(final DataUnitDocument document, final DataUnitDTO dto,
-								 final boolean convertProperties) {
+								 final boolean ignoreProperties) {
 		Assertions.assertNotNull(dto);
 		Assertions.assertEquals(document.getId(), dto.getId());
 		Assertions.assertEquals(document.getSchemaId(), dto.getSchemaId());
@@ -90,7 +85,9 @@ class DataUnitDTOConverterTest {
 		final List<DataUnitPropertyDTO> propertyDTOs = dto.getProperties();
 		Assertions.assertNotNull(propertyDTOs);
 
-		if (convertProperties) {
+		if (ignoreProperties) {
+			Assertions.assertTrue(propertyDTOs.isEmpty());
+		} else {
 			Assertions.assertEquals(propertyDocuments.size(), propertyDTOs.size());
 
 			for (int i = 0; i < propertyDocuments.size(); i++) {
@@ -101,8 +98,6 @@ class DataUnitDTOConverterTest {
 				Assertions.assertEquals(propertyDocument.getSchemaId(), propertyDTO.getSchemaId());
 				Assertions.assertEquals(propertyDocument.getValue(), propertyDTO.getValue());
 			}
-		} else {
-			Assertions.assertTrue(propertyDTOs.isEmpty());
 		}
 	}
 

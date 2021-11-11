@@ -5,6 +5,7 @@ import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPrope
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaEntityGenerator;
@@ -25,22 +26,12 @@ class DataUnitSchemaDTOConverterTest {
 			new TestDataUnitSchemaEntityGenerator();
 
 	@Test
-	void convertNullTest() {
-		Assertions.assertNull(converter.convert(null));
+	void convertDTONullTest() {
+		Assertions.assertNull(converter.convert((DataUnitSchemaDTO) null));
 	}
 
 	@Test
-	void convertBaseNullTest() {
-		Assertions.assertNull(converter.convertBase(null));
-	}
-
-	@Test
-	void convertFullNullTest() {
-		Assertions.assertNull(converter.convertFull(null));
-	}
-
-	@Test
-	void convertNotNullTest() {
+	void convertDTONotNullTest() {
 		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
 		final DataUnitSchemaEntity entity = converter.convert(dto);
 		checkConversion(dto, entity);
@@ -68,29 +59,36 @@ class DataUnitSchemaDTOConverterTest {
 	}
 
 	@Test
-	void convertBaseNotNullTest() {
+	void convertEntityNullTest() {
+		Assertions.assertNull(converter.convert((DataUnitSchemaEntity) null));
+	}
+
+	@Test
+	void convertEntityNotNullTest() {
 		final DataUnitSchemaEntity entity = entityGenerator.generateSingleObject();
-		final DataUnitSchemaDTO dto = converter.convertBase(entity);
+		final DataUnitSchemaDTO dto = converter.convert(entity);
 		checkConversion(entity, dto, false);
 	}
 
 	@Test
-	void convertFullNotNullTest() {
+	void convertEntityNotNullIgnorePropertySchemasTest() {
 		final DataUnitSchemaEntity entity = entityGenerator.generateSingleObject();
-		final DataUnitSchemaDTO dto = converter.convertFull(entity);
+		final DataUnitSchemaDTO dto = converter.convert(entity, DataUnitSchemaEntity_.PROPERTY_SCHEMAS);
 		checkConversion(entity, dto, true);
 	}
 
 	protected void checkConversion(final DataUnitSchemaEntity entity,
 								   final DataUnitSchemaDTO dto,
-								   final boolean convertPropertySchemas) {
+								   final boolean ignorePropertySchemas) {
 		Assertions.assertNotNull(dto);
 		Assertions.assertEquals(entity.getId(), dto.getId());
 		Assertions.assertEquals(entity.getName(), dto.getName());
 
 		final List<DataUnitPropertySchemaEntity> propertySchemaEntities = entity.getPropertySchemas();
 		final List<DataUnitPropertySchemaDTO> propertySchemaDTOs = dto.getPropertySchemas();
-		if (convertPropertySchemas) {
+		if (ignorePropertySchemas) {
+			Assertions.assertTrue(propertySchemaDTOs.isEmpty());
+		} else {
 			Assertions.assertNotNull(propertySchemaDTOs);
 			Assertions.assertEquals(propertySchemaEntities.size(), propertySchemaDTOs.size());
 
@@ -102,8 +100,6 @@ class DataUnitSchemaDTOConverterTest {
 				Assertions.assertEquals(propertySchemaEntity.getName(), propertySchemaDTO.getName());
 				Assertions.assertEquals(propertySchemaEntity.getType(), propertySchemaDTO.getType());
 			}
-		} else {
-			Assertions.assertTrue(propertySchemaDTOs.isEmpty());
 		}
 	}
 

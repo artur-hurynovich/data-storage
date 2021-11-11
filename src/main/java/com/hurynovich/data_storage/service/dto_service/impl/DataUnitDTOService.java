@@ -27,7 +27,7 @@ public class DataUnitDTOService implements BaseDTOService<DataUnitDTO, String> {
 
 	@Override
 	public DataUnitDTO save(final @NonNull DataUnitDTO dataUnit) {
-		return converter.convertFull(dao.save(converter.convert(dataUnit)));
+		return converter.convert(dao.save(converter.convert(dataUnit)));
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class DataUnitDTOService implements BaseDTOService<DataUnitDTO, String> {
 	public Optional<DataUnitDTO> findById(final @NonNull String id) {
 		final Optional<DataUnitDocument> optionalResult = dao.findById(id);
 
-		return optionalResult.map(converter::convertFull);
+		return optionalResult.map(converter::convert);
 	}
 
 	@Override

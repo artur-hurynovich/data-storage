@@ -1,68 +1,49 @@
 package com.hurynovich.data_storage.converter.impl;
 
-import com.hurynovich.data_storage.converter.DTOConverter;
+import com.hurynovich.data_storage.converter.model.ArgDescriptor;
+import com.hurynovich.data_storage.model.AbstractDocument;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO.DataUnitPropertyDTO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument.DataUnitPropertyDocument;
 import com.hurynovich.data_storage.utils.MassProcessingUtils;
-import org.modelmapper.ModelMapper;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 @Service
-public class DataUnitDTOConverter implements DTOConverter<DataUnitDTO, DataUnitDocument, String> {
+public class DataUnitDTOConverter extends AbstractDTOConverter<DataUnitDTO, DataUnitDocument, String> {
 
-	private final ModelMapper modelMapper = new ModelMapper();
+	public DataUnitDTOConverter() {
+		super(Map.of(0, new ArgDescriptor<>("id", String.class, AbstractDocument::getId),
+				1, new ArgDescriptor<>("schemaId", Long.class, DataUnitDocument::getSchemaId),
+				2, new ArgDescriptor<>("properties", List.class, dataUnit -> MassProcessingUtils.
+						processQuietly(dataUnit.getProperties(), convertPropertyFunction()))));
+	}
 
-	@Override
-	public DataUnitDocument convert(final @Nullable DataUnitDTO source) {
-		final DataUnitDocument target;
-		if (source != null) {
-			target = modelMapper.map(source, DataUnitDocument.class);
-		} else {
-			target = null;
-		}
+	private static Function<DataUnitPropertyDocument, DataUnitPropertyDTO> convertPropertyFunction() {
+		return source -> {
+			final DataUnitPropertyDTO target;
+			if (source != null) {
+				target = new DataUnitPropertyDTO(source.getSchemaId(), source.getValue());
+			} else {
+				target = null;
+			}
 
-		return target;
+			return target;
+		};
 	}
 
 	@Override
-	public DataUnitDTO convertBase(final @Nullable DataUnitDocument source) {
-		final DataUnitDTO target;
-		if (source != null) {
-			target = new DataUnitDTO(source.getId(), source.getSchemaId(), new ArrayList<>());
-		} else {
-			target = null;
-		}
-
-		return target;
+	protected Class<DataUnitDocument> getTargetClass() {
+		return DataUnitDocument.class;
 	}
 
 	@Override
-	public DataUnitDTO convertFull(final @Nullable DataUnitDocument source) {
-		final DataUnitDTO target;
-		if (source != null) {
-			target = new DataUnitDTO(source.getId(), source.getSchemaId(),
-					MassProcessingUtils.processQuietly(source.getProperties(), this::convertProperty));
-		} else {
-			target = null;
-		}
-
-		return target;
-	}
-
-	private DataUnitPropertyDTO convertProperty(final @Nullable DataUnitPropertyDocument source) {
-		final DataUnitPropertyDTO target;
-		if (source != null) {
-			target = new DataUnitPropertyDTO(source.getSchemaId(), source.getValue());
-		} else {
-			target = null;
-		}
-
-		return target;
+	protected Class<DataUnitDTO> getDTOClass() {
+		return DataUnitDTO.class;
 	}
 
 }

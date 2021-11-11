@@ -10,8 +10,8 @@ public interface DTOConverter<T extends AbstractDTO<I>, U extends Identified<I>,
 
 	U convert(@Nullable T source);
 
-	T convertBase(@Nullable U source);
+	T convert(@Nullable U source);
 
-	T convertFull(@Nullable U source);
+	T convert(@Nullable U source, String... ignoreProperties);
 
 }

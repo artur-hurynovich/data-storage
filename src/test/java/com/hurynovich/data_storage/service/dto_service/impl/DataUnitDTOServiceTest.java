@@ -49,7 +49,7 @@ class DataUnitDTOServiceTest {
 		final DataUnitDocument document = entityGenerator.generateSingleObject();
 		Mockito.when(converter.convert(dto)).thenReturn(document);
 		Mockito.when(dao.save(document)).thenReturn(document);
-		Mockito.when(converter.convertFull(document)).thenReturn(dto);
+		Mockito.when(converter.convert(document)).thenReturn(dto);
 
 		final DataUnitDTO savedDTO = service.save(dto);
 		Assertions.assertTrue(Objects.deepEquals(dto, savedDTO));
@@ -62,7 +62,7 @@ class DataUnitDTOServiceTest {
 		Mockito.when(dao.findById(id)).thenReturn(Optional.of(document));
 
 		final DataUnitDTO dto = dtoGenerator.generateSingleObject();
-		Mockito.when(converter.convertFull(document)).thenReturn(dto);
+		Mockito.when(converter.convert(document)).thenReturn(dto);
 
 		final Optional<DataUnitDTO> savedDTOOptional = service.findById(id);
 		Assertions.assertTrue(savedDTOOptional.isPresent());

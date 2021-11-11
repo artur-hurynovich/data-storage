@@ -6,6 +6,7 @@ import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaDTOService;
 import com.hurynovich.data_storage.utils.MassProcessingUtils;
 import org.springframework.lang.NonNull;
@@ -35,7 +36,7 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 
 	@Override
 	public DataUnitSchemaDTO save(final @NonNull DataUnitSchemaDTO dataUnitSchema) {
-		final DataUnitSchemaDTO savedDataUnitSchema = converter.convertFull(
+		final DataUnitSchemaDTO savedDataUnitSchema = converter.convert(
 				dao.save(converter.convert(dataUnitSchema)));
 
 		cache.store(savedDataUnitSchema.getId(), savedDataUnitSchema);
@@ -50,7 +51,7 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 			final Optional<DataUnitSchemaEntity> dataUnitSchemaEntityOptional = dao.findById(id);
 			if (dataUnitSchemaEntityOptional.isPresent()) {
 				final DataUnitSchemaEntity dataUnitSchemaEntity = dataUnitSchemaEntityOptional.get();
-				final DataUnitSchemaDTO dataUnitSchemaDTO = converter.convertFull(dataUnitSchemaEntity);
+				final DataUnitSchemaDTO dataUnitSchemaDTO = converter.convert(dataUnitSchemaEntity);
 
 				cache.store(id, dataUnitSchemaDTO);
 			}
@@ -76,7 +77,8 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<DataUnitSchemaDTO> findAll(final @NonNull PaginationParams params) {
-		return MassProcessingUtils.processQuietly(dao.findAll(params), converter::convertBase);
+		return MassProcessingUtils.processQuietly(dao.findAll(params), dataUnitSchema -> converter.
+				convert(dataUnitSchema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS));
 	}
 
 	@Override

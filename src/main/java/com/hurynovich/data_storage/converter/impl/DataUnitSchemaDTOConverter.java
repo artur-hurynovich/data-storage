@@ -1,68 +1,50 @@
 package com.hurynovich.data_storage.converter.impl;
 
-import com.hurynovich.data_storage.converter.DTOConverter;
+import com.hurynovich.data_storage.converter.model.ArgDescriptor;
+import com.hurynovich.data_storage.model.AbstractEntity_;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
 import com.hurynovich.data_storage.utils.MassProcessingUtils;
-import org.modelmapper.ModelMapper;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 @Service
-public class DataUnitSchemaDTOConverter implements DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity, Long> {
+public class DataUnitSchemaDTOConverter extends AbstractDTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity, Long> {
 
-	private final ModelMapper modelMapper = new ModelMapper();
+	protected DataUnitSchemaDTOConverter() {
+		super(Map.of(0, new ArgDescriptor<>(AbstractEntity_.ID, Long.class, DataUnitSchemaEntity::getId),
+				1, new ArgDescriptor<>(DataUnitSchemaEntity_.NAME, String.class, DataUnitSchemaEntity::getName),
+				2, new ArgDescriptor<>(DataUnitSchemaEntity_.PROPERTY_SCHEMAS, List.class, schema -> MassProcessingUtils.
+						processQuietly(schema.getPropertySchemas(), convertPropertySchemaFunction()))));
+	}
 
-	@Override
-	public DataUnitSchemaEntity convert(final @Nullable DataUnitSchemaDTO source) {
-		final DataUnitSchemaEntity target;
-		if (source != null) {
-			target = modelMapper.map(source, DataUnitSchemaEntity.class);
-		} else {
-			target = null;
-		}
+	private static Function<DataUnitPropertySchemaEntity, DataUnitPropertySchemaDTO> convertPropertySchemaFunction() {
+		return source -> {
+			final DataUnitPropertySchemaDTO target;
+			if (source != null) {
+				target = new DataUnitPropertySchemaDTO(source.getId(), source.getName(), source.getType());
+			} else {
+				target = null;
+			}
 
-		return target;
+			return target;
+		};
 	}
 
 	@Override
-	public DataUnitSchemaDTO convertBase(final @Nullable DataUnitSchemaEntity source) {
-		final DataUnitSchemaDTO target;
-		if (source != null) {
-			target = new DataUnitSchemaDTO(source.getId(), source.getName(), new ArrayList<>());
-		} else {
-			target = null;
-		}
-
-		return target;
+	protected Class<DataUnitSchemaEntity> getTargetClass() {
+		return DataUnitSchemaEntity.class;
 	}
 
 	@Override
-	public DataUnitSchemaDTO convertFull(final @Nullable DataUnitSchemaEntity source) {
-		final DataUnitSchemaDTO target;
-		if (source != null) {
-			target = new DataUnitSchemaDTO(source.getId(), source.getName(),
-					MassProcessingUtils.processQuietly(source.getPropertySchemas(), this::convertPropertySchema));
-		} else {
-			target = null;
-		}
-
-		return target;
-	}
-
-	private DataUnitPropertySchemaDTO convertPropertySchema(final @Nullable DataUnitPropertySchemaEntity source) {
-		final DataUnitPropertySchemaDTO target;
-		if (source != null) {
-			target = new DataUnitPropertySchemaDTO(source.getId(), source.getName(), source.getType());
-		} else {
-			target = null;
-		}
-
-		return target;
+	protected Class<DataUnitSchemaDTO> getDTOClass() {
+		return DataUnitSchemaDTO.class;
 	}
 
 }
