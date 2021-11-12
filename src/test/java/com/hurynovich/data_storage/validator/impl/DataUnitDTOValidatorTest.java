@@ -165,6 +165,26 @@ class DataUnitDTOValidatorTest {
 	}
 
 	@Test
+	void validatePropertySchemaIdDuplicateTest() {
+		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
+		final Long schemaId = dataUnit.getProperties().get(1).getSchemaId();
+		TestReflectionUtils.setField(dataUnit.getProperties().get(0), "schemaId", schemaId);
+		final DataUnitSchemaDTO dataUnitSchema = dataUnitSchemaGenerator.generateSingleObject();
+		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.of(dataUnitSchema));
+		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
+				thenReturn(true);
+
+		final ValidationResult validationResult = validator.validate(dataUnit);
+		Assertions.assertNotNull(validationResult);
+		Assertions.assertEquals(ValidationResultType.FAILURE, validationResult.getType());
+
+		final Set<String> errors = validationResult.getErrors();
+		Assertions.assertEquals(1, errors.size());
+		Assertions.assertEquals("Found duplicate '" + schemaId + "' for 'dataUnit.property.schemaId'",
+				errors.iterator().next());
+	}
+
+	@Test
 	void validatePropertySchemaIsNullTest() {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
 		final DataUnitSchemaDTO dataUnitSchema = dataUnitSchemaGenerator.generateSingleObject();

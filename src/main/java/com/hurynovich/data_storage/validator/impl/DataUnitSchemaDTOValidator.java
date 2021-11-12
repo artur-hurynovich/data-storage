@@ -31,12 +31,12 @@ public class DataUnitSchemaDTOValidator implements DTOValidator<DataUnitSchemaDT
 
 	private final DTOValidationHelper helper;
 
-	private final DataUnitSchemaDTOService service;
+	private final DataUnitSchemaDTOService schemaService;
 
 	public DataUnitSchemaDTOValidator(final @NonNull DTOValidationHelper helper,
-									  final @NonNull DataUnitSchemaDTOService service) {
+									  final @NonNull DataUnitSchemaDTOService schemaService) {
 		this.helper = helper;
-		this.service = service;
+		this.schemaService = schemaService;
 	}
 
 	@Override
@@ -52,54 +52,45 @@ public class DataUnitSchemaDTOValidator implements DTOValidator<DataUnitSchemaDT
 						DATA_UNIT_SCHEMA_NAME_MAX_LENGTH, result);
 			}
 
-			if ((id == null && service.existsByName(name))
-					|| (id != null && service.existsByNameAndNotId(name, id))) {
+			if ((id == null && schemaService.existsByName(name))
+					|| (id != null && schemaService.existsByNameAndNotId(name, id))) {
 				helper.applyFoundDuplicateError(DATA_UNIT_SCHEMA_NAME, name, result);
 			}
+		}
+
+		final DataUnitPropertySchemaValidationContext context;
+		if (id != null) {
+			context = schemaService.findById(id).
+					map(DataUnitPropertySchemaValidationContext::of).
+					orElseGet(DataUnitPropertySchemaValidationContext::empty);
+		} else {
+			context = DataUnitPropertySchemaValidationContext.empty();
 		}
 
 		final List<DataUnitPropertySchemaDTO> propertySchemas = schema.getPropertySchemas();
 		if (CollectionUtils.isEmpty(propertySchemas)) {
 			helper.applyIsEmptyError("dataUnitSchema.propertySchemas", result);
 		} else {
-			validatePropertySchemas(id, propertySchemas, result);
+			propertySchemas.forEach(propertySchema ->
+					validatePropertySchema(context, propertySchema, result));
 		}
 
 		return result;
 	}
 
-	private void validatePropertySchemas(final @Nullable Long schemaId,
-										 final @NonNull List<DataUnitPropertySchemaDTO> propertySchemas,
-										 final @NonNull ValidationResult result) {
-		final Set<Long> validPropertySchemaIds = new HashSet<>();
-		if (schemaId != null) {
-			service.findById(schemaId).ifPresent(dataUnitSchemaDTO -> validPropertySchemaIds.addAll(
-					dataUnitSchemaDTO.getPropertySchemas().stream().
-							map(AbstractDTO::getId).
-							collect(Collectors.toSet())));
-		}
-
-		final Set<String> uniquePropertySchemaNames = new HashSet<>();
-
-		propertySchemas.forEach(propertySchema ->
-				validatePropertySchema(schemaId, validPropertySchemaIds, propertySchema, uniquePropertySchemaNames, result));
-	}
-
-	private void validatePropertySchema(final @Nullable Long schemaId,
-										final @NonNull Set<Long> validPropertySchemaIds,
+	private void validatePropertySchema(final @NonNull DataUnitPropertySchemaValidationContext context,
 										final @Nullable DataUnitPropertySchemaDTO propertySchema,
-										final @NonNull Set<String> uniquePropertySchemaNames,
 										final @NonNull ValidationResult result) {
 		if (propertySchema == null) {
 			helper.applyIsNullError("dataUnitSchema.propertySchema", result);
 		} else {
 			final Long propertySchemaId = propertySchema.getId();
-			if ((propertySchemaId != null)
-					&& (schemaId == null || (!validPropertySchemaIds.contains(propertySchemaId)))) {
+			if (propertySchemaId != null
+					&& (context.getSchemaId() == null || !context.isValidPropertySchemaId(propertySchemaId))) {
 				helper.applyNotFoundByIdError("dataUnitPropertySchema", propertySchemaId, result);
 			}
 
-			validatePropertySchemaName(propertySchema.getName(), uniquePropertySchemaNames, result);
+			validatePropertySchemaName(context, propertySchema.getName(), result);
 
 			if (propertySchema.getType() == null) {
 				helper.applyIsNullError("dataUnitSchema.propertySchema.type", result);
@@ -107,8 +98,9 @@ public class DataUnitSchemaDTOValidator implements DTOValidator<DataUnitSchemaDT
 		}
 	}
 
-	private void validatePropertySchemaName(final @Nullable String name, final @NonNull Set<String> uniquePropertySchemaNames,
-											final @NonNull ValidationResult result) {
+
+	private void validatePropertySchemaName(final @NonNull DataUnitPropertySchemaValidationContext context,
+											final @Nullable String name, final @NonNull ValidationResult result) {
 		if (StringUtils.isBlank(name)) {
 			helper.applyIsBlankError(DATA_UNIT_PROPERTY_SCHEMA_NAME, result);
 		} else {
@@ -117,11 +109,48 @@ public class DataUnitSchemaDTOValidator implements DTOValidator<DataUnitSchemaDT
 						DATA_UNIT_SCHEMA_NAME_MAX_LENGTH, result);
 			}
 
-			if (!uniquePropertySchemaNames.add(name)) {
-				helper.applyFoundDuplicateError(DATA_UNIT_PROPERTY_SCHEMA_NAME,
-						name, result);
+			if (!context.isUniquePropertySchemaName(name)) {
+				helper.applyFoundDuplicateError(DATA_UNIT_PROPERTY_SCHEMA_NAME, name, result);
 			}
 		}
+	}
+
+	private static class DataUnitPropertySchemaValidationContext {
+
+		private final Long schemaId;
+
+		private final Set<Long> validPropertySchemaIds;
+
+		private final Set<String> uniquePropertySchemaNames = new HashSet<>();
+
+		private DataUnitPropertySchemaValidationContext(final @Nullable Long schemaId,
+														final @NonNull Set<Long> validPropertySchemaIds) {
+			this.schemaId = schemaId;
+			this.validPropertySchemaIds = validPropertySchemaIds;
+		}
+
+		public static DataUnitPropertySchemaValidationContext of(final @NonNull DataUnitSchemaDTO schema) {
+			return new DataUnitPropertySchemaValidationContext(schema.getId(), schema.getPropertySchemas().stream().
+					map(AbstractDTO::getId).
+					collect(Collectors.toSet()));
+		}
+
+		public static DataUnitPropertySchemaValidationContext empty() {
+			return new DataUnitPropertySchemaValidationContext(null, new HashSet<>());
+		}
+
+		public Long getSchemaId() {
+			return schemaId;
+		}
+
+		public boolean isValidPropertySchemaId(final @NonNull Long propertySchemaId) {
+			return validPropertySchemaIds.contains(propertySchemaId);
+		}
+
+		public boolean isUniquePropertySchemaName(final @NonNull String propertySchemaName) {
+			return uniquePropertySchemaNames.add(propertySchemaName);
+		}
+
 	}
 
 }
