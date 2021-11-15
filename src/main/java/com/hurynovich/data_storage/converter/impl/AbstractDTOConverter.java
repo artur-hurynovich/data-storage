@@ -28,7 +28,7 @@ public abstract class AbstractDTOConverter<T extends AbstractDTO<I>, U extends I
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDTOConverter.class);
 
-	private final ModelMapper modelMapper = new ModelMapper();
+	private final ModelMapper modelMapper;
 
 	private final Map<Integer, ArgDescriptor<U, ?>> argDescriptorsByIdx;
 
@@ -36,7 +36,13 @@ public abstract class AbstractDTOConverter<T extends AbstractDTO<I>, U extends I
 
 	private final String[] emptyIgnoreProperties = new String[0];
 
-	protected AbstractDTOConverter(final @NonNull Map<Integer, ArgDescriptor<U, ?>> argDescriptorsByIdx) {
+	protected AbstractDTOConverter(final @NonNull ModelMapper modelMapper,
+								   final @NonNull Map<Integer, ArgDescriptor<U, ?>> argDescriptorsByIdx) {
+		/*
+		 * According to http://modelmapper.org/user-manual/faq/, ModelMapper is thread-safe and
+		 * can be injected as a singleton
+		 */
+		this.modelMapper = modelMapper;
 		this.argDescriptorsByIdx = argDescriptorsByIdx;
 
 		validPropertyNames = argDescriptorsByIdx.values().stream().

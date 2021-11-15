@@ -11,13 +11,14 @@ import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchema
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaEntityGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 
 import java.util.List;
 
 class DataUnitSchemaDTOConverterTest {
 
 	private final DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity, Long> converter =
-			new DataUnitSchemaDTOConverter();
+			new DataUnitSchemaDTOConverter(new ModelMapper());
 
 	private final TestObjectGenerator<DataUnitSchemaDTO> dtoGenerator =
 			new TestDataUnitSchemaDTOGenerator();

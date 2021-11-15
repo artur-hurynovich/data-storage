@@ -8,6 +8,8 @@ import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
 import com.hurynovich.data_storage.utils.MassProcessingUtils;
+import org.modelmapper.ModelMapper;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +19,8 @@ import java.util.function.Function;
 @Service
 public class DataUnitSchemaDTOConverter extends AbstractDTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity, Long> {
 
-	protected DataUnitSchemaDTOConverter() {
-		super(Map.of(0, new ArgDescriptor<>(AbstractEntity_.ID, Long.class, DataUnitSchemaEntity::getId),
+	protected DataUnitSchemaDTOConverter(final @NonNull ModelMapper modelMapper) {
+		super(modelMapper, Map.of(0, new ArgDescriptor<>(AbstractEntity_.ID, Long.class, DataUnitSchemaEntity::getId),
 				1, new ArgDescriptor<>(DataUnitSchemaEntity_.NAME, String.class, DataUnitSchemaEntity::getName),
 				2, new ArgDescriptor<>(DataUnitSchemaEntity_.PROPERTY_SCHEMAS, List.class, schema -> MassProcessingUtils.
 						processQuietly(schema.getPropertySchemas(), convertPropertySchemaFunction()))));
