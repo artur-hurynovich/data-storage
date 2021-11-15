@@ -2,6 +2,9 @@ package com.hurynovich.data_storage.model.data_unit_property_schema;
 
 import com.hurynovich.data_storage.model.AbstractDTO;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class DataUnitPropertySchemaDTO extends AbstractDTO<Long> {
 
 	private final String name;

@@ -2,8 +2,10 @@ package com.hurynovich.data_storage.model;
 
 import org.springframework.lang.NonNull;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
+@Immutable
 public class PaginationParams {
 
 	private final Integer offset;

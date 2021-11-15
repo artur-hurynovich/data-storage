@@ -2,8 +2,11 @@ package com.hurynovich.data_storage.model.data_unit;
 
 import com.hurynovich.data_storage.model.AbstractDTO;
 
+import javax.annotation.concurrent.Immutable;
+import java.util.Collections;
 import java.util.List;
 
+@Immutable
 public class DataUnitDTO extends AbstractDTO<String> {
 
 	private final Long schemaId;
@@ -13,7 +16,7 @@ public class DataUnitDTO extends AbstractDTO<String> {
 	public DataUnitDTO(final String id, final Long schemaId, final List<DataUnitPropertyDTO> properties) {
 		super(id);
 		this.schemaId = schemaId;
-		this.properties = properties;
+		this.properties = Collections.unmodifiableList(properties);
 	}
 
 	public Long getSchemaId() {
@@ -24,6 +27,7 @@ public class DataUnitDTO extends AbstractDTO<String> {
 		return properties;
 	}
 
+	@Immutable
 	public static class DataUnitPropertyDTO {
 
 		private final Long schemaId;
