@@ -4,6 +4,6 @@ import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DataUnitSchemaDTOCache extends GenericCache<Long, DataUnitSchemaDTO> {
+class DataUnitSchemaDTOCache extends GenericCache<Long, DataUnitSchemaDTO> {
 
 }

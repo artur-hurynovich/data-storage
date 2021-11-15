@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class PaginatorImpl implements Paginator {
+class PaginatorImpl implements Paginator {
 
 	@Override
 	public PaginationParams buildParams(final @Nullable Integer pageNumber, final @NonNull Integer elementsPerPage) {

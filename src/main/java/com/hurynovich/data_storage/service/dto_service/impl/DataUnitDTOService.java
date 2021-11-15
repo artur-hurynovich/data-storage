@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class DataUnitDTOService implements BaseDTOService<DataUnitDTO, String> {
+class DataUnitDTOService implements BaseDTOService<DataUnitDTO, String> {
 
 	private final BaseDAO<DataUnitDocument, String> dao;
 

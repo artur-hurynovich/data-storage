@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class DataUnitSchemaDAOImpl implements DataUnitSchemaDAO {
+class DataUnitSchemaDAOImpl implements DataUnitSchemaDAO {
 
 	private final EntityManager entityManager;
 

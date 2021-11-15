@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class DataUnitSchemaDTOValidator implements DTOValidator<DataUnitSchemaDTO> {
+class DataUnitSchemaDTOValidator implements DTOValidator<DataUnitSchemaDTO> {
 
 	private static final String DATA_UNIT_SCHEMA_NAME = "dataUnitSchema.name";
 

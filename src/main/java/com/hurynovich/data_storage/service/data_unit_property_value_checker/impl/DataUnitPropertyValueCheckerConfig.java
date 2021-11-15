@@ -1,13 +1,7 @@
-package com.hurynovich.data_storage.service.config;
+package com.hurynovich.data_storage.service.data_unit_property_value_checker.impl;
 
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
 import com.hurynovich.data_storage.service.data_unit_property_value_checker.DataUnitPropertyValueTypeChecker;
-import com.hurynovich.data_storage.service.data_unit_property_value_checker.impl.DataUnitPropertyValueBooleanTypeChecker;
-import com.hurynovich.data_storage.service.data_unit_property_value_checker.impl.DataUnitPropertyValueDateTypeChecker;
-import com.hurynovich.data_storage.service.data_unit_property_value_checker.impl.DataUnitPropertyValueFloatTypeChecker;
-import com.hurynovich.data_storage.service.data_unit_property_value_checker.impl.DataUnitPropertyValueIntegerTypeChecker;
-import com.hurynovich.data_storage.service.data_unit_property_value_checker.impl.DataUnitPropertyValueTextTypeChecker;
-import com.hurynovich.data_storage.service.data_unit_property_value_checker.impl.DataUnitPropertyValueTimeTypeChecker;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

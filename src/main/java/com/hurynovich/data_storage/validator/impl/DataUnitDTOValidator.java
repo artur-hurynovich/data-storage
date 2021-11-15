@@ -26,7 +26,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class DataUnitDTOValidator implements DTOValidator<DataUnitDTO> {
+class DataUnitDTOValidator implements DTOValidator<DataUnitDTO> {
 
 	private final BaseDTOService<DataUnitSchemaDTO, Long> schemaService;
 

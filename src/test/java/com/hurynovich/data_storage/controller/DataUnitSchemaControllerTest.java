@@ -1,16 +1,16 @@
 package com.hurynovich.data_storage.controller;
 
-import com.hurynovich.data_storage.service.paginator.model.GenericPage;
 import com.hurynovich.data_storage.controller.model.GenericValidatedResponse;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.dto_service.MassReadDTOService;
 import com.hurynovich.data_storage.service.paginator.Paginator;
+import com.hurynovich.data_storage.service.paginator.model.GenericPage;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
+import com.hurynovich.data_storage.validator.DTOValidationHelper;
 import com.hurynovich.data_storage.validator.DTOValidator;
-import com.hurynovich.data_storage.validator.impl.DTOValidationHelperImpl;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.junit.jupiter.api.Assertions;
@@ -43,6 +43,9 @@ class DataUnitSchemaControllerTest extends AbstractControllerTest {
 	private DTOValidator<DataUnitSchemaDTO> validator;
 
 	@Mock
+	private DTOValidationHelper helper;
+
+	@Mock
 	private MassReadDTOService<DataUnitSchemaDTO, Long> service;
 
 	@Mock
@@ -58,7 +61,7 @@ class DataUnitSchemaControllerTest extends AbstractControllerTest {
 
 	@BeforeEach
 	public void initController() {
-		controller = new DataUnitSchemaController(validator, new DTOValidationHelperImpl(), service, paginator);
+		controller = new DataUnitSchemaController(validator, helper, service, paginator);
 	}
 
 	@Test
@@ -84,6 +87,13 @@ class DataUnitSchemaControllerTest extends AbstractControllerTest {
 
 	@Test
 	void postValidSchemaIdIsNotNullTest() {
+		Mockito.doAnswer(invocationOnMock -> {
+			final ValidationResult validationResult = invocationOnMock.getArgument(1);
+			validationResult.setType(ValidationResultType.FAILURE);
+			validationResult.addError("'dataUnitSchema.id' should be null");
+
+			return null;
+		}).when(helper).applyIsNotNullError(Mockito.eq("dataUnitSchema.id"), Mockito.any(ValidationResult.class));
 		final DataUnitSchemaDTO schema = schemaGenerator.generateSingleObject();
 		final ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> response = controller.postSchema(schema);
 		Assertions.assertNotNull(response);
@@ -168,6 +178,14 @@ class DataUnitSchemaControllerTest extends AbstractControllerTest {
 	@Test
 	void getSchemaByIdNotFoundTest() {
 		Mockito.when(service.findById(INCORRECT_LONG_ID)).thenReturn(Optional.empty());
+		Mockito.doAnswer(invocationOnMock -> {
+			final ValidationResult validationResult = invocationOnMock.getArgument(2);
+			validationResult.setType(ValidationResultType.FAILURE);
+			validationResult.addError("'dataUnitSchema' with id = '" + INCORRECT_LONG_ID + "' not found");
+
+			return null;
+		}).when(helper).applyNotFoundByIdError(Mockito.eq("dataUnitSchema"), Mockito.eq(INCORRECT_LONG_ID),
+				Mockito.any(ValidationResult.class));
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> response = controller.
 				getSchemaById(INCORRECT_LONG_ID);

@@ -2,7 +2,7 @@ package com.hurynovich.data_storage.service.data_unit_property_value_checker.imp
 
 import java.time.LocalDate;
 
-public class DataUnitPropertyValueDateTypeChecker extends AbstractDataUnitPropertyValueTypeChecker {
+class DataUnitPropertyValueDateTypeChecker extends AbstractDataUnitPropertyValueTypeChecker {
 
 	@Override
 	protected Class<?> getTypeCoreClass() {

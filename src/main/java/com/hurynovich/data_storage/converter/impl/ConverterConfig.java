@@ -1,4 +1,4 @@
-package com.hurynovich.data_storage.converter.config;
+package com.hurynovich.data_storage.converter.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

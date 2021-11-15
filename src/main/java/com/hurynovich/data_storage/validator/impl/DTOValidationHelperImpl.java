@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Service
-public class DTOValidationHelperImpl implements DTOValidationHelper {
+class DTOValidationHelperImpl implements DTOValidationHelper {
 
 	private static final String SINGLE_QUOTE = "'";
 

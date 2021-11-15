@@ -24,7 +24,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class AbstractDTOConverter<T extends AbstractDTO<I>, U extends Identified<I>, I extends Serializable>
+abstract class AbstractDTOConverter<T extends AbstractDTO<I>, U extends Identified<I>, I extends Serializable>
 		implements DTOConverter<T, U, I> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDTOConverter.class);

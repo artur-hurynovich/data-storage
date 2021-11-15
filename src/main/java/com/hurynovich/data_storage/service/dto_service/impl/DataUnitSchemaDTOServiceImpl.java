@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
+class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 
 	private final DataUnitSchemaDAO dao;
 

@@ -6,8 +6,8 @@ import com.hurynovich.data_storage.service.dto_service.BaseDTOService;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
+import com.hurynovich.data_storage.validator.DTOValidationHelper;
 import com.hurynovich.data_storage.validator.DTOValidator;
-import com.hurynovich.data_storage.validator.impl.DTOValidationHelperImpl;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.junit.jupiter.api.Assertions;
@@ -32,6 +32,9 @@ class DataUnitControllerTest extends AbstractControllerTest {
 	private DTOValidator<DataUnitDTO> validator;
 
 	@Mock
+	private DTOValidationHelper helper;
+
+	@Mock
 	private BaseDTOService<DataUnitDTO, String> service;
 
 	private DataUnitController controller;
@@ -41,7 +44,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 
 	@BeforeEach
 	public void initController() {
-		controller = new DataUnitController(validator, new DTOValidationHelperImpl(), service);
+		controller = new DataUnitController(validator, helper, service);
 	}
 
 	@Test
@@ -67,6 +70,13 @@ class DataUnitControllerTest extends AbstractControllerTest {
 
 	@Test
 	void postValidDataUnitIdIsNotNullTest() {
+		Mockito.doAnswer(invocationOnMock -> {
+			final ValidationResult validationResult = invocationOnMock.getArgument(1);
+			validationResult.setType(ValidationResultType.FAILURE);
+			validationResult.addError("'dataUnit.id' should be null");
+
+			return null;
+		}).when(helper).applyIsNotNullError(Mockito.eq("dataUnit.id"), Mockito.any(ValidationResult.class));
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.postDataUnit(dataUnit);
 		Assertions.assertNotNull(response);
@@ -150,6 +160,14 @@ class DataUnitControllerTest extends AbstractControllerTest {
 	@Test
 	void getDataUnitByIdNotFoundTest() {
 		Mockito.when(service.findById(INCORRECT_STRING_ID)).thenReturn(Optional.empty());
+		Mockito.doAnswer(invocationOnMock -> {
+			final ValidationResult validationResult = invocationOnMock.getArgument(2);
+			validationResult.setType(ValidationResultType.FAILURE);
+			validationResult.addError("'dataUnit' with id = '" + INCORRECT_STRING_ID + "' not found");
+
+			return null;
+		}).when(helper).applyNotFoundByIdError(Mockito.eq("dataUnit"), Mockito.eq(INCORRECT_STRING_ID),
+				Mockito.any(ValidationResult.class));
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.
 				getDataUnitById(INCORRECT_STRING_ID);

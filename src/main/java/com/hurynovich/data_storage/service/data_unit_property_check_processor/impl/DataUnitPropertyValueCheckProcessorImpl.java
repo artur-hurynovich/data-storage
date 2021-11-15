@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Service
-public class DataUnitPropertyValueCheckProcessorImpl implements DataUnitPropertyValueCheckProcessor {
+class DataUnitPropertyValueCheckProcessorImpl implements DataUnitPropertyValueCheckProcessor {
 
 	private final Map<DataUnitPropertyType, DataUnitPropertyValueTypeChecker> dataUnitPropertyValueTypeCheckersByType;
 

@@ -7,7 +7,7 @@ import org.springframework.lang.NonNull;
 import java.util.Objects;
 import java.util.Optional;
 
-public class GenericCache<K, V> implements Cache<K, V> {
+class GenericCache<K, V> implements Cache<K, V> {
 
 	private final com.github.benmanes.caffeine.cache.Cache<K, V> underlying =
 			Caffeine.newBuilder().build();

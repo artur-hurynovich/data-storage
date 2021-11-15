@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class DataUnitDAO implements BaseDAO<DataUnitDocument, String> {
+class DataUnitDAO implements BaseDAO<DataUnitDocument, String> {
 
 	private final MongoRepository<DataUnitDocument, String> repository;
 
