@@ -1,7 +1,7 @@
 package com.hurynovich.data_storage.service.data_unit_property_check_processor.impl;
 
-import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.exception.DataUnitPropertyValueCheckProcessorException;
 import com.hurynovich.data_storage.service.data_unit_property_value_checker.DataUnitPropertyValueTypeChecker;
@@ -19,14 +19,14 @@ public class DataUnitPropertyValueCheckProcessorImpl implements DataUnitProperty
 
 	public DataUnitPropertyValueCheckProcessorImpl(
 			final @NonNull Map<DataUnitPropertyType, DataUnitPropertyValueTypeChecker> dataUnitPropertyValueTypeCheckersByType) {
-		this.dataUnitPropertyValueTypeCheckersByType = dataUnitPropertyValueTypeCheckersByType;
+		this.dataUnitPropertyValueTypeCheckersByType = Objects.requireNonNull(dataUnitPropertyValueTypeCheckersByType);
 	}
 
 	@Override
 	public boolean processCheck(final @NonNull DataUnitPropertySchemaDTO propertySchema, final @Nullable Object value) {
 		boolean checkResult;
 
-		final DataUnitPropertyType type = Objects.requireNonNull(propertySchema.getType());
+		final DataUnitPropertyType type = propertySchema.getType();
 		final DataUnitPropertyValueTypeChecker dataUnitPropertyValueTypeChecker = dataUnitPropertyValueTypeCheckersByType.
 				get(type);
 		if (dataUnitPropertyValueTypeChecker != null) {

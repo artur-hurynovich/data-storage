@@ -12,13 +12,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 @Service
 public class DataUnitDTOConverter extends AbstractDTOConverter<DataUnitDTO, DataUnitDocument, String> {
 
 	public DataUnitDTOConverter(final @NonNull ModelMapper modelMapper) {
-		super(modelMapper, Map.of(0, new ArgDescriptor<>("id", String.class, AbstractDocument::getId),
+		super(Objects.requireNonNull(modelMapper), Map.of(
+				0, new ArgDescriptor<>("id", String.class, AbstractDocument::getId),
 				1, new ArgDescriptor<>("schemaId", Long.class, DataUnitDocument::getSchemaId),
 				2, new ArgDescriptor<>("properties", List.class, dataUnit -> MassProcessingUtils.
 						processQuietly(dataUnit.getProperties(), convertPropertyFunction()))));

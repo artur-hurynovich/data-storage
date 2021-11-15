@@ -4,6 +4,8 @@ import com.hurynovich.data_storage.validator.model.ValidationResult;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.util.Objects;
+
 public class GenericValidatedResponse<T> {
 
 	private final ValidationResult validationResult;
@@ -11,7 +13,7 @@ public class GenericValidatedResponse<T> {
 	private final T body;
 
 	public GenericValidatedResponse(final @NonNull ValidationResult validationResult, final @Nullable T body) {
-		this.validationResult = validationResult;
+		this.validationResult = Objects.requireNonNull(validationResult);
 		this.body = body;
 	}
 

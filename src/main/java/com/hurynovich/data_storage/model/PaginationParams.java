@@ -2,6 +2,8 @@ package com.hurynovich.data_storage.model;
 
 import org.springframework.lang.NonNull;
 
+import java.util.Objects;
+
 public class PaginationParams {
 
 	private final Integer offset;
@@ -9,8 +11,8 @@ public class PaginationParams {
 	private final Integer limit;
 
 	public PaginationParams(final @NonNull Integer offset, final @NonNull Integer limit) {
-		this.offset = offset;
-		this.limit = limit;
+		this.offset = Objects.requireNonNull(offset);
+		this.limit = Objects.requireNonNull(limit);
 	}
 
 	public Integer getOffset() {

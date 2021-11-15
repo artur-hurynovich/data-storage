@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.hurynovich.data_storage.cache.Cache;
 import org.springframework.lang.NonNull;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class GenericCache<K, V> implements Cache<K, V> {
@@ -13,7 +14,7 @@ public class GenericCache<K, V> implements Cache<K, V> {
 
 	@Override
 	public void store(final @NonNull K key, final @NonNull V value) {
-		underlying.put(key, value);
+		underlying.put(key, Objects.requireNonNull(value));
 	}
 
 	@Override

@@ -15,6 +15,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,8 +36,8 @@ public class DataUnitSchemaDTOValidator implements DTOValidator<DataUnitSchemaDT
 
 	public DataUnitSchemaDTOValidator(final @NonNull DTOValidationHelper helper,
 									  final @NonNull DataUnitSchemaDTOService schemaService) {
-		this.helper = helper;
-		this.schemaService = schemaService;
+		this.helper = Objects.requireNonNull(helper);
+		this.schemaService = Objects.requireNonNull(schemaService);
 	}
 
 	@Override

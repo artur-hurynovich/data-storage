@@ -1,11 +1,11 @@
 package com.hurynovich.data_storage.controller;
 
-import com.hurynovich.data_storage.service.paginator.model.GenericPage;
 import com.hurynovich.data_storage.controller.model.GenericValidatedResponse;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.dto_service.MassReadDTOService;
 import com.hurynovich.data_storage.service.paginator.Paginator;
+import com.hurynovich.data_storage.service.paginator.model.GenericPage;
 import com.hurynovich.data_storage.validator.DTOValidationHelper;
 import com.hurynovich.data_storage.validator.DTOValidator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -42,10 +43,10 @@ public class DataUnitSchemaController {
 									final @NonNull DTOValidationHelper helper,
 									final @NonNull MassReadDTOService<DataUnitSchemaDTO, Long> service,
 									final @NonNull Paginator paginator) {
-		this.validator = validator;
-		this.helper = helper;
-		this.service = service;
-		this.paginator = paginator;
+		this.validator = Objects.requireNonNull(validator);
+		this.helper = Objects.requireNonNull(helper);
+		this.service = Objects.requireNonNull(service);
+		this.paginator = Objects.requireNonNull(paginator);
 	}
 
 	@PostMapping("/schema")

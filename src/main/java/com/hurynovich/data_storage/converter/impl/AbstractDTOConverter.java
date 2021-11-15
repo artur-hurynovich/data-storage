@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -42,8 +43,8 @@ public abstract class AbstractDTOConverter<T extends AbstractDTO<I>, U extends I
 		 * According to http://modelmapper.org/user-manual/faq/, ModelMapper is thread-safe and
 		 * can be injected as a singleton
 		 */
-		this.modelMapper = modelMapper;
-		this.argDescriptorsByIdx = argDescriptorsByIdx;
+		this.modelMapper = Objects.requireNonNull(modelMapper);
+		this.argDescriptorsByIdx = Objects.requireNonNull(argDescriptorsByIdx);
 
 		validPropertyNames = argDescriptorsByIdx.values().stream().
 				map(ArgDescriptor::getName).
@@ -136,9 +137,9 @@ public abstract class AbstractDTOConverter<T extends AbstractDTO<I>, U extends I
 
 		public ArgDescriptor(final @NonNull String name, final @NonNull Class<U> type,
 							 final @NonNull Function<T, U> valueFunction) {
-			this.name = name;
-			this.type = type;
-			this.valueFunction = valueFunction;
+			this.name = Objects.requireNonNull(name);
+			this.type = Objects.requireNonNull(type);
+			this.valueFunction = Objects.requireNonNull(valueFunction);
 		}
 
 		public String getName() {

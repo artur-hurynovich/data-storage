@@ -9,6 +9,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -21,8 +22,8 @@ public class DataUnitDTOService implements BaseDTOService<DataUnitDTO, String> {
 
 	public DataUnitDTOService(final @NonNull BaseDAO<DataUnitDocument, String> dao,
 							  final @NonNull DTOConverter<DataUnitDTO, DataUnitDocument, String> converter) {
-		this.dao = dao;
-		this.converter = converter;
+		this.dao = Objects.requireNonNull(dao);
+		this.converter = Objects.requireNonNull(converter);
 	}
 
 	@Override

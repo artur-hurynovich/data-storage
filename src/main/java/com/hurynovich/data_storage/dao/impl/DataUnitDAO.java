@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -14,7 +15,7 @@ public class DataUnitDAO implements BaseDAO<DataUnitDocument, String> {
 	private final MongoRepository<DataUnitDocument, String> repository;
 
 	public DataUnitDAO(final @NonNull MongoRepository<DataUnitDocument, String> repository) {
-		this.repository = repository;
+		this.repository = Objects.requireNonNull(repository);
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -29,9 +30,9 @@ public class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 	public DataUnitSchemaDTOServiceImpl(final @NonNull DataUnitSchemaDAO dao,
 										final @NonNull DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity, Long> converter,
 										final @NonNull Cache<Long, DataUnitSchemaDTO> cache) {
-		this.dao = dao;
-		this.converter = converter;
-		this.cache = cache;
+		this.dao = Objects.requireNonNull(dao);
+		this.converter = Objects.requireNonNull(converter);
+		this.cache = Objects.requireNonNull(cache);
 	}
 
 	@Override

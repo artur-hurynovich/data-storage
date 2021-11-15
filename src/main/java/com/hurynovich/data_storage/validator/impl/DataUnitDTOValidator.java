@@ -19,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -36,9 +37,9 @@ public class DataUnitDTOValidator implements DTOValidator<DataUnitDTO> {
 	public DataUnitDTOValidator(final @NonNull BaseDTOService<DataUnitSchemaDTO, Long> schemaService,
 								final @NonNull DTOValidationHelper helper,
 								final @NonNull DataUnitPropertyValueCheckProcessor valueCheckProcessor) {
-		this.schemaService = schemaService;
-		this.helper = helper;
-		this.valueCheckProcessor = valueCheckProcessor;
+		this.schemaService = Objects.requireNonNull(schemaService);
+		this.helper = Objects.requireNonNull(helper);
+		this.valueCheckProcessor = Objects.requireNonNull(valueCheckProcessor);
 	}
 
 	@Override

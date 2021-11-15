@@ -15,6 +15,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -32,7 +33,7 @@ public class DataUnitSchemaDAOImpl implements DataUnitSchemaDAO {
 	 * might be violated.
 	 */
 	public DataUnitSchemaDAOImpl(final @NonNull EntityManager entityManager) {
-		this.entityManager = entityManager;
+		this.entityManager = Objects.requireNonNull(entityManager);
 	}
 
 	@Override
@@ -89,6 +90,8 @@ public class DataUnitSchemaDAOImpl implements DataUnitSchemaDAO {
 
 	@Override
 	public boolean existsByName(final @NonNull String name) {
+		Objects.requireNonNull(name);
+
 		final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		final CriteriaQuery<DataUnitSchemaEntity> criteriaQuery = criteriaBuilder.
 				createQuery(DataUnitSchemaEntity.class);
@@ -105,6 +108,9 @@ public class DataUnitSchemaDAOImpl implements DataUnitSchemaDAO {
 
 	@Override
 	public boolean existsByNameAndNotId(final @NonNull String name, final @NonNull Long id) {
+		Objects.requireNonNull(name);
+		Objects.requireNonNull(id);
+
 		final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		final CriteriaQuery<DataUnitSchemaEntity> criteriaQuery = criteriaBuilder.
 				createQuery(DataUnitSchemaEntity.class);

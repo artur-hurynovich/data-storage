@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -32,9 +33,9 @@ public class DataUnitController {
 	public DataUnitController(final @NonNull DTOValidator<DataUnitDTO> validator,
 							  final @NonNull DTOValidationHelper helper,
 							  final @NonNull BaseDTOService<DataUnitDTO, String> service) {
-		this.validator = validator;
-		this.helper = helper;
-		this.service = service;
+		this.validator = Objects.requireNonNull(validator);
+		this.helper = Objects.requireNonNull(helper);
+		this.service = Objects.requireNonNull(service);
 	}
 
 	@PostMapping("/dataUnit")

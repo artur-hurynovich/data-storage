@@ -1,19 +1,22 @@
 package com.hurynovich.data_storage.service.paginator.impl;
 
-import com.hurynovich.data_storage.service.paginator.model.GenericPage;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.service.paginator.Paginator;
+import com.hurynovich.data_storage.service.paginator.model.GenericPage;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PaginatorImpl implements Paginator {
 
 	@Override
 	public PaginationParams buildParams(final @Nullable Integer pageNumber, final @NonNull Integer elementsPerPage) {
+		Objects.requireNonNull(elementsPerPage);
+
 		final int nonNullPageNumber = (pageNumber != null) ? pageNumber : 1;
 
 		return new PaginationParams((nonNullPageNumber - 1) * elementsPerPage, elementsPerPage);
@@ -22,6 +25,9 @@ public class PaginatorImpl implements Paginator {
 	@Override
 	public <T> GenericPage<T> buildPage(final @NonNull List<T> elements, final @NonNull Long totalElementsCount,
 										final @NonNull PaginationParams params) {
+		Objects.requireNonNull(elements);
+		Objects.requireNonNull(totalElementsCount);
+
 		final Integer offset = params.getOffset();
 		final Integer limit = params.getLimit();
 
