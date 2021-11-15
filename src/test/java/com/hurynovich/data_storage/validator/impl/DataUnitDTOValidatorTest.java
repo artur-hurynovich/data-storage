@@ -131,7 +131,10 @@ class DataUnitDTOValidatorTest {
 	@Test
 	void validatePropertyIsNullTest() {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
-		dataUnit.getProperties().set(0, null);
+		final List<DataUnitDTO.DataUnitPropertyDTO> properties = new ArrayList<>(dataUnit.getProperties());
+		properties.add(null);
+		TestReflectionUtils.setField(dataUnit, "properties", properties);
+
 		final DataUnitSchemaDTO dataUnitSchema = dataUnitSchemaGenerator.generateSingleObject();
 		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.of(dataUnitSchema));
 		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).

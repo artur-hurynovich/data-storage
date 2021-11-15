@@ -174,9 +174,11 @@ class DataUnitSchemaDTOValidatorTest {
 	@Test
 	void validatePropertySchemaIsNullTest() {
 		final DataUnitSchemaDTO schema = schemaGenerator.generateSingleObject();
-		schema.getPropertySchemas().forEach(propertySchema ->
+		final List<DataUnitPropertySchemaDTO> propertySchemas = new ArrayList<>(schema.getPropertySchemas());
+		propertySchemas.forEach(propertySchema ->
 				TestReflectionUtils.setField(propertySchema, "id", null));
-		schema.getPropertySchemas().set(0, null);
+		propertySchemas.add(null);
+		TestReflectionUtils.setField(schema, "propertySchemas", propertySchemas);
 		Mockito.when(service.existsByNameAndNotId(schema.getName(), schema.getId())).thenReturn(false);
 
 		final ValidationResult validationResult = validator.validate(schema);
