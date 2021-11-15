@@ -1,6 +1,5 @@
 package com.hurynovich.data_storage.converter.impl;
 
-import com.hurynovich.data_storage.converter.model.ArgDescriptor;
 import com.hurynovich.data_storage.model.AbstractEntity_;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaEntity;

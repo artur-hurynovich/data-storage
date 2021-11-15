@@ -2,7 +2,6 @@ package com.hurynovich.data_storage.converter.impl;
 
 import com.hurynovich.data_storage.converter.DTOConverter;
 import com.hurynovich.data_storage.converter.exception.DTOConverterException;
-import com.hurynovich.data_storage.converter.model.ArgDescriptor;
 import com.hurynovich.data_storage.model.AbstractDTO;
 import com.hurynovich.data_storage.model.Identified;
 import org.modelmapper.ModelMapper;
@@ -20,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -125,5 +125,34 @@ public abstract class AbstractDTOConverter<T extends AbstractDTO<I>, U extends I
 	}
 
 	protected abstract Class<T> getDTOClass();
+
+	protected static class ArgDescriptor<T, U> {
+
+		private final String name;
+
+		private final Class<U> type;
+
+		private final Function<T, U> valueFunction;
+
+		public ArgDescriptor(final @NonNull String name, final @NonNull Class<U> type,
+							 final @NonNull Function<T, U> valueFunction) {
+			this.name = name;
+			this.type = type;
+			this.valueFunction = valueFunction;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public Class<U> getType() {
+			return type;
+		}
+
+		public Function<T, U> getValueFunction() {
+			return valueFunction;
+		}
+
+	}
 
 }
