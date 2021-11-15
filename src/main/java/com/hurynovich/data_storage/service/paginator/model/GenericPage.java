@@ -1,4 +1,4 @@
-package com.hurynovich.data_storage.model;
+package com.hurynovich.data_storage.service.paginator.model;
 
 import java.util.List;
 

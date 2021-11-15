@@ -1,4 +1,4 @@
-package com.hurynovich.data_storage.model;
+package com.hurynovich.data_storage.model.data_unit_property_schema;
 
 public enum DataUnitPropertyType {
 

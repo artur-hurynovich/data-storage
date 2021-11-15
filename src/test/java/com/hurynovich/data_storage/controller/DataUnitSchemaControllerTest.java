@@ -1,7 +1,7 @@
 package com.hurynovich.data_storage.controller;
 
-import com.hurynovich.data_storage.model.GenericPage;
-import com.hurynovich.data_storage.model.GenericValidatedResponse;
+import com.hurynovich.data_storage.service.paginator.model.GenericPage;
+import com.hurynovich.data_storage.controller.model.GenericValidatedResponse;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.dto_service.MassReadDTOService;

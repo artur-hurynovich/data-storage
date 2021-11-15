@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.service.config;
 
-import com.hurynovich.data_storage.model.DataUnitPropertyType;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
 import com.hurynovich.data_storage.service.data_unit_property_value_checker.DataUnitPropertyValueTypeChecker;
 import com.hurynovich.data_storage.service.data_unit_property_value_checker.impl.DataUnitPropertyValueBooleanTypeChecker;
 import com.hurynovich.data_storage.service.data_unit_property_value_checker.impl.DataUnitPropertyValueDateTypeChecker;

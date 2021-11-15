@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.controller;
 
-import com.hurynovich.data_storage.model.DataUnitPropertyType;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

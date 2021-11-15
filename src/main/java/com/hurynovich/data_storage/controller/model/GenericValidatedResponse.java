@@ -1,4 +1,4 @@
-package com.hurynovich.data_storage.model;
+package com.hurynovich.data_storage.controller.model;
 
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import org.springframework.lang.NonNull;

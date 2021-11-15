@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.controller;
 
-import com.hurynovich.data_storage.model.DataUnitPropertyType;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;

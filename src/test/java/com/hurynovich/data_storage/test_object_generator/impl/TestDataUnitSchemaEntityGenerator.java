@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.test_object_generator.impl;
 
-import com.hurynovich.data_storage.model.DataUnitPropertyType;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;

@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.controller;
 
-import com.hurynovich.data_storage.model.GenericValidatedResponse;
+import com.hurynovich.data_storage.controller.model.GenericValidatedResponse;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.service.dto_service.BaseDTOService;
 import com.hurynovich.data_storage.validator.DTOValidationHelper;

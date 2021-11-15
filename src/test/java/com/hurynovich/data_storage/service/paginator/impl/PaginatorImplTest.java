@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.service.paginator.impl;
 
-import com.hurynovich.data_storage.model.GenericPage;
+import com.hurynovich.data_storage.service.paginator.model.GenericPage;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.service.paginator.Paginator;
 import org.junit.jupiter.api.Assertions;
