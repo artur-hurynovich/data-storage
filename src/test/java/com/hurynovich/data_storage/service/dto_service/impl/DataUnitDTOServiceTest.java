@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -78,12 +79,22 @@ class DataUnitDTOServiceTest {
 	}
 
 	@Test
-	void deleteByIdTest() {
-		final DataUnitDTO dto = dtoGenerator.generateSingleObject();
-		final String id = dto.getId();
+	void deleteSuccessTest() {
+		final DataUnitDocument document = entityGenerator.generateSingleObject();
+		final String id = document.getId();
+		Mockito.when(dao.findById(id)).thenReturn(Optional.of(document));
+
 		service.deleteById(id);
 
-		Mockito.verify(dao).deleteById(id);
+		Mockito.verify(dao).delete(document);
+	}
+
+	@Test
+	void deleteNotFoundTest() {
+		Mockito.when(dao.findById(INCORRECT_STRING_ID)).thenReturn(Optional.empty());
+
+		Assertions.assertThrows(EntityNotFoundException.class, () -> service.deleteById(INCORRECT_STRING_ID),
+				"'DataUnitDocument' with id = '" + INCORRECT_STRING_ID + "' not found");
 	}
 
 }

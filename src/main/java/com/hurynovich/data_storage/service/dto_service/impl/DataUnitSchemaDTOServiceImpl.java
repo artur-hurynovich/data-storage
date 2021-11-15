@@ -13,6 +13,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,20 +62,25 @@ class DataUnitSchemaDTOServiceImpl implements DataUnitSchemaDTOService {
 		return cache.get(id);
 	}
 
+	@Override
+	public void deleteById(final @NonNull Long id) {
+		final Optional<DataUnitSchemaEntity> dataUnitSchemaOptional = dao.findById(id);
+		if (dataUnitSchemaOptional.isPresent()) {
+			dao.delete(dataUnitSchemaOptional.get());
+
+			if (cache.contains(id)) {
+				cache.invalidate(id);
+			}
+		} else {
+			throw new EntityNotFoundException("'DataUnitSchemaEntity' with id = '" + id + "' not found");
+		}
+	}
+
 	/*
 	 * We don't use cache in findAll method due to incompatibility of the cache with pagination.
 	 * The main reason of using cache - are frequent calls of findById method while validating DataUnitDTO,
 	 * as this method is called every time we save or update DataUnitDTO.
 	 */
-	@Override
-	public void deleteById(final @NonNull Long id) {
-		dao.deleteById(id);
-
-		if (cache.contains(id)) {
-			cache.invalidate(id);
-		}
-	}
-
 	@Override
 	@Transactional(readOnly = true)
 	public List<DataUnitSchemaDTO> findAll(final @NonNull PaginationParams params) {

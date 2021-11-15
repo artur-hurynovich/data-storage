@@ -10,7 +10,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -47,13 +46,8 @@ class DataUnitSchemaDAOImpl implements DataUnitSchemaDAO {
 	}
 
 	@Override
-	public void deleteById(final @NonNull Long id) {
-		final DataUnitSchemaEntity dataUnitSchema = entityManager.find(DataUnitSchemaEntity.class, id);
-		if (dataUnitSchema != null) {
-			entityManager.remove(dataUnitSchema);
-		} else {
-			throw new EntityNotFoundException("'DataUnitSchemaEntity' with id = '" + id + "' not found");
-		}
+	public void delete(final @NonNull DataUnitSchemaEntity dataUnitSchema) {
+		entityManager.remove(entityManager.merge(dataUnitSchema));
 	}
 
 	@Override

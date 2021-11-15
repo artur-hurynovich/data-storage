@@ -9,6 +9,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -41,7 +42,12 @@ class DataUnitDTOService implements BaseDTOService<DataUnitDTO, String> {
 
 	@Override
 	public void deleteById(final @NonNull String id) {
-		dao.deleteById(id);
+		final Optional<DataUnitDocument> dataUnitOptional = dao.findById(id);
+		if (dataUnitOptional.isPresent()) {
+			dao.delete(dataUnitOptional.get());
+		} else {
+			throw new EntityNotFoundException("'DataUnitDocument' with id = '" + id + "' not found");
+		}
 	}
 
 }

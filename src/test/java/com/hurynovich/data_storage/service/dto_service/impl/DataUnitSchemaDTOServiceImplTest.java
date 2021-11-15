@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -136,24 +137,34 @@ class DataUnitSchemaDTOServiceImplTest {
 	}
 
 	@Test
-	void deleteByIdNotInCacheTest() {
-		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
-		final Long id = dto.getId();
+	void deleteByIdNotInCacheSuccessTest() {
+		final DataUnitSchemaEntity entity = entityGenerator.generateSingleObject();
+		final Long id = entity.getId();
+		Mockito.when(dao.findById(id)).thenReturn(Optional.of(entity));
 		Mockito.when(cache.contains(id)).thenReturn(false);
 		service.deleteById(id);
 
-		Mockito.verify(dao).deleteById(id);
+		Mockito.verify(dao).delete(entity);
 	}
 
 	@Test
-	void deleteByIdInCacheTest() {
-		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
-		final Long id = dto.getId();
+	void deleteByIdInCacheSuccessTest() {
+		final DataUnitSchemaEntity entity = entityGenerator.generateSingleObject();
+		final Long id = entity.getId();
+		Mockito.when(dao.findById(id)).thenReturn(Optional.of(entity));
 		Mockito.when(cache.contains(id)).thenReturn(true);
 		service.deleteById(id);
 
-		Mockito.verify(dao).deleteById(id);
+		Mockito.verify(dao).delete(entity);
 		Mockito.verify(cache).invalidate(id);
+	}
+
+	@Test
+	void deleteByIdNotFoundTest() {
+		Mockito.when(dao.findById(INCORRECT_LONG_ID)).thenReturn(Optional.empty());
+
+		Assertions.assertThrows(EntityNotFoundException.class, () -> service.deleteById(INCORRECT_LONG_ID),
+				"'DataUnitSchemaEntity' with id = '" + INCORRECT_LONG_ID + "' not found");
 	}
 
 	@Test

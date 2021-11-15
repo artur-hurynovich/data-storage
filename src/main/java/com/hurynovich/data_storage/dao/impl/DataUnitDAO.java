@@ -29,8 +29,8 @@ class DataUnitDAO implements BaseDAO<DataUnitDocument, String> {
 	}
 
 	@Override
-	public void deleteById(final @NonNull String id) {
-		repository.deleteById(id);
+	public void delete(final @NonNull DataUnitDocument dataUnit) {
+		repository.delete(dataUnit);
 	}
 
 }

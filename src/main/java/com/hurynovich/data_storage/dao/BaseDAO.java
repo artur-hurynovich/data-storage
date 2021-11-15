@@ -12,6 +12,6 @@ public interface BaseDAO<T extends Identified<I>, I extends Serializable> {
 
 	Optional<T> findById(@NonNull I id);
 
-	void deleteById(@NonNull I id);
+	void delete(@NonNull T t);
 
 }
