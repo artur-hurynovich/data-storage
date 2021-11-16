@@ -12,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.internal.verification.Only;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.verification.Timeout;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -43,7 +45,7 @@ class GenericEventListenerTest {
 		final Event<DataUnitSchemaDTO> event = new Event<>(schema, EventType.DELETE);
 		eventListener.onEvent(event);
 
-		Mockito.verify(eventHandler).handle(event);
+		Mockito.verify(eventHandler, new Timeout(100, new Only())).handle(event);
 	}
 
 }
