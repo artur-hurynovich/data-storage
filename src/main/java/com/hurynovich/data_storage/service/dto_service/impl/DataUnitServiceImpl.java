@@ -1,10 +1,10 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
-import com.hurynovich.data_storage.converter.DTOConverter;
-import com.hurynovich.data_storage.dao.BaseDAO;
+import com.hurynovich.data_storage.converter.Converter;
+import com.hurynovich.data_storage.dao.DataUnitDAO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
-import com.hurynovich.data_storage.service.dto_service.BaseDTOService;
+import com.hurynovich.data_storage.service.dto_service.DataUnitService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,14 +15,14 @@ import java.util.Optional;
 
 @Service
 @Transactional
-class DataUnitDTOService implements BaseDTOService<DataUnitDTO, String> {
+class DataUnitServiceImpl implements DataUnitService {
 
-	private final BaseDAO<DataUnitDocument, String> dao;
+	private final DataUnitDAO dao;
 
-	private final DTOConverter<DataUnitDTO, DataUnitDocument, String> converter;
+	private final Converter<DataUnitDTO, DataUnitDocument, String> converter;
 
-	public DataUnitDTOService(final @NonNull BaseDAO<DataUnitDocument, String> dao,
-							  final @NonNull DTOConverter<DataUnitDTO, DataUnitDocument, String> converter) {
+	public DataUnitServiceImpl(final @NonNull DataUnitDAO dao,
+							   final @NonNull Converter<DataUnitDTO, DataUnitDocument, String> converter) {
 		this.dao = Objects.requireNonNull(dao);
 		this.converter = Objects.requireNonNull(converter);
 	}
@@ -48,6 +48,11 @@ class DataUnitDTOService implements BaseDTOService<DataUnitDTO, String> {
 		} else {
 			throw new EntityNotFoundException("'DataUnitDocument' with id = '" + id + "' not found");
 		}
+	}
+
+	@Override
+	public void deleteAllBySchemaId(final @NonNull Long schemaId) {
+		dao.deleteAllBySchemaId(schemaId);
 	}
 
 }

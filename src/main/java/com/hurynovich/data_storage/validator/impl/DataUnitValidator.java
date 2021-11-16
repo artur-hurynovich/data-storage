@@ -6,9 +6,9 @@ import com.hurynovich.data_storage.model.data_unit.DataUnitDTO.DataUnitPropertyD
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
-import com.hurynovich.data_storage.service.dto_service.BaseDTOService;
-import com.hurynovich.data_storage.validator.DTOValidationHelper;
-import com.hurynovich.data_storage.validator.DTOValidator;
+import com.hurynovich.data_storage.service.dto_service.BaseService;
+import com.hurynovich.data_storage.validator.ValidationHelper;
+import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.springframework.lang.NonNull;
@@ -26,17 +26,17 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-class DataUnitDTOValidator implements DTOValidator<DataUnitDTO> {
+class DataUnitValidator implements Validator<DataUnitDTO> {
 
-	private final BaseDTOService<DataUnitSchemaDTO, Long> schemaService;
+	private final BaseService<DataUnitSchemaDTO, Long> schemaService;
 
-	private final DTOValidationHelper helper;
+	private final ValidationHelper helper;
 
 	private final DataUnitPropertyValueCheckProcessor valueCheckProcessor;
 
-	public DataUnitDTOValidator(final @NonNull BaseDTOService<DataUnitSchemaDTO, Long> schemaService,
-								final @NonNull DTOValidationHelper helper,
-								final @NonNull DataUnitPropertyValueCheckProcessor valueCheckProcessor) {
+	public DataUnitValidator(final @NonNull BaseService<DataUnitSchemaDTO, Long> schemaService,
+							 final @NonNull ValidationHelper helper,
+							 final @NonNull DataUnitPropertyValueCheckProcessor valueCheckProcessor) {
 		this.schemaService = Objects.requireNonNull(schemaService);
 		this.helper = Objects.requireNonNull(helper);
 		this.valueCheckProcessor = Objects.requireNonNull(valueCheckProcessor);

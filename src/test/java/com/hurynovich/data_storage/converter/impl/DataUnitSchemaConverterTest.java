@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.converter.impl;
 
-import com.hurynovich.data_storage.converter.DTOConverter;
+import com.hurynovich.data_storage.converter.Converter;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
@@ -15,10 +15,10 @@ import org.modelmapper.ModelMapper;
 
 import java.util.List;
 
-class DataUnitSchemaDTOConverterTest {
+class DataUnitSchemaConverterTest {
 
-	private final DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity, Long> converter =
-			new DataUnitSchemaDTOConverter(new ModelMapper());
+	private final Converter<DataUnitSchemaDTO, DataUnitSchemaEntity, Long> converter =
+			new DataUnitSchemaConverter(new ModelMapper());
 
 	private final TestObjectGenerator<DataUnitSchemaDTO> dtoGenerator =
 			new TestDataUnitSchemaDTOGenerator();

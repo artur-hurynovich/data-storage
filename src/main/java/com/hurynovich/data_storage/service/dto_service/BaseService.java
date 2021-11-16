@@ -6,7 +6,7 @@ import org.springframework.lang.NonNull;
 import java.io.Serializable;
 import java.util.Optional;
 
-public interface BaseDTOService<T extends AbstractDTO<I>, I extends Serializable> {
+public interface BaseService<T extends AbstractDTO<I>, I extends Serializable> {
 
 	T save(@NonNull T t);
 

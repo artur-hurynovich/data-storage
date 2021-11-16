@@ -1,21 +1,26 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
 import com.hurynovich.data_storage.cache.Cache;
-import com.hurynovich.data_storage.converter.DTOConverter;
+import com.hurynovich.data_storage.converter.Converter;
 import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
+import com.hurynovich.data_storage.event.EventListener;
+import com.hurynovich.data_storage.event.model.Event;
+import com.hurynovich.data_storage.event.model.EventType;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
-import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaDTOService;
+import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaEntityGenerator;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,13 +34,13 @@ import java.util.Optional;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_LONG_ID;
 
 @ExtendWith(MockitoExtension.class)
-class DataUnitSchemaDTOServiceImplTest {
+class DataUnitSchemaServiceImplTest {
 
 	@Mock
 	private DataUnitSchemaDAO dao;
 
 	@Mock
-	private DTOConverter<DataUnitSchemaDTO, DataUnitSchemaEntity, Long> converter;
+	private Converter<DataUnitSchemaDTO, DataUnitSchemaEntity, Long> converter;
 
 	@Mock
 	private Cache<Long, DataUnitSchemaDTO> cache;
@@ -43,7 +48,10 @@ class DataUnitSchemaDTOServiceImplTest {
 	@Mock
 	private PaginationParams params;
 
-	private DataUnitSchemaDTOService service;
+	@Mock
+	private EventListener<DataUnitSchemaDTO> eventListener;
+
+	private DataUnitSchemaService service;
 
 	private final TestObjectGenerator<DataUnitSchemaDTO> dtoGenerator =
 			new TestDataUnitSchemaDTOGenerator();
@@ -53,7 +61,7 @@ class DataUnitSchemaDTOServiceImplTest {
 
 	@BeforeEach
 	public void initService() {
-		service = new DataUnitSchemaDTOServiceImpl(dao, converter, cache);
+		service = new DataUnitSchemaServiceImpl(dao, converter, cache, eventListener);
 	}
 
 	@Test
@@ -141,10 +149,15 @@ class DataUnitSchemaDTOServiceImplTest {
 		final DataUnitSchemaEntity entity = entityGenerator.generateSingleObject();
 		final Long id = entity.getId();
 		Mockito.when(dao.findById(id)).thenReturn(Optional.of(entity));
+
+		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
+		Mockito.when(converter.convert(entity)).thenReturn(dto);
 		Mockito.when(cache.contains(id)).thenReturn(false);
 		service.deleteById(id);
 
 		Mockito.verify(dao).delete(entity);
+		Mockito.verify(eventListener).onEvent(
+				Mockito.argThat(new EventArgumentMatcher(new Event<>(dto, EventType.DELETE))));
 	}
 
 	@Test
@@ -152,11 +165,16 @@ class DataUnitSchemaDTOServiceImplTest {
 		final DataUnitSchemaEntity entity = entityGenerator.generateSingleObject();
 		final Long id = entity.getId();
 		Mockito.when(dao.findById(id)).thenReturn(Optional.of(entity));
+
+		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
+		Mockito.when(converter.convert(entity)).thenReturn(dto);
 		Mockito.when(cache.contains(id)).thenReturn(true);
 		service.deleteById(id);
 
 		Mockito.verify(dao).delete(entity);
 		Mockito.verify(cache).invalidate(id);
+		Mockito.verify(eventListener).onEvent(
+				Mockito.argThat(new EventArgumentMatcher(new Event<>(dto, EventType.DELETE))));
 	}
 
 	@Test
@@ -203,6 +221,21 @@ class DataUnitSchemaDTOServiceImplTest {
 		Mockito.when(dao.existsByNameAndNotId(name, id)).thenReturn(false);
 
 		Assertions.assertFalse(service.existsByNameAndNotId(name, id));
+	}
+
+	private static class EventArgumentMatcher implements ArgumentMatcher<Event<DataUnitSchemaDTO>> {
+
+		private final Event<DataUnitSchemaDTO> wanted;
+
+		private EventArgumentMatcher(final Event<DataUnitSchemaDTO> wanted) {
+			this.wanted = wanted;
+		}
+
+		@Override
+		public boolean matches(final Event<DataUnitSchemaDTO> actual) {
+			return EqualsBuilder.reflectionEquals(wanted, actual);
+		}
+
 	}
 
 }

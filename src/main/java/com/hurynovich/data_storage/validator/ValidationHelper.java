@@ -5,7 +5,7 @@ import org.springframework.lang.NonNull;
 
 import java.io.Serializable;
 
-public interface DTOValidationHelper {
+public interface ValidationHelper {
 
 	void applyIsNotNullError(@NonNull String targetName, @NonNull ValidationResult result);
 

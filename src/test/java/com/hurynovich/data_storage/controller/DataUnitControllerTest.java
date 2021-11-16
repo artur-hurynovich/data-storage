@@ -2,12 +2,12 @@ package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.controller.model.GenericValidatedResponse;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
-import com.hurynovich.data_storage.service.dto_service.BaseDTOService;
+import com.hurynovich.data_storage.service.dto_service.BaseService;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
-import com.hurynovich.data_storage.validator.DTOValidationHelper;
-import com.hurynovich.data_storage.validator.DTOValidator;
+import com.hurynovich.data_storage.validator.ValidationHelper;
+import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.junit.jupiter.api.Assertions;
@@ -29,13 +29,13 @@ import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUni
 class DataUnitControllerTest extends AbstractControllerTest {
 
 	@Mock
-	private DTOValidator<DataUnitDTO> validator;
+	private Validator<DataUnitDTO> validator;
 
 	@Mock
-	private DTOValidationHelper helper;
+	private ValidationHelper helper;
 
 	@Mock
-	private BaseDTOService<DataUnitDTO, String> service;
+	private BaseService<DataUnitDTO, String> service;
 
 	private DataUnitController controller;
 

@@ -6,7 +6,7 @@ import org.springframework.lang.NonNull;
 
 import java.io.Serializable;
 
-public interface DTOValidator<T extends AbstractDTO<? extends Serializable>> {
+public interface Validator<T extends AbstractDTO<? extends Serializable>> {
 
 	ValidationResult validate(@NonNull T t);
 

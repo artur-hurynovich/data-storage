@@ -10,7 +10,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 @Configuration
-public class DataUnitPropertyValueCheckerConfig {
+class DataUnitPropertyValueCheckerConfig {
 
 	@Bean
 	public Map<DataUnitPropertyType, DataUnitPropertyValueTypeChecker> dataUnitPropertyValueTypeCheckersByType() {

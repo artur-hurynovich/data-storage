@@ -3,11 +3,11 @@ package com.hurynovich.data_storage.controller;
 import com.hurynovich.data_storage.controller.model.GenericValidatedResponse;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
-import com.hurynovich.data_storage.service.dto_service.MassReadDTOService;
+import com.hurynovich.data_storage.service.dto_service.MassReadService;
 import com.hurynovich.data_storage.service.paginator.Paginator;
 import com.hurynovich.data_storage.service.paginator.model.GenericPage;
-import com.hurynovich.data_storage.validator.DTOValidationHelper;
-import com.hurynovich.data_storage.validator.DTOValidator;
+import com.hurynovich.data_storage.validator.ValidationHelper;
+import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.springframework.http.HttpStatus;
@@ -31,17 +31,17 @@ public class DataUnitSchemaController {
 
 	private static final int ELEMENTS_PER_PAGE = 20;
 
-	private final DTOValidator<DataUnitSchemaDTO> validator;
+	private final Validator<DataUnitSchemaDTO> validator;
 
-	private final DTOValidationHelper helper;
+	private final ValidationHelper helper;
 
-	private final MassReadDTOService<DataUnitSchemaDTO, Long> service;
+	private final MassReadService<DataUnitSchemaDTO, Long> service;
 
 	private final Paginator paginator;
 
-	public DataUnitSchemaController(final @NonNull DTOValidator<DataUnitSchemaDTO> validator,
-									final @NonNull DTOValidationHelper helper,
-									final @NonNull MassReadDTOService<DataUnitSchemaDTO, Long> service,
+	public DataUnitSchemaController(final @NonNull Validator<DataUnitSchemaDTO> validator,
+									final @NonNull ValidationHelper helper,
+									final @NonNull MassReadService<DataUnitSchemaDTO, Long> service,
 									final @NonNull Paginator paginator) {
 		this.validator = Objects.requireNonNull(validator);
 		this.helper = Objects.requireNonNull(helper);

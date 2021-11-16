@@ -3,9 +3,9 @@ package com.hurynovich.data_storage.validator.impl;
 import com.hurynovich.data_storage.model.AbstractDTO;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
-import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaDTOService;
-import com.hurynovich.data_storage.validator.DTOValidationHelper;
-import com.hurynovich.data_storage.validator.DTOValidator;
+import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
+import com.hurynovich.data_storage.validator.ValidationHelper;
+import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-class DataUnitSchemaDTOValidator implements DTOValidator<DataUnitSchemaDTO> {
+class DataUnitSchemaValidator implements Validator<DataUnitSchemaDTO> {
 
 	private static final String DATA_UNIT_SCHEMA_NAME = "dataUnitSchema.name";
 
@@ -30,12 +30,12 @@ class DataUnitSchemaDTOValidator implements DTOValidator<DataUnitSchemaDTO> {
 
 	private static final int DATA_UNIT_PROPERTY_SCHEMA_NAME_MAX_LENGTH = DATA_UNIT_SCHEMA_NAME_MAX_LENGTH;
 
-	private final DTOValidationHelper helper;
+	private final ValidationHelper helper;
 
-	private final DataUnitSchemaDTOService schemaService;
+	private final DataUnitSchemaService schemaService;
 
-	public DataUnitSchemaDTOValidator(final @NonNull DTOValidationHelper helper,
-									  final @NonNull DataUnitSchemaDTOService schemaService) {
+	public DataUnitSchemaValidator(final @NonNull ValidationHelper helper,
+								   final @NonNull DataUnitSchemaService schemaService) {
 		this.helper = Objects.requireNonNull(helper);
 		this.schemaService = Objects.requireNonNull(schemaService);
 	}

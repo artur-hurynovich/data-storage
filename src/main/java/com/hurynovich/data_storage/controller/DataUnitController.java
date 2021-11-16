@@ -2,9 +2,9 @@ package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.controller.model.GenericValidatedResponse;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
-import com.hurynovich.data_storage.service.dto_service.BaseDTOService;
-import com.hurynovich.data_storage.validator.DTOValidationHelper;
-import com.hurynovich.data_storage.validator.DTOValidator;
+import com.hurynovich.data_storage.service.dto_service.BaseService;
+import com.hurynovich.data_storage.validator.ValidationHelper;
+import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.springframework.http.HttpStatus;
@@ -24,15 +24,15 @@ import java.util.Optional;
 @RestController
 public class DataUnitController {
 
-	private final DTOValidator<DataUnitDTO> validator;
+	private final Validator<DataUnitDTO> validator;
 
-	private final DTOValidationHelper helper;
+	private final ValidationHelper helper;
 
-	private final BaseDTOService<DataUnitDTO, String> service;
+	private final BaseService<DataUnitDTO, String> service;
 
-	public DataUnitController(final @NonNull DTOValidator<DataUnitDTO> validator,
-							  final @NonNull DTOValidationHelper helper,
-							  final @NonNull BaseDTOService<DataUnitDTO, String> service) {
+	public DataUnitController(final @NonNull Validator<DataUnitDTO> validator,
+							  final @NonNull ValidationHelper helper,
+							  final @NonNull BaseService<DataUnitDTO, String> service) {
 		this.validator = Objects.requireNonNull(validator);
 		this.helper = Objects.requireNonNull(helper);
 		this.service = Objects.requireNonNull(service);

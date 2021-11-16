@@ -1,10 +1,10 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
-import com.hurynovich.data_storage.converter.DTOConverter;
-import com.hurynovich.data_storage.dao.BaseDAO;
+import com.hurynovich.data_storage.converter.Converter;
+import com.hurynovich.data_storage.dao.DataUnitDAO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
-import com.hurynovich.data_storage.service.dto_service.BaseDTOService;
+import com.hurynovich.data_storage.service.dto_service.DataUnitService;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDocumentGenerator;
@@ -23,15 +23,15 @@ import java.util.Optional;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_STRING_ID;
 
 @ExtendWith(MockitoExtension.class)
-class DataUnitDTOServiceTest {
+class DataUnitServiceImplTest {
 
 	@Mock
-	private BaseDAO<DataUnitDocument, String> dao;
+	private DataUnitDAO dao;
 
 	@Mock
-	private DTOConverter<DataUnitDTO, DataUnitDocument, String> converter;
+	private Converter<DataUnitDTO, DataUnitDocument, String> converter;
 
-	private BaseDTOService<DataUnitDTO, String> service;
+	private DataUnitService service;
 
 	private final TestObjectGenerator<DataUnitDTO> dtoGenerator =
 			new TestDataUnitDTOGenerator();
@@ -41,7 +41,7 @@ class DataUnitDTOServiceTest {
 
 	@BeforeEach
 	public void initService() {
-		service = new DataUnitDTOService(dao, converter);
+		service = new DataUnitServiceImpl(dao, converter);
 	}
 
 	@Test
@@ -95,6 +95,15 @@ class DataUnitDTOServiceTest {
 
 		Assertions.assertThrows(EntityNotFoundException.class, () -> service.deleteById(INCORRECT_STRING_ID),
 				"'DataUnitDocument' with id = '" + INCORRECT_STRING_ID + "' not found");
+	}
+
+	@Test
+	void deleteAllBySchemaIdTest() {
+		final DataUnitDocument document = entityGenerator.generateSingleObject();
+		final Long schemaId = document.getSchemaId();
+		service.deleteAllBySchemaId(schemaId);
+
+		Mockito.verify(dao).deleteAllBySchemaId(schemaId);
 	}
 
 }

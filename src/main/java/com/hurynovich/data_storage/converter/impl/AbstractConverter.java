@@ -1,7 +1,7 @@
 package com.hurynovich.data_storage.converter.impl;
 
-import com.hurynovich.data_storage.converter.DTOConverter;
-import com.hurynovich.data_storage.converter.exception.DTOConverterException;
+import com.hurynovich.data_storage.converter.Converter;
+import com.hurynovich.data_storage.converter.exception.ConverterException;
 import com.hurynovich.data_storage.model.AbstractDTO;
 import com.hurynovich.data_storage.model.Identified;
 import org.modelmapper.ModelMapper;
@@ -24,10 +24,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-abstract class AbstractDTOConverter<T extends AbstractDTO<I>, U extends Identified<I>, I extends Serializable>
-		implements DTOConverter<T, U, I> {
+abstract class AbstractConverter<T extends AbstractDTO<I>, U extends Identified<I>, I extends Serializable>
+		implements Converter<T, U, I> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDTOConverter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConverter.class);
 
 	private final ModelMapper modelMapper;
 
@@ -37,8 +37,8 @@ abstract class AbstractDTOConverter<T extends AbstractDTO<I>, U extends Identifi
 
 	private final String[] emptyIgnoreProperties = new String[0];
 
-	protected AbstractDTOConverter(final @NonNull ModelMapper modelMapper,
-								   final @NonNull Map<Integer, ArgDescriptor<U, ?>> argDescriptorsByIdx) {
+	protected AbstractConverter(final @NonNull ModelMapper modelMapper,
+								final @NonNull Map<Integer, ArgDescriptor<U, ?>> argDescriptorsByIdx) {
 		/*
 		 * According to http://modelmapper.org/user-manual/faq/, ModelMapper is thread-safe and
 		 * can be injected as a singleton
@@ -100,10 +100,10 @@ abstract class AbstractDTOConverter<T extends AbstractDTO<I>, U extends Identifi
 				final Constructor<T> constructor = ReflectionUtils.accessibleConstructor(dtoClass, argTypes);
 				target = constructor.newInstance(args);
 			} catch (final NoSuchMethodException e) {
-				throw new DTOConverterException("Constructor for type '" + dtoClass +
+				throw new ConverterException("Constructor for type '" + dtoClass +
 						"' with arguments " + Arrays.deepToString(argTypes) + " not found", e);
 			} catch (final InvocationTargetException | InstantiationException | IllegalAccessException e) {
-				throw new DTOConverterException("Failed to instantiate object of type '" + dtoClass + "'", e);
+				throw new ConverterException("Failed to instantiate object of type '" + dtoClass + "'", e);
 			}
 		} else {
 			target = null;

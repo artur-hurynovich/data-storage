@@ -3,14 +3,14 @@ package com.hurynovich.data_storage.controller;
 import com.hurynovich.data_storage.controller.model.GenericValidatedResponse;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
-import com.hurynovich.data_storage.service.dto_service.MassReadDTOService;
+import com.hurynovich.data_storage.service.dto_service.MassReadService;
 import com.hurynovich.data_storage.service.paginator.Paginator;
 import com.hurynovich.data_storage.service.paginator.model.GenericPage;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
-import com.hurynovich.data_storage.validator.DTOValidationHelper;
-import com.hurynovich.data_storage.validator.DTOValidator;
+import com.hurynovich.data_storage.validator.ValidationHelper;
+import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.junit.jupiter.api.Assertions;
@@ -40,13 +40,13 @@ class DataUnitSchemaControllerTest extends AbstractControllerTest {
 	private static final long TOTAL_ELEMENTS_COUNT = 10;
 
 	@Mock
-	private DTOValidator<DataUnitSchemaDTO> validator;
+	private Validator<DataUnitSchemaDTO> validator;
 
 	@Mock
-	private DTOValidationHelper helper;
+	private ValidationHelper helper;
 
 	@Mock
-	private MassReadDTOService<DataUnitSchemaDTO, Long> service;
+	private MassReadService<DataUnitSchemaDTO, Long> service;
 
 	@Mock
 	private Paginator paginator;

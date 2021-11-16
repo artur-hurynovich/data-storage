@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.validator.impl;
 
-import com.hurynovich.data_storage.validator.DTOValidationHelper;
+import com.hurynovich.data_storage.validator.ValidationHelper;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.junit.jupiter.api.Assertions;
@@ -9,14 +9,14 @@ import org.junit.jupiter.api.Test;
 import java.util.Set;
 import java.util.function.Consumer;
 
-class DTOValidationHelperImplTest {
+class ValidationHelperImplTest {
 
 	private static final String TARGET_NAME = "targetName";
 	private static final int MAX_LENGTH = 100;
 	private static final String DUPLICATE = "duplicate";
 	private static final Long ID = 100L;
 
-	private final DTOValidationHelper helper = new DTOValidationHelperImpl();
+	private final ValidationHelper helper = new ValidationHelperImpl();
 
 	@Test
 	void applyIsNotNullErrorTest() {

@@ -16,9 +16,9 @@ import java.util.Objects;
 import java.util.function.Function;
 
 @Service
-class DataUnitDTOConverter extends AbstractDTOConverter<DataUnitDTO, DataUnitDocument, String> {
+class DataUnitConverter extends AbstractConverter<DataUnitDTO, DataUnitDocument, String> {
 
-	public DataUnitDTOConverter(final @NonNull ModelMapper modelMapper) {
+	public DataUnitConverter(final @NonNull ModelMapper modelMapper) {
 		super(Objects.requireNonNull(modelMapper), Map.of(
 				0, new ArgDescriptor<>("id", String.class, AbstractDocument::getId),
 				1, new ArgDescriptor<>("schemaId", Long.class, DataUnitDocument::getSchemaId),

@@ -2,11 +2,11 @@ package com.hurynovich.data_storage.validator.impl;
 
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
-import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaDTOService;
+import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
-import com.hurynovich.data_storage.validator.DTOValidator;
+import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -26,19 +26,19 @@ import java.util.Set;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID;
 
 @ExtendWith(MockitoExtension.class)
-class DataUnitSchemaDTOValidatorTest {
+class DataUnitSchemaValidatorTest {
 
 	@Mock
-	private DataUnitSchemaDTOService service;
+	private DataUnitSchemaService service;
 
-	private DTOValidator<DataUnitSchemaDTO> validator;
+	private Validator<DataUnitSchemaDTO> validator;
 
 	private final TestObjectGenerator<DataUnitSchemaDTO> schemaGenerator =
 			new TestDataUnitSchemaDTOGenerator();
 
 	@BeforeEach
 	public void initValidator() {
-		validator = new DataUnitSchemaDTOValidator(new DTOValidationHelperImpl(), service);
+		validator = new DataUnitSchemaValidator(new ValidationHelperImpl(), service);
 	}
 
 	@Test

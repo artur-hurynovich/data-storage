@@ -4,12 +4,12 @@ import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
-import com.hurynovich.data_storage.service.dto_service.BaseDTOService;
+import com.hurynovich.data_storage.service.dto_service.BaseService;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
-import com.hurynovich.data_storage.validator.DTOValidator;
+import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.junit.jupiter.api.Assertions;
@@ -31,15 +31,15 @@ import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUni
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_LONG_ID;
 
 @ExtendWith(MockitoExtension.class)
-class DataUnitDTOValidatorTest {
+class DataUnitValidatorTest {
 
 	@Mock
-	private BaseDTOService<DataUnitSchemaDTO, Long> dataUnitSchemaService;
+	private BaseService<DataUnitSchemaDTO, Long> dataUnitSchemaService;
 
 	@Mock
 	private DataUnitPropertyValueCheckProcessor checkProcessor;
 
-	private DTOValidator<DataUnitDTO> validator;
+	private Validator<DataUnitDTO> validator;
 
 	private final TestObjectGenerator<DataUnitDTO> dataUnitGenerator =
 			new TestDataUnitDTOGenerator();
@@ -49,7 +49,7 @@ class DataUnitDTOValidatorTest {
 
 	@BeforeEach
 	public void initValidator() {
-		validator = new DataUnitDTOValidator(dataUnitSchemaService, new DTOValidationHelperImpl(), checkProcessor);
+		validator = new DataUnitValidator(dataUnitSchemaService, new ValidationHelperImpl(), checkProcessor);
 	}
 
 	@Test

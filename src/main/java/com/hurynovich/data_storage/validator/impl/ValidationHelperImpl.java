@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.validator.impl;
 
-import com.hurynovich.data_storage.validator.DTOValidationHelper;
+import com.hurynovich.data_storage.validator.ValidationHelper;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.springframework.lang.NonNull;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Service
-class DTOValidationHelperImpl implements DTOValidationHelper {
+class ValidationHelperImpl implements ValidationHelper {
 
 	private static final String SINGLE_QUOTE = "'";
 

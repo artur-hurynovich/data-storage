@@ -1,8 +1,8 @@
 package com.hurynovich.data_storage.dao.impl;
 
-import com.hurynovich.data_storage.dao.BaseDAO;
+import com.hurynovich.data_storage.dao.DataUnitDAO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import com.hurynovich.data_storage.repository.DataUnitRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
@@ -10,11 +10,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-class DataUnitDAO implements BaseDAO<DataUnitDocument, String> {
+class DataUnitDAOImpl implements DataUnitDAO {
 
-	private final MongoRepository<DataUnitDocument, String> repository;
+	private final DataUnitRepository repository;
 
-	public DataUnitDAO(final @NonNull MongoRepository<DataUnitDocument, String> repository) {
+	public DataUnitDAOImpl(final @NonNull DataUnitRepository repository) {
 		this.repository = Objects.requireNonNull(repository);
 	}
 
@@ -31,6 +31,11 @@ class DataUnitDAO implements BaseDAO<DataUnitDocument, String> {
 	@Override
 	public void delete(final @NonNull DataUnitDocument dataUnit) {
 		repository.delete(dataUnit);
+	}
+
+	@Override
+	public void deleteAllBySchemaId(final @NonNull Long schemaId) {
+		repository.deleteBySchemaId(schemaId);
 	}
 
 }
