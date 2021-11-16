@@ -1,9 +1,7 @@
 package com.hurynovich.data_storage.service.paginator.model;
 
-import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
-@Immutable
 public class GenericPage<T> {
 
 	private final List<T> elements;
