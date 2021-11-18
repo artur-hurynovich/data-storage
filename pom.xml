@@ -72,8 +72,15 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!--Required to fix warning: diagnostic: warning: unknown enum constant javax.annotation.meta.When.MAYBE
-		reason: class file for javax.annotation.meta.When not found-->
+		<!-- https://github.com/artur-hurynovich/metamodel_generator -->
+		<dependency>
+			<groupId>com.hurynovich</groupId>
+			<artifactId>metamodel_generator</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+
+		<!-- Required to fix warning: diagnostic: warning: unknown enum constant javax.annotation.meta.When.MAYBE
+		reason: class file for javax.annotation.meta.When not found -->
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>jsr305</artifactId>
