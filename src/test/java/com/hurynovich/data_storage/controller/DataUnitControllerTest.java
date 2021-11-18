@@ -2,7 +2,8 @@ package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.controller.model.GenericValidatedResponse;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
-import com.hurynovich.data_storage.service.dto_service.BaseService;
+import com.hurynovich.data_storage.service.dto_service.DataUnitService;
+import com.hurynovich.data_storage.service.paginator.Paginator;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
@@ -35,7 +36,10 @@ class DataUnitControllerTest extends AbstractControllerTest {
 	private ValidationHelper helper;
 
 	@Mock
-	private BaseService<DataUnitDTO, String> service;
+	private DataUnitService service;
+
+	@Mock
+	private Paginator paginator;
 
 	private DataUnitController controller;
 
@@ -44,7 +48,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 
 	@BeforeEach
 	public void initController() {
-		controller = new DataUnitController(validator, helper, service);
+		controller = new DataUnitController(validator, helper, service, paginator);
 	}
 
 	@Test

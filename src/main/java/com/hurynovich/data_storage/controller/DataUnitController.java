@@ -1,8 +1,12 @@
 package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.controller.model.GenericValidatedResponse;
+import com.hurynovich.data_storage.filter.model.Filter;
+import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
-import com.hurynovich.data_storage.service.dto_service.BaseService;
+import com.hurynovich.data_storage.service.dto_service.DataUnitService;
+import com.hurynovich.data_storage.service.paginator.Paginator;
+import com.hurynovich.data_storage.service.paginator.model.GenericPage;
 import com.hurynovich.data_storage.validator.ValidationHelper;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
@@ -16,26 +20,34 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @RestController
 public class DataUnitController {
 
+	private static final int ELEMENTS_PER_PAGE = 20;
+
 	private final Validator<DataUnitDTO> validator;
 
 	private final ValidationHelper helper;
 
-	private final BaseService<DataUnitDTO, String> service;
+	private final DataUnitService service;
+
+	private final Paginator paginator;
 
 	public DataUnitController(final @NonNull Validator<DataUnitDTO> validator,
 							  final @NonNull ValidationHelper helper,
-							  final @NonNull BaseService<DataUnitDTO, String> service) {
+							  final @NonNull DataUnitService service,
+							  final @NonNull Paginator paginator) {
 		this.validator = Objects.requireNonNull(validator);
 		this.helper = Objects.requireNonNull(helper);
 		this.service = Objects.requireNonNull(service);
+		this.paginator = Objects.requireNonNull(paginator);
 	}
 
 	@PostMapping("/dataUnit")
@@ -82,6 +94,16 @@ public class DataUnitController {
 		}
 
 		return new ResponseEntity<>(new GenericValidatedResponse<>(validationResult, body), status);
+	}
+
+	@GetMapping("/dataUnits")
+	public ResponseEntity<GenericValidatedResponse<GenericPage<DataUnitDTO>>> getDataUnits(
+			final @RequestParam(required = false) Integer pageNumber, final @RequestBody Filter filter) {
+		final PaginationParams params = paginator.buildParams(pageNumber, ELEMENTS_PER_PAGE);
+		final List<DataUnitDTO> dataUnits = service.findAll(params, filter);
+		final GenericPage<DataUnitDTO> page = paginator.buildPage(dataUnits, service.count(), params);
+
+		return ResponseEntity.ok(new GenericValidatedResponse<>(new ValidationResult(), page));
 	}
 
 	@PutMapping("/dataUnit/{id}")
