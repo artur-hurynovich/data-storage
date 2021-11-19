@@ -1,9 +1,12 @@
 package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.controller.model.GenericValidatedResponse;
+import com.hurynovich.data_storage.filter.model.DataUnitFilter;
+import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.service.dto_service.DataUnitService;
 import com.hurynovich.data_storage.service.paginator.Paginator;
+import com.hurynovich.data_storage.service.paginator.model.GenericPage;
 import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
@@ -22,12 +25,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_STRING_ID;
 
 @ExtendWith(MockitoExtension.class)
 class DataUnitControllerTest extends AbstractControllerTest {
+
+	private static final int PAGE_NUMBER = 1;
+
+	private static final int ELEMENTS_PER_PAGE = 20;
+
+	private static final long TOTAL_ELEMENTS_COUNT = 10;
 
 	@Mock
 	private Validator<DataUnitDTO> validator;
@@ -40,6 +51,12 @@ class DataUnitControllerTest extends AbstractControllerTest {
 
 	@Mock
 	private Paginator paginator;
+
+	@Mock
+	private PaginationParams params;
+
+	@Mock
+	private DataUnitFilter filter;
 
 	private DataUnitController controller;
 
@@ -188,6 +205,74 @@ class DataUnitControllerTest extends AbstractControllerTest {
 		checkValidationResultsEquality(validationResult, responseBody.getValidationResult());
 
 		Assertions.assertNull(responseBody.getBody());
+	}
+
+	@Test
+	void getSchemasTest() {
+		final List<DataUnitDTO> dataUnits = dataUnitGenerator.generateMultipleObjects();
+		Mockito.when(paginator.buildParams(PAGE_NUMBER, ELEMENTS_PER_PAGE)).thenReturn(params);
+		Mockito.when(service.findAll(params, filter)).thenReturn(dataUnits);
+		Mockito.when(service.count(filter)).thenReturn(TOTAL_ELEMENTS_COUNT);
+		Mockito.when(paginator.buildPage(dataUnits, TOTAL_ELEMENTS_COUNT, params)).
+				thenReturn(GenericPage.builder(dataUnits).
+						withTotalElementsCount(TOTAL_ELEMENTS_COUNT).
+						withPreviousPageNumber(null).
+						withCurrentPageNumber(1L).
+						withNextPageNumber(null).
+						withTotalPagesCount(1L).
+						build());
+
+		final ResponseEntity<GenericValidatedResponse<GenericPage<DataUnitDTO>>> response = controller.
+				getDataUnits(PAGE_NUMBER, filter);
+		Assertions.assertNotNull(response);
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+
+		final GenericValidatedResponse<GenericPage<DataUnitDTO>> responseBody = response.getBody();
+		Assertions.assertNotNull(responseBody);
+
+		checkValidationResultsEquality(new ValidationResult(), responseBody.getValidationResult());
+
+		final GenericPage<DataUnitDTO> page = responseBody.getBody();
+		Assertions.assertTrue(Objects.deepEquals(dataUnits, page.getElements()));
+		Assertions.assertEquals(TOTAL_ELEMENTS_COUNT, page.getTotalElementsCount());
+		Assertions.assertNull(page.getPreviousPageNumber());
+		Assertions.assertEquals(1L, page.getCurrentPageNumber());
+		Assertions.assertNull(page.getNextPageNumber());
+		Assertions.assertEquals(1L, page.getTotalPagesCount());
+	}
+
+	@Test
+	void getSchemasEmptyTest() {
+		Mockito.when(paginator.buildParams(PAGE_NUMBER, ELEMENTS_PER_PAGE)).thenReturn(params);
+		final List<DataUnitDTO> dataUnits = new ArrayList<>();
+		Mockito.when(service.findAll(params, filter)).thenReturn(dataUnits);
+		Mockito.when(service.count(filter)).thenReturn(0L);
+		Mockito.when(paginator.buildPage(dataUnits, 0L, params)).
+				thenReturn(GenericPage.builder(dataUnits).
+						withTotalElementsCount(0L).
+						withPreviousPageNumber(null).
+						withCurrentPageNumber(null).
+						withNextPageNumber(null).
+						withTotalPagesCount(0L).
+						build());
+
+		final ResponseEntity<GenericValidatedResponse<GenericPage<DataUnitDTO>>> response = controller.
+				getDataUnits(PAGE_NUMBER, filter);
+		Assertions.assertNotNull(response);
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+
+		final GenericValidatedResponse<GenericPage<DataUnitDTO>> responseBody = response.getBody();
+		Assertions.assertNotNull(responseBody);
+
+		checkValidationResultsEquality(new ValidationResult(), responseBody.getValidationResult());
+
+		final GenericPage<DataUnitDTO> page = responseBody.getBody();
+		Assertions.assertTrue(Objects.deepEquals(dataUnits, page.getElements()));
+		Assertions.assertEquals(0L, page.getTotalElementsCount());
+		Assertions.assertNull(page.getPreviousPageNumber());
+		Assertions.assertNull(page.getCurrentPageNumber());
+		Assertions.assertNull(page.getNextPageNumber());
+		Assertions.assertEquals(0L, page.getTotalPagesCount());
 	}
 
 	@Test
