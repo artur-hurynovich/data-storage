@@ -7,7 +7,7 @@ package com.hurynovich.data_storage.filter.model;
  * LT - less than
  * LE - less or equal
  */
-public enum FilterCriteriaComparison {
+public enum CriteriaComparison {
 
 	EQ, GT, GE, LT, LE, STARTS_WITH, ENDS_WITH, CONTAINS
 

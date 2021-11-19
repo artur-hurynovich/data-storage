@@ -2,7 +2,7 @@ package com.hurynovich.data_storage.dao.impl;
 
 import com.hurynovich.data_storage.dao.DataUnitDAO;
 import com.hurynovich.data_storage.filter.DataUnitQueryCriteriaBuilder;
-import com.hurynovich.data_storage.filter.model.Filter;
+import com.hurynovich.data_storage.filter.model.DataUnitFilter;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument_;
@@ -47,7 +47,8 @@ class DataUnitDAOImpl implements DataUnitDAO {
 	}
 
 	@Override
-	public List<DataUnitDocument> findAll(final @NonNull PaginationParams params, final @NonNull Filter filter) {
+	public List<DataUnitDocument> findAll(final @NonNull PaginationParams params,
+										  final @NonNull DataUnitFilter filter) {
 		final Query query = new Query().
 				addCriteria(criteriaBuilder.build(filter)).
 				skip(params.getOffset()).

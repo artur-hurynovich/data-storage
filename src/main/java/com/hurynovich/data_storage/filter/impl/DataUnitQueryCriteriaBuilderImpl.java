@@ -2,9 +2,9 @@ package com.hurynovich.data_storage.filter.impl;
 
 import com.hurynovich.data_storage.filter.DataUnitQueryCriteriaBuilder;
 import com.hurynovich.data_storage.filter.exception.DataUnitQueryCriteriaBuilderException;
-import com.hurynovich.data_storage.filter.model.Filter;
-import com.hurynovich.data_storage.filter.model.FilterCriteria;
-import com.hurynovich.data_storage.filter.model.FilterCriteriaComparison;
+import com.hurynovich.data_storage.filter.model.CriteriaComparison;
+import com.hurynovich.data_storage.filter.model.DataUnitFilter;
+import com.hurynovich.data_storage.filter.model.DataUnitPropertyCriteria;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument_;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyDocument_;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -16,30 +16,34 @@ import java.util.function.BiConsumer;
 
 class DataUnitQueryCriteriaBuilderImpl implements DataUnitQueryCriteriaBuilder {
 
-	private final Map<FilterCriteriaComparison, BiConsumer<Criteria, FilterCriteria>> valueCriteriaAppliersByComparison;
+	private final Map<CriteriaComparison, BiConsumer<Criteria, DataUnitPropertyCriteria>> valueCriteriaAppliersByComparison;
 
 	public DataUnitQueryCriteriaBuilderImpl(
-			final @NonNull Map<FilterCriteriaComparison, BiConsumer<Criteria, FilterCriteria>> valueCriteriaAppliersByComparison) {
+			final @NonNull Map<CriteriaComparison, BiConsumer<Criteria, DataUnitPropertyCriteria>> valueCriteriaAppliersByComparison) {
 		this.valueCriteriaAppliersByComparison = Objects.requireNonNull(valueCriteriaAppliersByComparison);
 	}
 
 	@Override
-	public Criteria build(final @NonNull Filter filter) {
-		final Criteria resultCriteria = new Criteria();
-		final Criteria[] criteria = filter.getCriteria().stream().
-				map(this::buildSingleCriteria).
+	public Criteria build(final @NonNull DataUnitFilter filter) {
+		final Criteria resultCriteria = buildSchemaIdCriteria(filter);
+		final Criteria[] propertyCriteria = filter.getCriteria().stream().
+				map(this::buildPropertyCriteria).
 				toArray(Criteria[]::new);
-		if (criteria.length > 0) {
-			resultCriteria.andOperator(criteria);
+		if (propertyCriteria.length > 0) {
+			resultCriteria.andOperator(propertyCriteria);
 		}
 
 		return resultCriteria;
 	}
 
-	private Criteria buildSingleCriteria(final @NonNull FilterCriteria filterCriteria) {
+	private Criteria buildSchemaIdCriteria(final @NonNull DataUnitFilter filter) {
+		return Criteria.where(DataUnitDocument_.SCHEMA_ID).is(filter.getSchemaId());
+	}
+
+	private Criteria buildPropertyCriteria(final @NonNull DataUnitPropertyCriteria filterCriteria) {
 		final Criteria elemMatchCriteria = Criteria.
 				where(DataUnitPropertyDocument_.SCHEMA_ID).
-				is(filterCriteria.getSchemaId());
+				is(filterCriteria.getPropertySchemaId());
 		applyValueCriteria(elemMatchCriteria, filterCriteria);
 
 		return Criteria.
@@ -48,9 +52,9 @@ class DataUnitQueryCriteriaBuilderImpl implements DataUnitQueryCriteriaBuilder {
 	}
 
 	private void applyValueCriteria(final @NonNull Criteria elemMatchCriteria,
-									final @NonNull FilterCriteria filterCriteria) {
-		final FilterCriteriaComparison comparison = filterCriteria.getComparison();
-		final BiConsumer<Criteria, FilterCriteria> applier = valueCriteriaAppliersByComparison.get(comparison);
+									final @NonNull DataUnitPropertyCriteria filterCriteria) {
+		final CriteriaComparison comparison = filterCriteria.getComparison();
+		final BiConsumer<Criteria, DataUnitPropertyCriteria> applier = valueCriteriaAppliersByComparison.get(comparison);
 		if (applier != null) {
 			applier.accept(elemMatchCriteria.and(DataUnitPropertyDocument_.VALUE), filterCriteria);
 		} else {

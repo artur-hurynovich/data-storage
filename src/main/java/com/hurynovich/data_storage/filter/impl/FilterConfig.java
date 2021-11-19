@@ -1,8 +1,8 @@
 package com.hurynovich.data_storage.filter.impl;
 
 import com.hurynovich.data_storage.filter.DataUnitQueryCriteriaBuilder;
-import com.hurynovich.data_storage.filter.model.FilterCriteria;
-import com.hurynovich.data_storage.filter.model.FilterCriteriaComparison;
+import com.hurynovich.data_storage.filter.model.CriteriaComparison;
+import com.hurynovich.data_storage.filter.model.DataUnitPropertyCriteria;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -24,23 +24,23 @@ public class FilterConfig {
 
 	@Bean
 	public DataUnitQueryCriteriaBuilder dataUnitQueryCriteriaBuilder() {
-		final Map<FilterCriteriaComparison, BiConsumer<Criteria, FilterCriteria>> valueCriteriaAppliersByComparison =
-				new EnumMap<>(FilterCriteriaComparison.class);
-		valueCriteriaAppliersByComparison.put(FilterCriteriaComparison.EQ, (criteria, filterCriteria) ->
+		final Map<CriteriaComparison, BiConsumer<Criteria, DataUnitPropertyCriteria>> valueCriteriaAppliersByComparison =
+				new EnumMap<>(CriteriaComparison.class);
+		valueCriteriaAppliersByComparison.put(CriteriaComparison.EQ, (criteria, filterCriteria) ->
 				criteria.is(filterCriteria.getComparisonPattern()));
-		valueCriteriaAppliersByComparison.put(FilterCriteriaComparison.GT, (criteria, filterCriteria) ->
+		valueCriteriaAppliersByComparison.put(CriteriaComparison.GT, (criteria, filterCriteria) ->
 				criteria.gt(filterCriteria.getComparisonPattern()));
-		valueCriteriaAppliersByComparison.put(FilterCriteriaComparison.GE, (criteria, filterCriteria) ->
+		valueCriteriaAppliersByComparison.put(CriteriaComparison.GE, (criteria, filterCriteria) ->
 				criteria.gte(filterCriteria.getComparisonPattern()));
-		valueCriteriaAppliersByComparison.put(FilterCriteriaComparison.LT, (criteria, filterCriteria) ->
+		valueCriteriaAppliersByComparison.put(CriteriaComparison.LT, (criteria, filterCriteria) ->
 				criteria.lt(filterCriteria.getComparisonPattern()));
-		valueCriteriaAppliersByComparison.put(FilterCriteriaComparison.LE, (criteria, filterCriteria) ->
+		valueCriteriaAppliersByComparison.put(CriteriaComparison.LE, (criteria, filterCriteria) ->
 				criteria.lte(filterCriteria.getComparisonPattern()));
-		valueCriteriaAppliersByComparison.put(FilterCriteriaComparison.STARTS_WITH, (criteria, filterCriteria) ->
+		valueCriteriaAppliersByComparison.put(CriteriaComparison.STARTS_WITH, (criteria, filterCriteria) ->
 				criteria.regex(START_OF_LINE_REGEX + filterCriteria.getComparisonPattern(), CASE_INSENSITIVE_OPTION));
-		valueCriteriaAppliersByComparison.put(FilterCriteriaComparison.ENDS_WITH, (criteria, filterCriteria) ->
+		valueCriteriaAppliersByComparison.put(CriteriaComparison.ENDS_WITH, (criteria, filterCriteria) ->
 				criteria.regex(filterCriteria.getComparisonPattern() + END_OF_LINE_REGEX, CASE_INSENSITIVE_OPTION));
-		valueCriteriaAppliersByComparison.put(FilterCriteriaComparison.CONTAINS, (criteria, filterCriteria) ->
+		valueCriteriaAppliersByComparison.put(CriteriaComparison.CONTAINS, (criteria, filterCriteria) ->
 				criteria.regex(ANY_SYMBOLS_REGEX + filterCriteria.getComparisonPattern() + ANY_SYMBOLS_REGEX, CASE_INSENSITIVE_OPTION));
 
 		return new DataUnitQueryCriteriaBuilderImpl(valueCriteriaAppliersByComparison);

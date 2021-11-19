@@ -1,7 +1,7 @@
 package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.controller.model.GenericValidatedResponse;
-import com.hurynovich.data_storage.filter.model.Filter;
+import com.hurynovich.data_storage.filter.model.DataUnitFilter;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.service.dto_service.DataUnitService;
@@ -98,7 +98,7 @@ public class DataUnitController {
 
 	@GetMapping("/dataUnits")
 	public ResponseEntity<GenericValidatedResponse<GenericPage<DataUnitDTO>>> getDataUnits(
-			final @RequestParam(required = false) Integer pageNumber, final @RequestBody Filter filter) {
+			final @RequestParam(required = false) Integer pageNumber, final @RequestBody DataUnitFilter filter) {
 		final PaginationParams params = paginator.buildParams(pageNumber, ELEMENTS_PER_PAGE);
 		final List<DataUnitDTO> dataUnits = service.findAll(params, filter);
 		final GenericPage<DataUnitDTO> page = paginator.buildPage(dataUnits, service.count(), params);

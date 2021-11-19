@@ -2,7 +2,7 @@ package com.hurynovich.data_storage.service.dto_service.impl;
 
 import com.hurynovich.data_storage.converter.Converter;
 import com.hurynovich.data_storage.dao.DataUnitDAO;
-import com.hurynovich.data_storage.filter.model.Filter;
+import com.hurynovich.data_storage.filter.model.DataUnitFilter;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
@@ -55,7 +55,7 @@ class DataUnitServiceImpl implements DataUnitService {
 	}
 
 	@Override
-	public List<DataUnitDTO> findAll(final @NonNull PaginationParams params, final @NonNull Filter filter) {
+	public List<DataUnitDTO> findAll(final @NonNull PaginationParams params, final @NonNull DataUnitFilter filter) {
 		return MassProcessingUtils.processQuietly(dao.findAll(params, filter), converter::convert);
 	}
 
