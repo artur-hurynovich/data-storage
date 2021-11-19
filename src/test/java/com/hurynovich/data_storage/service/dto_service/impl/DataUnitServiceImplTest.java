@@ -2,6 +2,8 @@ package com.hurynovich.data_storage.service.dto_service.impl;
 
 import com.hurynovich.data_storage.converter.Converter;
 import com.hurynovich.data_storage.dao.DataUnitDAO;
+import com.hurynovich.data_storage.filter.model.DataUnitFilter;
+import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
 import com.hurynovich.data_storage.service.dto_service.DataUnitService;
@@ -17,6 +19,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -30,6 +34,12 @@ class DataUnitServiceImplTest {
 
 	@Mock
 	private Converter<DataUnitDTO, DataUnitDocument, String> converter;
+
+	@Mock
+	private PaginationParams params;
+
+	@Mock
+	private DataUnitFilter filter;
 
 	private DataUnitService service;
 
@@ -95,6 +105,42 @@ class DataUnitServiceImplTest {
 
 		Assertions.assertThrows(EntityNotFoundException.class, () -> service.deleteById(INCORRECT_STRING_ID),
 				"'DataUnitDocument' with id = '" + INCORRECT_STRING_ID + "' not found");
+	}
+
+	@Test
+	void findAllTest() {
+		final List<DataUnitDocument> documents = entityGenerator.generateMultipleObjects();
+		Mockito.when(dao.findAll(params, filter)).thenReturn(documents);
+
+		final List<DataUnitDTO> dtos = dtoGenerator.generateMultipleObjects();
+		for (int i = 0; i < documents.size(); i++) {
+			final DataUnitDTO dto = dtos.get(i);
+			Mockito.when(converter.convert(documents.get(i))).thenReturn(dto);
+		}
+
+		final List<DataUnitDTO> savedDTOs = service.findAll(params, filter);
+		Assertions.assertNotNull(savedDTOs);
+		Assertions.assertFalse(savedDTOs.isEmpty());
+		Assertions.assertTrue(Objects.deepEquals(dtos, savedDTOs));
+	}
+
+	@Test
+	void findAllEmptyTest() {
+		final List<DataUnitDocument> documents = new ArrayList<>();
+		Mockito.when(dao.findAll(params, filter)).thenReturn(documents);
+
+		final List<DataUnitDTO> savedDTOs = service.findAll(params, filter);
+		Assertions.assertNotNull(savedDTOs);
+		Assertions.assertTrue(savedDTOs.isEmpty());
+	}
+
+	@Test
+	void countTest() {
+		final List<DataUnitDocument> documents = entityGenerator.generateMultipleObjects();
+		final long count = documents.size();
+		Mockito.when(dao.count(filter)).thenReturn(count);
+
+		Assertions.assertEquals(count, service.count(filter));
 	}
 
 	@Test
