@@ -60,8 +60,8 @@ class DataUnitServiceImpl implements DataUnitService {
 	}
 
 	@Override
-	public long count() {
-		return dao.count();
+	public long count(final @NonNull DataUnitFilter filter) {
+		return dao.count(filter);
 	}
 
 	@Override

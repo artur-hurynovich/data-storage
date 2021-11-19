@@ -23,8 +23,6 @@ class DataUnitDAOImpl implements DataUnitDAO {
 
 	private final DataUnitQueryCriteriaBuilder criteriaBuilder;
 
-	private final Query emptyQuery = new Query();
-
 	public DataUnitDAOImpl(final @NonNull MongoTemplate mongoTemplate,
 						   final @NonNull DataUnitQueryCriteriaBuilder criteriaBuilder) {
 		this.mongoTemplate = Objects.requireNonNull(mongoTemplate);
@@ -58,8 +56,10 @@ class DataUnitDAOImpl implements DataUnitDAO {
 	}
 
 	@Override
-	public long count() {
-		return mongoTemplate.count(emptyQuery, DataUnitDocument.class);
+	public long count(final @NonNull DataUnitFilter filter) {
+		final Query query = new Query().addCriteria(criteriaBuilder.build(filter));
+
+		return mongoTemplate.count(query, DataUnitDocument.class);
 	}
 
 	@Override

@@ -11,7 +11,7 @@ public interface DataUnitDAO extends BaseDAO<DataUnitDocument, String> {
 
 	List<DataUnitDocument> findAll(@NonNull PaginationParams params, @NonNull DataUnitFilter filter);
 
-	long count();
+	long count(@NonNull DataUnitFilter filter);
 
 	void deleteAllBySchemaId(@NonNull Long schemaId);
 

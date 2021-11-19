@@ -101,7 +101,7 @@ public class DataUnitController {
 			final @RequestParam(required = false) Integer pageNumber, final @RequestBody DataUnitFilter filter) {
 		final PaginationParams params = paginator.buildParams(pageNumber, ELEMENTS_PER_PAGE);
 		final List<DataUnitDTO> dataUnits = service.findAll(params, filter);
-		final GenericPage<DataUnitDTO> page = paginator.buildPage(dataUnits, service.count(), params);
+		final GenericPage<DataUnitDTO> page = paginator.buildPage(dataUnits, service.count(filter), params);
 
 		return ResponseEntity.ok(new GenericValidatedResponse<>(new ValidationResult(), page));
 	}

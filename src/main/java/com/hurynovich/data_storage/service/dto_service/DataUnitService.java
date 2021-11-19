@@ -11,7 +11,7 @@ public interface DataUnitService extends BaseService<DataUnitDTO, String> {
 
 	List<DataUnitDTO> findAll(@NonNull PaginationParams params, @NonNull DataUnitFilter filter);
 
-	long count();
+	long count(@NonNull DataUnitFilter filter);
 
 	void deleteAllBySchemaId(@NonNull Long schemaId);
 
