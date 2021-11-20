@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_LONG_ID;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_STRING_ID;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,7 +42,10 @@ class DataUnitControllerTest extends AbstractControllerTest {
 	private static final long TOTAL_ELEMENTS_COUNT = 10;
 
 	@Mock
-	private Validator<DataUnitDTO> validator;
+	private Validator<DataUnitDTO> dataUnitValidator;
+
+	@Mock
+	private Validator<DataUnitFilter> filterValidator;
 
 	@Mock
 	private ValidationHelper helper;
@@ -65,7 +69,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 
 	@BeforeEach
 	public void initController() {
-		controller = new DataUnitController(validator, helper, service, paginator);
+		controller = new DataUnitController(dataUnitValidator, filterValidator, helper, service, paginator);
 	}
 
 	@Test
@@ -74,7 +78,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 		TestReflectionUtils.setField(dataUnit, "id", null);
 
 		final ValidationResult validationResult = new ValidationResult();
-		Mockito.when(validator.validate(dataUnit)).thenReturn(validationResult);
+		Mockito.when(dataUnitValidator.validate(dataUnit)).thenReturn(validationResult);
 		Mockito.when(service.save(dataUnit)).thenReturn(dataUnit);
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.postDataUnit(dataUnit);
@@ -123,7 +127,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
 		validationResult.addError("'dataUnit.schemaId' can't be null");
-		Mockito.when(validator.validate(dataUnit)).thenReturn(validationResult);
+		Mockito.when(dataUnitValidator.validate(dataUnit)).thenReturn(validationResult);
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.postDataUnit(dataUnit);
 		Assertions.assertNotNull(response);
@@ -145,7 +149,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
 		validationResult.addError("'dataUnit.properties' can't be null or empty");
-		Mockito.when(validator.validate(dataUnit)).thenReturn(validationResult);
+		Mockito.when(dataUnitValidator.validate(dataUnit)).thenReturn(validationResult);
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.
 				putDataUnit(dataUnit.getId(), dataUnit);
@@ -209,8 +213,9 @@ class DataUnitControllerTest extends AbstractControllerTest {
 
 	@Test
 	void getSchemasTest() {
-		final List<DataUnitDTO> dataUnits = dataUnitGenerator.generateMultipleObjects();
+		Mockito.when(filterValidator.validate(filter)).thenReturn(new ValidationResult());
 		Mockito.when(paginator.buildParams(PAGE_NUMBER, ELEMENTS_PER_PAGE)).thenReturn(params);
+		final List<DataUnitDTO> dataUnits = dataUnitGenerator.generateMultipleObjects();
 		Mockito.when(service.findAll(params, filter)).thenReturn(dataUnits);
 		Mockito.when(service.count(filter)).thenReturn(TOTAL_ELEMENTS_COUNT);
 		Mockito.when(paginator.buildPage(dataUnits, TOTAL_ELEMENTS_COUNT, params)).
@@ -243,6 +248,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 
 	@Test
 	void getSchemasEmptyTest() {
+		Mockito.when(filterValidator.validate(filter)).thenReturn(new ValidationResult());
 		Mockito.when(paginator.buildParams(PAGE_NUMBER, ELEMENTS_PER_PAGE)).thenReturn(params);
 		final List<DataUnitDTO> dataUnits = new ArrayList<>();
 		Mockito.when(service.findAll(params, filter)).thenReturn(dataUnits);
@@ -276,10 +282,30 @@ class DataUnitControllerTest extends AbstractControllerTest {
 	}
 
 	@Test
+	void getSchemasDataUnitSchemaNotFoundTest() {
+		final ValidationResult validationResult = new ValidationResult();
+		validationResult.setType(ValidationResultType.FAILURE);
+		validationResult.addError("'dataUnitSchema' with id = '" + INCORRECT_LONG_ID + "' not found");
+		Mockito.when(filterValidator.validate(filter)).thenReturn(validationResult);
+
+		final ResponseEntity<GenericValidatedResponse<GenericPage<DataUnitDTO>>> response = controller.
+				getDataUnits(PAGE_NUMBER, filter);
+		Assertions.assertNotNull(response);
+		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+		final GenericValidatedResponse<GenericPage<DataUnitDTO>> responseBody = response.getBody();
+		Assertions.assertNotNull(responseBody);
+
+		checkValidationResultsEquality(validationResult, responseBody.getValidationResult());
+
+		Assertions.assertNull(responseBody.getBody());
+	}
+
+	@Test
 	void putValidDataUnitTest() {
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateSingleObject();
 		final ValidationResult validationResult = new ValidationResult();
-		Mockito.when(validator.validate(dataUnit)).thenReturn(validationResult);
+		Mockito.when(dataUnitValidator.validate(dataUnit)).thenReturn(validationResult);
 		Mockito.when(service.save(dataUnit)).thenReturn(dataUnit);
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.
@@ -344,7 +370,7 @@ class DataUnitControllerTest extends AbstractControllerTest {
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
 		validationResult.addError("'dataUnit.properties' can't be null or empty");
-		Mockito.when(validator.validate(dataUnit)).thenReturn(validationResult);
+		Mockito.when(dataUnitValidator.validate(dataUnit)).thenReturn(validationResult);
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.
 				putDataUnit(dataUnit.getId(), dataUnit);

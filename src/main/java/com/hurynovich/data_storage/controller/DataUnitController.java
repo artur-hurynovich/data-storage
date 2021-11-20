@@ -32,7 +32,9 @@ public class DataUnitController {
 
 	private static final int ELEMENTS_PER_PAGE = 20;
 
-	private final Validator<DataUnitDTO> validator;
+	private final Validator<DataUnitDTO> dataUnitValidator;
+
+	private final Validator<DataUnitFilter> filterValidator;
 
 	private final ValidationHelper helper;
 
@@ -40,11 +42,13 @@ public class DataUnitController {
 
 	private final Paginator paginator;
 
-	public DataUnitController(final @NonNull Validator<DataUnitDTO> validator,
+	public DataUnitController(final @NonNull Validator<DataUnitDTO> dataUnitValidator,
+							  final @NonNull Validator<DataUnitFilter> filterValidator,
 							  final @NonNull ValidationHelper helper,
 							  final @NonNull DataUnitService service,
 							  final @NonNull Paginator paginator) {
-		this.validator = Objects.requireNonNull(validator);
+		this.dataUnitValidator = Objects.requireNonNull(dataUnitValidator);
+		this.filterValidator = Objects.requireNonNull(filterValidator);
 		this.helper = Objects.requireNonNull(helper);
 		this.service = Objects.requireNonNull(service);
 		this.paginator = Objects.requireNonNull(paginator);
@@ -62,7 +66,7 @@ public class DataUnitController {
 			body = null;
 			status = HttpStatus.BAD_REQUEST;
 		} else {
-			validationResult = validator.validate(dataUnit);
+			validationResult = dataUnitValidator.validate(dataUnit);
 			if (validationResult.getType() == ValidationResultType.SUCCESS) {
 				body = service.save(dataUnit);
 				status = HttpStatus.CREATED;
@@ -99,11 +103,20 @@ public class DataUnitController {
 	@GetMapping("/dataUnits")
 	public ResponseEntity<GenericValidatedResponse<GenericPage<DataUnitDTO>>> getDataUnits(
 			final @RequestParam(required = false) Integer pageNumber, final @RequestBody DataUnitFilter filter) {
-		final PaginationParams params = paginator.buildParams(pageNumber, ELEMENTS_PER_PAGE);
-		final List<DataUnitDTO> dataUnits = service.findAll(params, filter);
-		final GenericPage<DataUnitDTO> page = paginator.buildPage(dataUnits, service.count(filter), params);
+		final ValidationResult validationResult = filterValidator.validate(filter);
+		final GenericPage<DataUnitDTO> body;
+		final HttpStatus status;
+		if (validationResult.getType() == ValidationResultType.SUCCESS) {
+			final PaginationParams params = paginator.buildParams(pageNumber, ELEMENTS_PER_PAGE);
+			final List<DataUnitDTO> dataUnits = service.findAll(params, filter);
+			body = paginator.buildPage(dataUnits, service.count(filter), params);
+			status = HttpStatus.OK;
+		} else {
+			body = null;
+			status = HttpStatus.BAD_REQUEST;
+		}
 
-		return ResponseEntity.ok(new GenericValidatedResponse<>(new ValidationResult(), page));
+		return new ResponseEntity<>(new GenericValidatedResponse<>(validationResult, body), status);
 	}
 
 	@PutMapping("/dataUnit/{id}")
@@ -120,7 +133,7 @@ public class DataUnitController {
 			body = null;
 			status = HttpStatus.BAD_REQUEST;
 		} else {
-			validationResult = validator.validate(dataUnit);
+			validationResult = dataUnitValidator.validate(dataUnit);
 			if (validationResult.getType() == ValidationResultType.SUCCESS) {
 				body = service.save(dataUnit);
 				status = HttpStatus.OK;
