@@ -1,16 +1,14 @@
 package com.hurynovich.data_storage.service.data_unit_property_check_processor.impl;
 
-import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
-import com.hurynovich.data_storage.service.data_unit_property_check_processor.exception.DataUnitPropertyValueCheckProcessorException;
 import com.hurynovich.data_storage.service.data_unit_property_value_checker.DataUnitPropertyValueTypeChecker;
+import com.hurynovich.data_storage.service.data_unit_property_value_checker.impl.DataUnitPropertyValueCheckerConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Map;
@@ -25,11 +23,8 @@ import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUni
 @ExtendWith(MockitoExtension.class)
 class DataUnitPropertyValueCheckProcessorTest {
 
-	@Mock
-	private Map<DataUnitPropertyType, DataUnitPropertyValueTypeChecker> checkersByType;
-
-	@Mock
-	private DataUnitPropertyValueTypeChecker checker;
+	private final Map<DataUnitPropertyType, DataUnitPropertyValueTypeChecker> checkersByType =
+			new DataUnitPropertyValueCheckerConfig().dataUnitPropertyValueTypeCheckersByType();
 
 	private DataUnitPropertyValueCheckProcessor processor;
 
@@ -41,7 +36,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void textTypeNullTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.TEXT);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
 
 		Assertions.assertTrue(processor.processCheck(propertySchema, null));
 	}
@@ -53,8 +47,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void textTypeNotNullTrueTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.TEXT);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
-		Mockito.when(checker.check(DATA_UNIT_TEXT_PROPERTY_VALUE)).thenReturn(true);
 
 		Assertions.assertTrue(processor.processCheck(propertySchema, DATA_UNIT_TEXT_PROPERTY_VALUE));
 	}
@@ -62,8 +54,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void textTypeNotNullFalseTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.TEXT);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
-		Mockito.when(checker.check(DATA_UNIT_INTEGER_PROPERTY_VALUE)).thenReturn(false);
 
 		Assertions.assertFalse(processor.processCheck(propertySchema, DATA_UNIT_INTEGER_PROPERTY_VALUE));
 	}
@@ -71,7 +61,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void integerTypeNullTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.INTEGER);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
 
 		Assertions.assertTrue(processor.processCheck(propertySchema, null));
 	}
@@ -79,8 +68,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void integerTypeNotNullTrueTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.INTEGER);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
-		Mockito.when(checker.check(DATA_UNIT_INTEGER_PROPERTY_VALUE)).thenReturn(true);
 
 		Assertions.assertTrue(processor.processCheck(propertySchema, DATA_UNIT_INTEGER_PROPERTY_VALUE));
 	}
@@ -88,8 +75,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void integerTypeNotNullFalseTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.INTEGER);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
-		Mockito.when(checker.check(DATA_UNIT_FLOAT_PROPERTY_VALUE)).thenReturn(false);
 
 		Assertions.assertFalse(processor.processCheck(propertySchema, DATA_UNIT_FLOAT_PROPERTY_VALUE));
 	}
@@ -97,7 +82,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void floatTypeNullTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.FLOAT);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
 
 		Assertions.assertTrue(processor.processCheck(propertySchema, null));
 	}
@@ -105,8 +89,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void floatTypeNotNullTrueTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.FLOAT);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
-		Mockito.when(checker.check(DATA_UNIT_FLOAT_PROPERTY_VALUE)).thenReturn(true);
 
 		Assertions.assertTrue(processor.processCheck(propertySchema, DATA_UNIT_FLOAT_PROPERTY_VALUE));
 	}
@@ -114,8 +96,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void floatTypeNotNullFalseTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.FLOAT);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
-		Mockito.when(checker.check(DATA_UNIT_BOOLEAN_PROPERTY_VALUE)).thenReturn(false);
 
 		Assertions.assertFalse(processor.processCheck(propertySchema, DATA_UNIT_BOOLEAN_PROPERTY_VALUE));
 	}
@@ -123,7 +103,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void booleanTypeNullTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.BOOLEAN);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
 
 		Assertions.assertTrue(processor.processCheck(propertySchema, null));
 	}
@@ -131,8 +110,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void booleanTypeNotNullTrueTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.BOOLEAN);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
-		Mockito.when(checker.check(DATA_UNIT_BOOLEAN_PROPERTY_VALUE)).thenReturn(true);
 
 		Assertions.assertTrue(processor.processCheck(propertySchema, DATA_UNIT_BOOLEAN_PROPERTY_VALUE));
 	}
@@ -140,8 +117,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void booleanTypeNotNullFalseTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.BOOLEAN);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
-		Mockito.when(checker.check(DATA_UNIT_DATE_PROPERTY_VALUE)).thenReturn(false);
 
 		Assertions.assertFalse(processor.processCheck(propertySchema, DATA_UNIT_DATE_PROPERTY_VALUE));
 	}
@@ -149,7 +124,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void dateTypeNullTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.DATE);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
 
 		Assertions.assertTrue(processor.processCheck(propertySchema, null));
 	}
@@ -157,8 +131,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void dateTypeNotNullTrueTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.DATE);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
-		Mockito.when(checker.check(DATA_UNIT_DATE_PROPERTY_VALUE)).thenReturn(true);
 
 		Assertions.assertTrue(processor.processCheck(propertySchema, DATA_UNIT_DATE_PROPERTY_VALUE));
 	}
@@ -166,8 +138,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void dateTypeNotNullFalseTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.DATE);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
-		Mockito.when(checker.check(DATA_UNIT_TIME_PROPERTY_VALUE)).thenReturn(false);
 
 		Assertions.assertFalse(processor.processCheck(propertySchema, DATA_UNIT_TIME_PROPERTY_VALUE));
 	}
@@ -175,7 +145,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void timeTypeNullTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.TIME);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
 
 		Assertions.assertTrue(processor.processCheck(propertySchema, null));
 	}
@@ -183,8 +152,6 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void timeTypeNotNullTrueTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.TIME);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
-		Mockito.when(checker.check(DATA_UNIT_TIME_PROPERTY_VALUE)).thenReturn(true);
 
 		Assertions.assertTrue(processor.processCheck(propertySchema, DATA_UNIT_TIME_PROPERTY_VALUE));
 	}
@@ -192,21 +159,8 @@ class DataUnitPropertyValueCheckProcessorTest {
 	@Test
 	void timeTypeNotNullFalseTest() {
 		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.TIME);
-		Mockito.when(checkersByType.get(propertySchema.getType())).thenReturn(checker);
-		Mockito.when(checker.check(DATA_UNIT_TEXT_PROPERTY_VALUE)).thenReturn(false);
 
 		Assertions.assertFalse(processor.processCheck(propertySchema, DATA_UNIT_TEXT_PROPERTY_VALUE));
-	}
-
-	@Test
-	void checkerNotFoundExceptionTest() {
-		final DataUnitPropertySchemaDTO propertySchema = buildPropertySchema(DataUnitPropertyType.TIME);
-		final DataUnitPropertyType type = propertySchema.getType();
-		Mockito.when(checkersByType.get(type)).thenReturn(null);
-
-		Assertions.assertThrows(DataUnitPropertyValueCheckProcessorException.class,
-				() -> processor.processCheck(propertySchema, null),
-				"No dataUnitPropertyValueTypeChecker for DataUnitPropertyType = " + type);
 	}
 
 }

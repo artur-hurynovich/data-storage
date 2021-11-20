@@ -10,14 +10,13 @@ import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGen
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDocumentGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 
 import java.util.List;
 
 class DataUnitConverterTest {
 
 	private final Converter<DataUnitDTO, DataUnitDocument, String> converter =
-			new DataUnitConverter(new ModelMapper());
+			new DataUnitConverter(new ConverterConfig().modelMapper());
 
 	private final TestObjectGenerator<DataUnitDTO> dtoGenerator =
 			new TestDataUnitDTOGenerator();

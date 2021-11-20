@@ -13,7 +13,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 @Configuration
-class EventListenerConfig {
+public class EventListenerConfig {
 
 	@Bean
 	public EventListener<DataUnitSchemaDTO> dataUnitSchemaEventListener(
