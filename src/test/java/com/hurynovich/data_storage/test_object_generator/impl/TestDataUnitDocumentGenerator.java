@@ -85,4 +85,13 @@ public class TestDataUnitDocumentGenerator implements TestIdentifiedObjectGenera
 		return Arrays.asList(dataUnit1, dataUnit2, dataUnit3);
 	}
 
+	@Override
+	public List<DataUnitDocument> generateObjectsNullId() {
+		final DataUnitDocument dataUnit1 = generateDataUnit(null, DATA_UNIT_SCHEMA_ID_1);
+		final DataUnitDocument dataUnit2 = generateDataUnit(null, DATA_UNIT_SCHEMA_ID_2);
+		final DataUnitDocument dataUnit3 = generateDataUnit(null, DATA_UNIT_SCHEMA_ID_3);
+
+		return Arrays.asList(dataUnit1, dataUnit2, dataUnit3);
+	}
+
 }

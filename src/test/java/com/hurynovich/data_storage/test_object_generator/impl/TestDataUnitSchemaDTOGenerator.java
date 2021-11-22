@@ -22,8 +22,10 @@ import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUni
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_INTEGER_PROPERTY_SCHEMA_NAME;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_INTEGER_PROPERTY_SCHEMA_TYPE;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_SCHEMA_ID_1;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_SCHEMA_ID_2;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_SCHEMA_ID_3;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_SCHEMA_NAME_1;
+import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_SCHEMA_NAME_2;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_SCHEMA_NAME_3;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID;
 import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TEXT_PROPERTY_SCHEMA_NAME;
@@ -95,9 +97,21 @@ public class TestDataUnitSchemaDTOGenerator implements TestIdentifiedObjectGener
 		final DataUnitSchemaDTO schema1 = generateSchema(
 				DATA_UNIT_SCHEMA_ID_1, DATA_UNIT_SCHEMA_NAME_1, this::generatePropertySchemas);
 		final DataUnitSchemaDTO schema2 = generateSchema(
-				DATA_UNIT_SCHEMA_ID_1, DATA_UNIT_SCHEMA_NAME_1, this::generatePropertySchemas);
+				DATA_UNIT_SCHEMA_ID_2, DATA_UNIT_SCHEMA_NAME_2, this::generatePropertySchemas);
 		final DataUnitSchemaDTO schema3 = generateSchema(
 				DATA_UNIT_SCHEMA_ID_3, DATA_UNIT_SCHEMA_NAME_3, this::generatePropertySchemas);
+
+		return Arrays.asList(schema1, schema2, schema3);
+	}
+
+	@Override
+	public List<DataUnitSchemaDTO> generateObjectsNullId() {
+		final DataUnitSchemaDTO schema1 = generateSchema(
+				null, DATA_UNIT_SCHEMA_NAME_1, this::generatePropertySchemasNullId);
+		final DataUnitSchemaDTO schema2 = generateSchema(
+				null, DATA_UNIT_SCHEMA_NAME_1, this::generatePropertySchemasNullId);
+		final DataUnitSchemaDTO schema3 = generateSchema(
+				null, DATA_UNIT_SCHEMA_NAME_3, this::generatePropertySchemasNullId);
 
 		return Arrays.asList(schema1, schema2, schema3);
 	}

@@ -117,4 +117,16 @@ public class TestDataUnitSchemaEntityGenerator implements TestIdentifiedObjectGe
 		return Arrays.asList(schema1, schema2, schema3);
 	}
 
+	@Override
+	public List<DataUnitSchemaEntity> generateObjectsNullId() {
+		final DataUnitSchemaEntity schema1 = generateSchema(
+				null, DATA_UNIT_SCHEMA_NAME_1, this::generateNewPropertySchemasNullId);
+		final DataUnitSchemaEntity schema2 = generateSchema(
+				null, DATA_UNIT_SCHEMA_NAME_2, this::generateNewPropertySchemasNullId);
+		final DataUnitSchemaEntity schema3 = generateSchema(
+				null, DATA_UNIT_SCHEMA_NAME_3, this::generateNewPropertySchemasNullId);
+
+		return Arrays.asList(schema1, schema2, schema3);
+	}
+
 }

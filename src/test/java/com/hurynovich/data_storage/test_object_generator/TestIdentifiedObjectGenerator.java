@@ -12,4 +12,6 @@ public interface TestIdentifiedObjectGenerator<T extends Identified<?>> {
 
 	List<T> generateObjects();
 
+	List<T> generateObjectsNullId();
+
 }

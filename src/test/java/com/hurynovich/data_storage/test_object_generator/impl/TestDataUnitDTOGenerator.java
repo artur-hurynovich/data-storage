@@ -73,4 +73,13 @@ public class TestDataUnitDTOGenerator implements TestIdentifiedObjectGenerator<D
 		return Arrays.asList(dataUnit1, dataUnit2, dataUnit3);
 	}
 
+	@Override
+	public List<DataUnitDTO> generateObjectsNullId() {
+		final DataUnitDTO dataUnit1 = generateDataUnit(null, DATA_UNIT_SCHEMA_ID_1);
+		final DataUnitDTO dataUnit2 = generateDataUnit(null, DATA_UNIT_SCHEMA_ID_2);
+		final DataUnitDTO dataUnit3 = generateDataUnit(null, DATA_UNIT_SCHEMA_ID_3);
+
+		return Arrays.asList(dataUnit1, dataUnit2, dataUnit3);
+	}
+
 }
