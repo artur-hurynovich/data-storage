@@ -12,6 +12,7 @@ import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,12 +76,12 @@ class DataUnitSchemaValidatorTest {
 
 	@Test
 	void validateSchemaNameIsEmptyTest() {
-		processValidateSchemaNameTest("");
+		processValidateSchemaNameTest(StringUtils.EMPTY);
 	}
 
 	@Test
 	void validateSchemaNameIsBlankTest() {
-		processValidateSchemaNameTest(" ");
+		processValidateSchemaNameTest(StringUtils.SPACE);
 	}
 
 	@Test
@@ -226,12 +227,12 @@ class DataUnitSchemaValidatorTest {
 
 	@Test
 	void validatePropertySchemaNameIsEmptyTest() {
-		processValidatePropertySchemaNameTest("");
+		processValidatePropertySchemaNameTest(StringUtils.EMPTY);
 	}
 
 	@Test
 	void validatePropertySchemaNameIsBlankTest() {
-		processValidatePropertySchemaNameTest(" ");
+		processValidatePropertySchemaNameTest(StringUtils.SPACE);
 	}
 
 	@Test
