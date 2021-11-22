@@ -5,7 +5,7 @@ import com.hurynovich.data_storage.event.model.Event;
 import com.hurynovich.data_storage.event.model.EventType;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.dto_service.DataUnitService;
-import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
+import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ class DataUnitSchemaDeleteEventHandlerTest {
 	@Mock
 	private DataUnitService dataUnitService;
 
-	private final TestObjectGenerator<DataUnitSchemaDTO> schemaGenerator =
+	private final TestIdentifiedObjectGenerator<DataUnitSchemaDTO> schemaGenerator =
 			new TestDataUnitSchemaDTOGenerator();
 
 	@BeforeEach
@@ -32,7 +32,7 @@ class DataUnitSchemaDeleteEventHandlerTest {
 
 	@Test
 	void handleTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateSingleObject();
+		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
 		eventHandler.handle(new Event<>(schema, EventType.DELETE));
 
 		Mockito.verify(dataUnitService).deleteAllBySchemaId(schema.getId());

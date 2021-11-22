@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 abstract class AbstractConverter<T extends AbstractDTO<I>, U extends Identified<I>, I extends Serializable>
 		implements Converter<T, U, I> {
@@ -34,8 +33,6 @@ abstract class AbstractConverter<T extends AbstractDTO<I>, U extends Identified<
 	private final Map<Integer, ArgDescriptor<U, ?>> argDescriptorsByIdx;
 
 	private final Set<String> validPropertyNames;
-
-	private final String[] emptyIgnoreProperties = new String[0];
 
 	protected AbstractConverter(final @NonNull ModelMapper modelMapper,
 								final @NonNull Map<Integer, ArgDescriptor<U, ?>> argDescriptorsByIdx) {
@@ -66,12 +63,7 @@ abstract class AbstractConverter<T extends AbstractDTO<I>, U extends Identified<
 	protected abstract Class<U> getTargetClass();
 
 	@Override
-	public T convert(final @Nullable U source) {
-		return convert(source, emptyIgnoreProperties);
-	}
-
-	@Override
-	public T convert(final @Nullable U source, final String... ignoreProperties) {
+	public T convert(final @Nullable U source, final @Nullable String... ignoreProperties) {
 		final T target;
 		if (source != null) {
 			final Set<String> ignorePropertiesSet = buildIgnoreProperties(ignoreProperties);
@@ -112,9 +104,9 @@ abstract class AbstractConverter<T extends AbstractDTO<I>, U extends Identified<
 		return target;
 	}
 
-	private Set<String> buildIgnoreProperties(final String... ignoreProperties) {
+	private Set<String> buildIgnoreProperties(final @Nullable String... ignoreProperties) {
 		return ignoreProperties != null ?
-				Stream.of(ignoreProperties).collect(Collectors.toSet()) : Collections.emptySet();
+				Set.of(ignoreProperties) : Collections.emptySet();
 	}
 
 	private void validateIgnoreProperties(final @NonNull Set<String> ignoreProperties) {

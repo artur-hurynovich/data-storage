@@ -10,8 +10,6 @@ public interface Converter<T extends AbstractDTO<I>, U extends Identified<I>, I 
 
 	U convert(@Nullable T source);
 
-	T convert(@Nullable U source);
-
-	T convert(@Nullable U source, String... ignoreProperties);
+	T convert(@Nullable U source, @Nullable String... ignoreProperties);
 
 }

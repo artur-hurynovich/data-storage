@@ -1,10 +1,12 @@
 package com.hurynovich.data_storage.converter.impl;
 
 import com.hurynovich.data_storage.model.AbstractDocument;
+import com.hurynovich.data_storage.model.AbstractDocument_;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO.DataUnitPropertyDTO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument.DataUnitPropertyDocument;
+import com.hurynovich.data_storage.model.data_unit.DataUnitDocument_;
 import com.hurynovich.data_storage.utils.MassProcessingUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.lang.NonNull;
@@ -20,9 +22,9 @@ class DataUnitConverter extends AbstractConverter<DataUnitDTO, DataUnitDocument,
 
 	public DataUnitConverter(final @NonNull ModelMapper modelMapper) {
 		super(Objects.requireNonNull(modelMapper), Map.of(
-				0, new ArgDescriptor<>("id", String.class, AbstractDocument::getId),
-				1, new ArgDescriptor<>("schemaId", Long.class, DataUnitDocument::getSchemaId),
-				2, new ArgDescriptor<>("properties", List.class, dataUnit -> MassProcessingUtils.
+				0, new ArgDescriptor<>(AbstractDocument_.ID, String.class, AbstractDocument::getId),
+				1, new ArgDescriptor<>(DataUnitDocument_.SCHEMA_ID, Long.class, DataUnitDocument::getSchemaId),
+				2, new ArgDescriptor<>(DataUnitDocument_.PROPERTIES, List.class, dataUnit -> MassProcessingUtils.
 						processQuietly(dataUnit.getProperties(), convertPropertyFunction()))));
 	}
 

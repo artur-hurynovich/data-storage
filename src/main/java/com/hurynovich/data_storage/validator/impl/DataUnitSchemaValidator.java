@@ -132,6 +132,7 @@ class DataUnitSchemaValidator implements Validator<DataUnitSchemaDTO> {
 
 		public static DataUnitPropertySchemaValidationContext of(final @NonNull DataUnitSchemaDTO schema) {
 			return new DataUnitPropertySchemaValidationContext(schema.getId(), schema.getPropertySchemas().stream().
+					filter(Objects::nonNull).
 					map(AbstractDTO::getId).
 					collect(Collectors.toSet()));
 		}

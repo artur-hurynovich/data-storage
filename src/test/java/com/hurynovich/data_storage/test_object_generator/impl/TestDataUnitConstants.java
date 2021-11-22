@@ -19,9 +19,6 @@ public class TestDataUnitConstants {
 	public static final Long DATA_UNIT_SCHEMA_ID_3 = 3333L;
 	public static final String DATA_UNIT_SCHEMA_NAME_3 = "Schema Name 3";
 
-	public static final Long DATA_UNIT_SCHEMA_ID_4 = 4444L;
-	public static final String DATA_UNIT_SCHEMA_NAME_4 = "Schema Name 4";
-
 	public static final Long DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID = 1000L;
 	public static final String DATA_UNIT_TEXT_PROPERTY_SCHEMA_NAME = "Text Property Schema";
 	public static final DataUnitPropertyType DATA_UNIT_TEXT_PROPERTY_SCHEMA_TYPE = DataUnitPropertyType.TEXT;
@@ -51,8 +48,6 @@ public class TestDataUnitConstants {
 	public static final String DATA_UNIT_ID_2 = "2222";
 
 	public static final String DATA_UNIT_ID_3 = "3333";
-
-	public static final String DATA_UNIT_ID_4 = "4444";
 
 	public static final String DATA_UNIT_TEXT_PROPERTY_VALUE = "text";
 

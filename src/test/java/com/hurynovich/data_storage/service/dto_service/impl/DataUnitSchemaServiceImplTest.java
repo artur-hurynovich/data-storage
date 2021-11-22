@@ -6,14 +6,18 @@ import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
 import com.hurynovich.data_storage.event.EventListener;
 import com.hurynovich.data_storage.event.model.Event;
 import com.hurynovich.data_storage.event.model.EventType;
+import com.hurynovich.data_storage.model.AbstractEntity_;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
-import com.hurynovich.data_storage.test_object_generator.TestObjectGenerator;
+import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaEntityGenerator;
+import com.hurynovich.data_storage.test_objects_asserter.Asserter;
+import com.hurynovich.data_storage.test_objects_asserter.impl.DataUnitSchemaAsserter;
+import com.hurynovich.data_storage.test_objects_asserter.model.DataUnitSchemaWrapper;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Assertions;
@@ -53,11 +57,14 @@ class DataUnitSchemaServiceImplTest {
 
 	private DataUnitSchemaService service;
 
-	private final TestObjectGenerator<DataUnitSchemaDTO> dtoGenerator =
+	private final TestIdentifiedObjectGenerator<DataUnitSchemaDTO> dtoGenerator =
 			new TestDataUnitSchemaDTOGenerator();
 
-	private final TestObjectGenerator<DataUnitSchemaEntity> entityGenerator =
+	private final TestIdentifiedObjectGenerator<DataUnitSchemaEntity> entityGenerator =
 			new TestDataUnitSchemaEntityGenerator();
+
+	private final Asserter<DataUnitSchemaWrapper> asserter =
+			new DataUnitSchemaAsserter();
 
 	@BeforeEach
 	public void initService() {
@@ -66,50 +73,52 @@ class DataUnitSchemaServiceImplTest {
 
 	@Test
 	void saveTest() {
-		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
-		final DataUnitSchemaEntity entity = entityGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dto = dtoGenerator.generateObjectNullId();
+		final DataUnitSchemaEntity entity = entityGenerator.generateObject();
 		Mockito.when(converter.convert(dto)).thenReturn(entity);
 		Mockito.when(dao.save(entity)).thenReturn(entity);
-		Mockito.when(converter.convert(entity)).thenReturn(dto);
+		Mockito.when(converter.convert(entity)).thenReturn(dtoGenerator.generateObject());
 
 		final DataUnitSchemaDTO savedDTO = service.save(dto);
-		Mockito.verify(cache).store(dto.getId(), dto);
-		Assertions.assertTrue(Objects.deepEquals(dto, savedDTO));
+		Mockito.verify(cache).store(savedDTO.getId(), savedDTO);
+
+		asserter.assertEquals(DataUnitSchemaWrapper.of(dto), DataUnitSchemaWrapper.of(savedDTO),
+				AbstractEntity_.ID);
+		Assertions.assertNotNull(savedDTO.getId());
 	}
 
 	@Test
 	void findByIdNotInCacheTest() {
-		final DataUnitSchemaEntity entity = entityGenerator.generateSingleObject();
+		final DataUnitSchemaEntity entity = entityGenerator.generateObject();
 		final Long id = entity.getId();
 		Mockito.when(cache.contains(id)).thenReturn(false);
 		Mockito.when(dao.findById(id)).thenReturn(Optional.of(entity));
 
-		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dto = dtoGenerator.generateObject();
 		Mockito.when(converter.convert(entity)).thenReturn(dto);
 		Mockito.when(cache.get(id)).thenReturn(Optional.of(dto));
 
 		final Optional<DataUnitSchemaDTO> savedDTOOptional = service.findById(id);
 		Mockito.verify(cache).store(id, dto);
 		Assertions.assertTrue(savedDTOOptional.isPresent());
-		Assertions.assertTrue(Objects.deepEquals(dto, savedDTOOptional.get()));
+		asserter.assertEquals(DataUnitSchemaWrapper.of(dto), DataUnitSchemaWrapper.of(savedDTOOptional.get()));
 	}
 
 	@Test
 	void findByIdInCacheTest() {
-		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dto = dtoGenerator.generateObject();
 		final Long id = dto.getId();
 		Mockito.when(cache.contains(id)).thenReturn(true);
 		Mockito.when(cache.get(id)).thenReturn(Optional.of(dto));
 
 		final Optional<DataUnitSchemaDTO> savedDTOOptional = service.findById(id);
 		Assertions.assertTrue(savedDTOOptional.isPresent());
-		Assertions.assertTrue(Objects.deepEquals(dto, savedDTOOptional.get()));
+		asserter.assertEquals(DataUnitSchemaWrapper.of(dto), DataUnitSchemaWrapper.of(savedDTOOptional.get()));
 	}
 
 	@Test
 	void findByIdEmptyTest() {
 		Mockito.when(cache.contains(INCORRECT_LONG_ID)).thenReturn(false);
-		Mockito.when(cache.get(INCORRECT_LONG_ID)).thenReturn(Optional.empty());
 		Mockito.when(cache.get(INCORRECT_LONG_ID)).thenReturn(Optional.empty());
 
 		final Optional<DataUnitSchemaDTO> savedDTOOptional = service.findById(INCORRECT_LONG_ID);
@@ -118,10 +127,10 @@ class DataUnitSchemaServiceImplTest {
 
 	@Test
 	void findAllTest() {
-		final List<DataUnitSchemaEntity> entities = entityGenerator.generateMultipleObjects();
+		final List<DataUnitSchemaEntity> entities = entityGenerator.generateObjects();
 		Mockito.when(dao.findAll(params)).thenReturn(entities);
 
-		final List<DataUnitSchemaDTO> dtos = dtoGenerator.generateMultipleObjects();
+		final List<DataUnitSchemaDTO> dtos = dtoGenerator.generateObjects();
 		for (int i = 0; i < entities.size(); i++) {
 			final DataUnitSchemaDTO dto = dtos.get(i);
 			TestReflectionUtils.setField(dto, DataUnitSchemaEntity_.PROPERTY_SCHEMAS, new ArrayList<>());
@@ -146,11 +155,11 @@ class DataUnitSchemaServiceImplTest {
 
 	@Test
 	void deleteByIdNotInCacheSuccessTest() {
-		final DataUnitSchemaEntity entity = entityGenerator.generateSingleObject();
+		final DataUnitSchemaEntity entity = entityGenerator.generateObject();
 		final Long id = entity.getId();
 		Mockito.when(dao.findById(id)).thenReturn(Optional.of(entity));
 
-		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dto = dtoGenerator.generateObject();
 		Mockito.when(converter.convert(entity)).thenReturn(dto);
 		Mockito.when(cache.contains(id)).thenReturn(false);
 		service.deleteById(id);
@@ -162,11 +171,11 @@ class DataUnitSchemaServiceImplTest {
 
 	@Test
 	void deleteByIdInCacheSuccessTest() {
-		final DataUnitSchemaEntity entity = entityGenerator.generateSingleObject();
+		final DataUnitSchemaEntity entity = entityGenerator.generateObject();
 		final Long id = entity.getId();
 		Mockito.when(dao.findById(id)).thenReturn(Optional.of(entity));
 
-		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dto = dtoGenerator.generateObject();
 		Mockito.when(converter.convert(entity)).thenReturn(dto);
 		Mockito.when(cache.contains(id)).thenReturn(true);
 		service.deleteById(id);
@@ -187,7 +196,7 @@ class DataUnitSchemaServiceImplTest {
 
 	@Test
 	void existsByNameTrueTest() {
-		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dto = dtoGenerator.generateObject();
 		final String name = dto.getName();
 		Mockito.when(dao.existsByName(name)).thenReturn(true);
 
@@ -196,7 +205,7 @@ class DataUnitSchemaServiceImplTest {
 
 	@Test
 	void existsByNameFalseTest() {
-		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dto = dtoGenerator.generateObject();
 		final String name = dto.getName();
 		Mockito.when(dao.existsByName(name)).thenReturn(false);
 
@@ -205,7 +214,7 @@ class DataUnitSchemaServiceImplTest {
 
 	@Test
 	void existsByNameAndNotIdTrueTest() {
-		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dto = dtoGenerator.generateObject();
 		final String name = dto.getName();
 		final Long id = dto.getId();
 		Mockito.when(dao.existsByNameAndNotId(name, id)).thenReturn(true);
@@ -215,7 +224,7 @@ class DataUnitSchemaServiceImplTest {
 
 	@Test
 	void existsByNameAndNotIdFalseTest() {
-		final DataUnitSchemaDTO dto = dtoGenerator.generateSingleObject();
+		final DataUnitSchemaDTO dto = dtoGenerator.generateObject();
 		final String name = dto.getName();
 		final Long id = dto.getId();
 		Mockito.when(dao.existsByNameAndNotId(name, id)).thenReturn(false);
