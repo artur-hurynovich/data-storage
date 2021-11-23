@@ -152,7 +152,7 @@ public class DataUnitController {
 		service.deleteById(id);
 
 		return new ResponseEntity<>(
-				new GenericValidatedResponse<>(new ValidationResult(), null), HttpStatus.NO_CONTENT);
+				new GenericValidatedResponse<>(new ValidationResult(), null), HttpStatus.OK);
 	}
 
 }

@@ -11,7 +11,7 @@ import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGen
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import com.hurynovich.data_storage.test_objects_asserter.Asserter;
 import com.hurynovich.data_storage.test_objects_asserter.impl.DataUnitSchemaAsserter;
-import com.hurynovich.data_storage.test_objects_asserter.impl.ValidationResultComparator;
+import com.hurynovich.data_storage.test_objects_asserter.impl.ValidationResultAsserter;
 import com.hurynovich.data_storage.test_objects_asserter.model.DataUnitSchemaWrapper;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import com.hurynovich.data_storage.validator.ValidationHelper;
@@ -67,7 +67,7 @@ class DataUnitSchemaControllerTest {
 			new DataUnitSchemaAsserter();
 
 	private final Asserter<ValidationResult> validationResultComparator =
-			new ValidationResultComparator();
+			new ValidationResultAsserter();
 
 	@BeforeEach
 	public void initController() {
@@ -376,7 +376,7 @@ class DataUnitSchemaControllerTest {
 		final ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> response = controller.deleteSchemaById(id);
 		Mockito.verify(service).deleteById(id);
 		Assertions.assertNotNull(response);
-		Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		final GenericValidatedResponse<DataUnitSchemaDTO> responseBody = response.getBody();
 		Assertions.assertNotNull(responseBody);

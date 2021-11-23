@@ -4,7 +4,7 @@ import com.hurynovich.data_storage.test_objects_asserter.Asserter;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import org.junit.jupiter.api.Assertions;
 
-public class ValidationResultComparator implements Asserter<ValidationResult> {
+public class ValidationResultAsserter implements Asserter<ValidationResult> {
 
 	@Override
 	public void assertEquals(final ValidationResult expected, final ValidationResult actual,

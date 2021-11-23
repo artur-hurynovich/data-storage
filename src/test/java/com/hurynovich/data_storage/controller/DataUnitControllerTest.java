@@ -13,7 +13,7 @@ import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGen
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
 import com.hurynovich.data_storage.test_objects_asserter.Asserter;
 import com.hurynovich.data_storage.test_objects_asserter.impl.DataUnitAsserter;
-import com.hurynovich.data_storage.test_objects_asserter.impl.ValidationResultComparator;
+import com.hurynovich.data_storage.test_objects_asserter.impl.ValidationResultAsserter;
 import com.hurynovich.data_storage.test_objects_asserter.model.DataUnitWrapper;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import com.hurynovich.data_storage.validator.ValidationHelper;
@@ -76,7 +76,7 @@ class DataUnitControllerTest {
 			new DataUnitAsserter();
 
 	private final Asserter<ValidationResult> validationResultAsserter =
-			new ValidationResultComparator();
+			new ValidationResultAsserter();
 
 	@BeforeEach
 	public void initController() {
@@ -406,7 +406,7 @@ class DataUnitControllerTest {
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.deleteDataUnitById(id);
 		Mockito.verify(service).deleteById(id);
 		Assertions.assertNotNull(response);
-		Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		final GenericValidatedResponse<DataUnitDTO> responseBody = response.getBody();
 		Assertions.assertNotNull(responseBody);
