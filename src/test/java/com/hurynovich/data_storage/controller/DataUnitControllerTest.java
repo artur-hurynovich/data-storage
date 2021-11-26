@@ -5,16 +5,17 @@ import com.hurynovich.data_storage.filter.model.DataUnitFilter;
 import com.hurynovich.data_storage.model.AbstractEntity_;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
+import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument_;
 import com.hurynovich.data_storage.service.dto_service.DataUnitService;
 import com.hurynovich.data_storage.service.paginator.Paginator;
 import com.hurynovich.data_storage.service.paginator.model.GenericPage;
 import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
-import com.hurynovich.data_storage.test_objects_asserter.Asserter;
+import com.hurynovich.data_storage.test_objects_asserter.TestIdentifiedObjectsAsserter;
+import com.hurynovich.data_storage.test_objects_asserter.TestObjectsAsserter;
 import com.hurynovich.data_storage.test_objects_asserter.impl.DataUnitAsserter;
 import com.hurynovich.data_storage.test_objects_asserter.impl.ValidationResultAsserter;
-import com.hurynovich.data_storage.test_objects_asserter.model.DataUnitWrapper;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import com.hurynovich.data_storage.validator.ValidationHelper;
 import com.hurynovich.data_storage.validator.Validator;
@@ -72,10 +73,10 @@ class DataUnitControllerTest {
 	private final TestIdentifiedObjectGenerator<DataUnitDTO> dataUnitGenerator =
 			new TestDataUnitDTOGenerator();
 
-	private final Asserter<DataUnitWrapper> dataUnitAsserter =
+	private final TestIdentifiedObjectsAsserter<DataUnitDTO, DataUnitDocument> dataUnitAsserter =
 			new DataUnitAsserter();
 
-	private final Asserter<ValidationResult> validationResultAsserter =
+	private final TestObjectsAsserter<ValidationResult> validationResultAsserter =
 			new ValidationResultAsserter();
 
 	@BeforeEach
@@ -99,8 +100,7 @@ class DataUnitControllerTest {
 
 		validationResultAsserter.assertEquals(validationResult, responseBody.getValidationResult());
 
-		dataUnitAsserter.assertEquals(DataUnitWrapper.of(newDataUnit), DataUnitWrapper.of(responseBody.getBody()),
-				AbstractEntity_.ID);
+		dataUnitAsserter.assertEquals(newDataUnit, responseBody.getBody(), AbstractEntity_.ID);
 
 		Assertions.assertNotNull(responseBody.getBody().getId());
 	}
@@ -190,7 +190,7 @@ class DataUnitControllerTest {
 
 		validationResultAsserter.assertEquals(new ValidationResult(), responseBody.getValidationResult());
 
-		dataUnitAsserter.assertEquals(DataUnitWrapper.of(dataUnit), DataUnitWrapper.of(responseBody.getBody()));
+		dataUnitAsserter.assertEquals(dataUnit, responseBody.getBody());
 	}
 
 	@Test
@@ -250,8 +250,7 @@ class DataUnitControllerTest {
 		final GenericPage<DataUnitDTO> page = responseBody.getBody();
 		Assertions.assertEquals(dataUnits.size(), page.getElements().size());
 		for (int i = 0; i < dataUnits.size(); i++) {
-			dataUnitAsserter.assertEquals(
-					DataUnitWrapper.of(dataUnits.get(i)), DataUnitWrapper.of(page.getElements().get(i)));
+			dataUnitAsserter.assertEquals(dataUnits.get(i), page.getElements().get(i));
 		}
 
 		Assertions.assertEquals(TOTAL_ELEMENTS_COUNT, page.getTotalElementsCount());
@@ -333,7 +332,7 @@ class DataUnitControllerTest {
 
 		validationResultAsserter.assertEquals(validationResult, responseBody.getValidationResult());
 
-		dataUnitAsserter.assertEquals(DataUnitWrapper.of(dataUnit), DataUnitWrapper.of(responseBody.getBody()));
+		dataUnitAsserter.assertEquals(dataUnit, responseBody.getBody());
 	}
 
 	@Test

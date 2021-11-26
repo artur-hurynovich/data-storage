@@ -15,9 +15,8 @@ import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
 import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaEntityGenerator;
-import com.hurynovich.data_storage.test_objects_asserter.Asserter;
+import com.hurynovich.data_storage.test_objects_asserter.TestIdentifiedObjectsAsserter;
 import com.hurynovich.data_storage.test_objects_asserter.impl.DataUnitSchemaAsserter;
-import com.hurynovich.data_storage.test_objects_asserter.model.DataUnitSchemaWrapper;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Assertions;
@@ -63,7 +62,7 @@ class DataUnitSchemaServiceImplTest {
 	private final TestIdentifiedObjectGenerator<DataUnitSchemaEntity> entityGenerator =
 			new TestDataUnitSchemaEntityGenerator();
 
-	private final Asserter<DataUnitSchemaWrapper> asserter =
+	private final TestIdentifiedObjectsAsserter<DataUnitSchemaDTO, DataUnitSchemaEntity> asserter =
 			new DataUnitSchemaAsserter();
 
 	@BeforeEach
@@ -82,8 +81,7 @@ class DataUnitSchemaServiceImplTest {
 		final DataUnitSchemaDTO savedDTO = service.save(dto);
 		Mockito.verify(cache).store(savedDTO.getId(), savedDTO);
 
-		asserter.assertEquals(DataUnitSchemaWrapper.of(dto), DataUnitSchemaWrapper.of(savedDTO),
-				AbstractEntity_.ID);
+		asserter.assertEquals(dto, savedDTO, AbstractEntity_.ID);
 		Assertions.assertNotNull(savedDTO.getId());
 	}
 
@@ -101,7 +99,7 @@ class DataUnitSchemaServiceImplTest {
 		final Optional<DataUnitSchemaDTO> savedDTOOptional = service.findById(id);
 		Mockito.verify(cache).store(id, dto);
 		Assertions.assertTrue(savedDTOOptional.isPresent());
-		asserter.assertEquals(DataUnitSchemaWrapper.of(dto), DataUnitSchemaWrapper.of(savedDTOOptional.get()));
+		asserter.assertEquals(dto, savedDTOOptional.get());
 	}
 
 	@Test
@@ -113,7 +111,7 @@ class DataUnitSchemaServiceImplTest {
 
 		final Optional<DataUnitSchemaDTO> savedDTOOptional = service.findById(id);
 		Assertions.assertTrue(savedDTOOptional.isPresent());
-		asserter.assertEquals(DataUnitSchemaWrapper.of(dto), DataUnitSchemaWrapper.of(savedDTOOptional.get()));
+		asserter.assertEquals(dto, savedDTOOptional.get());
 	}
 
 	@Test

@@ -9,15 +9,16 @@ import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPrope
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaEntity_;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
 import com.hurynovich.data_storage.service.dto_service.BaseService;
 import com.hurynovich.data_storage.service.paginator.model.GenericPage;
 import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
-import com.hurynovich.data_storage.test_objects_asserter.Asserter;
+import com.hurynovich.data_storage.test_objects_asserter.TestIdentifiedObjectsAsserter;
+import com.hurynovich.data_storage.test_objects_asserter.TestObjectsAsserter;
 import com.hurynovich.data_storage.test_objects_asserter.impl.DataUnitSchemaAsserter;
 import com.hurynovich.data_storage.test_objects_asserter.impl.ValidationResultAsserter;
-import com.hurynovich.data_storage.test_objects_asserter.model.DataUnitSchemaWrapper;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -45,10 +46,11 @@ class DataUnitSchemaIT extends AbstractAPITest {
 	private final TestIdentifiedObjectGenerator<DataUnitSchemaDTO> dtoGenerator =
 			new TestDataUnitSchemaDTOGenerator();
 
-	private final Asserter<ValidationResult> validationResultAsserter =
+	private final TestObjectsAsserter<ValidationResult> validationResultAsserter =
 			new ValidationResultAsserter();
 
-	private final Asserter<DataUnitSchemaWrapper> schemaAsserter = new DataUnitSchemaAsserter();
+	private final TestIdentifiedObjectsAsserter<DataUnitSchemaDTO, DataUnitSchemaEntity> schemaAsserter =
+			new DataUnitSchemaAsserter();
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -77,16 +79,14 @@ class DataUnitSchemaIT extends AbstractAPITest {
 		Assertions.assertNotNull(responseSchema);
 		final Long responseSchemaId = responseSchema.getId();
 		Assertions.assertNotNull(responseSchemaId);
-		schemaAsserter.assertEquals(DataUnitSchemaWrapper.of(schema), DataUnitSchemaWrapper.of(responseSchema),
-				AbstractEntity_.ID);
+		schemaAsserter.assertEquals(schema, responseSchema, AbstractEntity_.ID);
 
 		final Optional<DataUnitSchemaDTO> savedSchemaOptional = service.findById(responseSchemaId);
 		Assertions.assertTrue(savedSchemaOptional.isPresent());
 		final DataUnitSchemaDTO savedSchema = savedSchemaOptional.get();
 		Assertions.assertNotNull(savedSchema);
 		Assertions.assertEquals(savedSchema.getId(), responseSchemaId);
-		schemaAsserter.assertEquals(DataUnitSchemaWrapper.of(schema), DataUnitSchemaWrapper.of(savedSchema),
-				AbstractEntity_.ID);
+		schemaAsserter.assertEquals(schema, savedSchema, AbstractEntity_.ID);
 
 		service.deleteById(responseSchemaId);
 	}
@@ -115,8 +115,7 @@ class DataUnitSchemaIT extends AbstractAPITest {
 		final Long responseSchemaId = responseSchema.getId();
 		Assertions.assertNotNull(responseSchemaId);
 		Assertions.assertEquals(existingSchemaId, responseSchemaId);
-		schemaAsserter.assertEquals(DataUnitSchemaWrapper.of(existingSchema), DataUnitSchemaWrapper.of(responseSchema),
-				AbstractEntity_.ID);
+		schemaAsserter.assertEquals(existingSchema, responseSchema, AbstractEntity_.ID);
 	}
 
 	@Test
@@ -148,8 +147,7 @@ class DataUnitSchemaIT extends AbstractAPITest {
 		Assertions.assertEquals(existingSchemas.size(), responseSchemas.size());
 		for (int i = 0; i < existingSchemas.size(); i++) {
 			final DataUnitSchemaDTO responseSchema = responseSchemas.get(i);
-			schemaAsserter.assertEquals(
-					DataUnitSchemaWrapper.of(existingSchemas.get(i)), DataUnitSchemaWrapper.of(responseSchema),
+			schemaAsserter.assertEquals(existingSchemas.get(i), responseSchema,
 					DataUnitSchemaEntity_.PROPERTY_SCHEMAS);
 
 			final List<DataUnitPropertySchemaDTO> propertySchemas = responseSchema.getPropertySchemas();
@@ -254,16 +252,14 @@ class DataUnitSchemaIT extends AbstractAPITest {
 		final Long responseSchemaId = responseSchema.getId();
 		Assertions.assertNotNull(responseSchemaId);
 		Assertions.assertEquals(existingSchemaId, responseSchemaId);
-		schemaAsserter.assertEquals(DataUnitSchemaWrapper.of(schema), DataUnitSchemaWrapper.of(responseSchema),
-				AbstractEntity_.ID);
+		schemaAsserter.assertEquals(schema, responseSchema, AbstractEntity_.ID);
 
 		final Optional<DataUnitSchemaDTO> updatedSchemaOptional = service.findById(existingSchemaId);
 		Assertions.assertTrue(updatedSchemaOptional.isPresent());
 		final DataUnitSchemaDTO updatedSchema = updatedSchemaOptional.get();
 		Assertions.assertNotNull(updatedSchema);
 		Assertions.assertEquals(existingSchemaId, updatedSchema.getId());
-		schemaAsserter.assertEquals(DataUnitSchemaWrapper.of(schema), DataUnitSchemaWrapper.of(updatedSchema),
-				AbstractEntity_.ID);
+		schemaAsserter.assertEquals(schema, updatedSchema, AbstractEntity_.ID);
 
 		service.deleteById(existingSchemaId);
 	}

@@ -7,9 +7,8 @@ import com.hurynovich.data_storage.model.data_unit.DataUnitDocument_;
 import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDocumentGenerator;
-import com.hurynovich.data_storage.test_objects_asserter.Asserter;
+import com.hurynovich.data_storage.test_objects_asserter.TestIdentifiedObjectsAsserter;
 import com.hurynovich.data_storage.test_objects_asserter.impl.DataUnitAsserter;
-import com.hurynovich.data_storage.test_objects_asserter.model.DataUnitWrapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +23,7 @@ class DataUnitConverterTest {
 	private final TestIdentifiedObjectGenerator<DataUnitDocument> documentGenerator =
 			new TestDataUnitDocumentGenerator();
 
-	private final Asserter<DataUnitWrapper> asserter =
+	private final TestIdentifiedObjectsAsserter<DataUnitDTO, DataUnitDocument> asserter =
 			new DataUnitAsserter();
 
 	@Test
@@ -36,7 +35,7 @@ class DataUnitConverterTest {
 	void convertNotNullTest() {
 		final DataUnitDTO dto = dtoGenerator.generateObject();
 		final DataUnitDocument document = converter.convert(dto);
-		asserter.assertEquals(DataUnitWrapper.of(dto), DataUnitWrapper.of(document));
+		asserter.assertEquals(dto, document);
 	}
 
 	@Test
@@ -48,14 +47,14 @@ class DataUnitConverterTest {
 	void convertDocumentNotNullTest() {
 		final DataUnitDocument document = documentGenerator.generateObject();
 		final DataUnitDTO dto = converter.convert(document);
-		asserter.assertEquals(DataUnitWrapper.of(document), DataUnitWrapper.of(dto));
+		asserter.assertEquals(document, dto);
 	}
 
 	@Test
 	void convertDocumentNotNullIgnorePropertiesTest() {
 		final DataUnitDocument document = documentGenerator.generateObject();
 		final DataUnitDTO dto = converter.convert(document, DataUnitDocument_.PROPERTIES);
-		asserter.assertEquals(DataUnitWrapper.of(document), DataUnitWrapper.of(dto), DataUnitDocument_.PROPERTIES);
+		asserter.assertEquals(document, dto, DataUnitDocument_.PROPERTIES);
 	}
 
 }

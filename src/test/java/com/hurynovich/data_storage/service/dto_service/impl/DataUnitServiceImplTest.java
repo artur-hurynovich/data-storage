@@ -11,9 +11,8 @@ import com.hurynovich.data_storage.service.dto_service.DataUnitService;
 import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDocumentGenerator;
-import com.hurynovich.data_storage.test_objects_asserter.Asserter;
+import com.hurynovich.data_storage.test_objects_asserter.TestIdentifiedObjectsAsserter;
 import com.hurynovich.data_storage.test_objects_asserter.impl.DataUnitAsserter;
-import com.hurynovich.data_storage.test_objects_asserter.model.DataUnitWrapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,7 +51,7 @@ class DataUnitServiceImplTest {
 	private final TestIdentifiedObjectGenerator<DataUnitDocument> entityGenerator =
 			new TestDataUnitDocumentGenerator();
 
-	private final Asserter<DataUnitWrapper> asserter = new DataUnitAsserter();
+	private final TestIdentifiedObjectsAsserter<DataUnitDTO, DataUnitDocument> asserter = new DataUnitAsserter();
 
 	@BeforeEach
 	public void initService() {
@@ -68,8 +67,7 @@ class DataUnitServiceImplTest {
 		Mockito.when(converter.convert(document)).thenReturn(dtoGenerator.generateObject());
 
 		final DataUnitDTO savedDTO = service.save(dto);
-		asserter.assertEquals(DataUnitWrapper.of(dto), DataUnitWrapper.of(savedDTO),
-				AbstractDocument_.ID);
+		asserter.assertEquals(dto, savedDTO, AbstractDocument_.ID);
 		Assertions.assertNotNull(savedDTO.getId());
 	}
 
@@ -84,7 +82,7 @@ class DataUnitServiceImplTest {
 
 		final Optional<DataUnitDTO> savedDTOOptional = service.findById(id);
 		Assertions.assertTrue(savedDTOOptional.isPresent());
-		asserter.assertEquals(DataUnitWrapper.of(dto), DataUnitWrapper.of(savedDTOOptional.get()));
+		asserter.assertEquals(dto, savedDTOOptional.get());
 	}
 
 	@Test
@@ -130,8 +128,7 @@ class DataUnitServiceImplTest {
 		Assertions.assertFalse(savedDTOs.isEmpty());
 		Assertions.assertEquals(dtos.size(), savedDTOs.size());
 		for (int i = 0; i < dtos.size(); i++) {
-			asserter.assertEquals(
-					DataUnitWrapper.of(dtos.get(i)), DataUnitWrapper.of(savedDTOs.get(i)));
+			asserter.assertEquals(dtos.get(i), savedDTOs.get(i));
 		}
 	}
 
