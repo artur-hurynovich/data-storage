@@ -83,7 +83,7 @@ class DataUnitSchemaServiceImpl implements DataUnitSchemaService {
 
 			eventListener.onEvent(new Event<>(dataUnitSchemaDTO, EventType.DELETE));
 		} else {
-			throw new EntityNotFoundException("'DataUnitSchemaEntity' with id = '" + id + "' not found");
+			throw new EntityNotFoundException("'dataUnitSchema' with id = '" + id + "' not found");
 		}
 	}
 
@@ -115,5 +115,4 @@ class DataUnitSchemaServiceImpl implements DataUnitSchemaService {
 	public boolean existsByNameAndNotId(final @NonNull String name, final @NonNull Long id) {
 		return dao.existsByNameAndNotId(name, id);
 	}
-
 }

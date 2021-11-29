@@ -1,6 +1,6 @@
-package com.hurynovich.data_storage.it.dao.impl;
+package com.hurynovich.data_storage.it.test_dao.impl;
 
-import com.hurynovich.data_storage.it.dao.TestDAO;
+import com.hurynovich.data_storage.it.test_dao.TestDAO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
 import org.springframework.stereotype.Repository;

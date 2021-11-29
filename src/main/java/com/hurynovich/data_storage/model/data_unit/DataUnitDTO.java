@@ -1,6 +1,7 @@
 package com.hurynovich.data_storage.model.data_unit;
 
 import com.hurynovich.data_storage.model.AbstractDTO;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +15,8 @@ public class DataUnitDTO extends AbstractDTO<String> {
 	public DataUnitDTO(final String id, final Long schemaId, final List<DataUnitPropertyDTO> properties) {
 		super(id);
 		this.schemaId = schemaId;
-		this.properties = Collections.unmodifiableList(properties);
+		this.properties = CollectionUtils.isEmpty(properties) ?
+				Collections.emptyList() : Collections.unmodifiableList(properties);
 	}
 
 	public Long getSchemaId() {
@@ -43,7 +45,5 @@ public class DataUnitDTO extends AbstractDTO<String> {
 		public Object getValue() {
 			return value;
 		}
-
 	}
-
 }

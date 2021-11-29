@@ -1,4 +1,4 @@
-package com.hurynovich.data_storage.it.dao;
+package com.hurynovich.data_storage.it.test_dao;
 
 import com.hurynovich.data_storage.model.Identified;
 
@@ -11,5 +11,4 @@ public interface TestDAO<T extends Identified<I>, I extends Serializable> {
 	T findById(I id);
 
 	void deleteById(I id);
-
 }

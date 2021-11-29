@@ -31,6 +31,10 @@ import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUni
 @ExtendWith(MockitoExtension.class)
 class DataUnitSchemaValidatorTest {
 
+	private static final int DATA_UNIT_SCHEMA_NAME_MAX_LENGTH = 25;
+
+	private static final int DATA_UNIT_PROPERTY_SCHEMA_NAME_MAX_LENGTH = DATA_UNIT_SCHEMA_NAME_MAX_LENGTH;
+
 	@Mock
 	private DataUnitSchemaService service;
 
@@ -87,7 +91,8 @@ class DataUnitSchemaValidatorTest {
 	@Test
 	void validateSchemaNameExceedsMaxLengthTest() {
 		final DataUnitSchemaDTO schema = schemaGenerator.generateObjectNullId();
-		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.NAME, RandomStringUtils.randomAlphabetic(26));
+		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.NAME,
+				RandomStringUtils.randomAlphabetic(DATA_UNIT_SCHEMA_NAME_MAX_LENGTH + 1));
 
 		final ValidationResult validationResult = validator.validate(schema);
 		Assertions.assertNotNull(validationResult);
@@ -95,7 +100,8 @@ class DataUnitSchemaValidatorTest {
 
 		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertEquals("'dataUnitSchema.name' can't exceed 25 characters",
+		Assertions.assertEquals("'dataUnitSchema.name' can't exceed " +
+						DATA_UNIT_SCHEMA_NAME_MAX_LENGTH + " characters",
 				errors.iterator().next());
 	}
 

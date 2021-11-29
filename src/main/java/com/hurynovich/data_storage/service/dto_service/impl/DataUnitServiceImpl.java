@@ -50,7 +50,7 @@ class DataUnitServiceImpl implements DataUnitService {
 		if (dataUnitOptional.isPresent()) {
 			dao.delete(dataUnitOptional.get());
 		} else {
-			throw new EntityNotFoundException("'DataUnitDocument' with id = '" + id + "' not found");
+			throw new EntityNotFoundException("'dataUnit' with id = '" + id + "' not found");
 		}
 	}
 
@@ -68,7 +68,6 @@ class DataUnitServiceImpl implements DataUnitService {
 	public void deleteAllBySchemaId(final @NonNull Long schemaId) {
 		dao.deleteAllBySchemaId(schemaId);
 	}
-
 }
 
 

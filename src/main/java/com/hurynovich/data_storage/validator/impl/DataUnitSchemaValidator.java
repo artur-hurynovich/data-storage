@@ -167,7 +167,5 @@ class DataUnitSchemaValidator implements Validator<DataUnitSchemaDTO> {
 		public boolean isUniquePropertySchemaName(final @NonNull String propertySchemaName) {
 			return uniquePropertySchemaNames.add(propertySchemaName);
 		}
-
 	}
-
 }
