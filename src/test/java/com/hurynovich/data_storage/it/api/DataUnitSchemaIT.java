@@ -4,17 +4,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hurynovich.data_storage.controller.model.GenericValidatedResponse;
+import com.hurynovich.data_storage.it.dao.TestDAO;
 import com.hurynovich.data_storage.model.AbstractEntity_;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaEntity_;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
-import com.hurynovich.data_storage.service.dto_service.BaseService;
 import com.hurynovich.data_storage.service.paginator.model.GenericPage;
 import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGenerator;
 import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
+import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaEntityGenerator;
 import com.hurynovich.data_storage.test_objects_asserter.TestIdentifiedObjectsAsserter;
 import com.hurynovich.data_storage.test_objects_asserter.TestObjectsAsserter;
 import com.hurynovich.data_storage.test_objects_asserter.impl.DataUnitSchemaAsserter;
@@ -30,14 +32,13 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 class DataUnitSchemaIT extends AbstractAPITest {
 
 	@Autowired
-	private BaseService<DataUnitSchemaDTO, Long> service;
+	private TestDAO<DataUnitSchemaEntity, Long> testDAO;
 
 	private static final String UPDATED_SCHEMA_NAME = "Schema Name UPD";
 
@@ -45,6 +46,9 @@ class DataUnitSchemaIT extends AbstractAPITest {
 
 	private final TestIdentifiedObjectGenerator<DataUnitSchemaDTO> dtoGenerator =
 			new TestDataUnitSchemaDTOGenerator();
+
+	private final TestIdentifiedObjectGenerator<DataUnitSchemaEntity> entityGenerator =
+			new TestDataUnitSchemaEntityGenerator();
 
 	private final TestObjectsAsserter<ValidationResult> validationResultAsserter =
 			new ValidationResultAsserter();
@@ -81,23 +85,22 @@ class DataUnitSchemaIT extends AbstractAPITest {
 		Assertions.assertNotNull(responseSchemaId);
 		schemaAsserter.assertEquals(schema, responseSchema, AbstractEntity_.ID);
 
-		final Optional<DataUnitSchemaDTO> savedSchemaOptional = service.findById(responseSchemaId);
-		Assertions.assertTrue(savedSchemaOptional.isPresent());
-		final DataUnitSchemaDTO savedSchema = savedSchemaOptional.get();
+		final DataUnitSchemaEntity savedSchema = testDAO.findById(responseSchemaId);
 		Assertions.assertNotNull(savedSchema);
-		Assertions.assertEquals(savedSchema.getId(), responseSchemaId);
+		final Long savedSchemaId = savedSchema.getId();
+		Assertions.assertEquals(savedSchemaId, responseSchemaId);
 		schemaAsserter.assertEquals(schema, savedSchema, AbstractEntity_.ID);
 
-		service.deleteById(responseSchemaId);
+		testDAO.deleteById(savedSchemaId);
 	}
 
 	@Test
 	void getSchemaByIdTest() {
-		final DataUnitSchemaDTO existingSchema = service.save(dtoGenerator.generateObjectNullId());
-		final Long existingSchemaId = existingSchema.getId();
+		final DataUnitSchemaEntity savedSchema = testDAO.save(entityGenerator.generateObjectNullId());
+		final Long savedSchemaId = savedSchema.getId();
 		final ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> responseEntity = send(
 				HttpMethod.GET,
-				"/schema/" + existingSchemaId,
+				"/schema/" + savedSchemaId,
 				new ParameterizedTypeReference<>() {
 				});
 		Assertions.assertNotNull(responseEntity);
@@ -112,16 +115,15 @@ class DataUnitSchemaIT extends AbstractAPITest {
 
 		final DataUnitSchemaDTO responseSchema = responseBody.getBody();
 		Assertions.assertNotNull(responseSchema);
-		final Long responseSchemaId = responseSchema.getId();
-		Assertions.assertNotNull(responseSchemaId);
-		Assertions.assertEquals(existingSchemaId, responseSchemaId);
-		schemaAsserter.assertEquals(existingSchema, responseSchema, AbstractEntity_.ID);
+		schemaAsserter.assertEquals(savedSchema, responseSchema);
+
+		testDAO.deleteById(savedSchemaId);
 	}
 
 	@Test
 	void getSchemasTest() {
-		final List<DataUnitSchemaDTO> existingSchemas = dtoGenerator.generateObjectsNullId().stream().
-				map(service::save).
+		final List<DataUnitSchemaEntity> savedSchemas = entityGenerator.generateObjectsNullId().stream().
+				map(testDAO::save).
 				collect(Collectors.toList());
 		final ResponseEntity<String> responseEntity = send(
 				HttpMethod.GET,
@@ -144,10 +146,10 @@ class DataUnitSchemaIT extends AbstractAPITest {
 
 		final List<DataUnitSchemaDTO> responseSchemas = page.getElements();
 		Assertions.assertNotNull(responseSchemas);
-		Assertions.assertEquals(existingSchemas.size(), responseSchemas.size());
-		for (int i = 0; i < existingSchemas.size(); i++) {
+		Assertions.assertEquals(savedSchemas.size(), responseSchemas.size());
+		for (int i = 0; i < savedSchemas.size(); i++) {
 			final DataUnitSchemaDTO responseSchema = responseSchemas.get(i);
-			schemaAsserter.assertEquals(existingSchemas.get(i), responseSchema,
+			schemaAsserter.assertEquals(savedSchemas.get(i), responseSchema,
 					DataUnitSchemaEntity_.PROPERTY_SCHEMAS);
 
 			final List<DataUnitPropertySchemaDTO> propertySchemas = responseSchema.getPropertySchemas();
@@ -155,11 +157,13 @@ class DataUnitSchemaIT extends AbstractAPITest {
 			Assertions.assertTrue(propertySchemas.isEmpty());
 		}
 
-		Assertions.assertEquals(existingSchemas.size(), page.getTotalElementsCount());
+		Assertions.assertEquals(savedSchemas.size(), page.getTotalElementsCount());
 		Assertions.assertNull(page.getPreviousPageNumber());
 		Assertions.assertEquals(1, page.getCurrentPageNumber());
 		Assertions.assertNull(page.getNextPageNumber());
 		Assertions.assertEquals(1, page.getTotalPagesCount());
+
+		savedSchemas.forEach(savedSchema -> testDAO.deleteById(savedSchema.getId()));
 	}
 
 	/*
@@ -224,16 +228,16 @@ class DataUnitSchemaIT extends AbstractAPITest {
 
 	@Test
 	void putSchemaTest() {
-		final DataUnitSchemaDTO existingSchema = service.save(dtoGenerator.generateObjectNullId());
-		final Long existingSchemaId = existingSchema.getId();
-		final DataUnitPropertySchemaDTO existingPropertySchema = existingSchema.getPropertySchemas().iterator().next();
-		final DataUnitSchemaDTO schema = new DataUnitSchemaDTO(existingSchemaId,
+		final DataUnitSchemaEntity savedSchema = testDAO.save(entityGenerator.generateObjectNullId());
+		final Long savedSchemaId = savedSchema.getId();
+		final DataUnitPropertySchemaEntity savedPropertySchema = savedSchema.getPropertySchemas().iterator().next();
+		final DataUnitSchemaDTO schema = new DataUnitSchemaDTO(savedSchemaId,
 				UPDATED_SCHEMA_NAME,
 				Collections.singletonList(new DataUnitPropertySchemaDTO(
-						existingPropertySchema.getId(), UPDATED_PROPERTY_SCHEMA_NAME, DataUnitPropertyType.BOOLEAN)));
+						savedPropertySchema.getId(), UPDATED_PROPERTY_SCHEMA_NAME, DataUnitPropertyType.BOOLEAN)));
 		final ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> responseEntity = send(
 				HttpMethod.PUT,
-				"/schema/" + existingSchema.getId(),
+				"/schema/" + savedSchema.getId(),
 				schema,
 				new ParameterizedTypeReference<>() {
 				});
@@ -249,28 +253,21 @@ class DataUnitSchemaIT extends AbstractAPITest {
 
 		final DataUnitSchemaDTO responseSchema = responseBody.getBody();
 		Assertions.assertNotNull(responseSchema);
-		final Long responseSchemaId = responseSchema.getId();
-		Assertions.assertNotNull(responseSchemaId);
-		Assertions.assertEquals(existingSchemaId, responseSchemaId);
-		schemaAsserter.assertEquals(schema, responseSchema, AbstractEntity_.ID);
+		schemaAsserter.assertEquals(schema, responseSchema);
 
-		final Optional<DataUnitSchemaDTO> updatedSchemaOptional = service.findById(existingSchemaId);
-		Assertions.assertTrue(updatedSchemaOptional.isPresent());
-		final DataUnitSchemaDTO updatedSchema = updatedSchemaOptional.get();
-		Assertions.assertNotNull(updatedSchema);
-		Assertions.assertEquals(existingSchemaId, updatedSchema.getId());
-		schemaAsserter.assertEquals(schema, updatedSchema, AbstractEntity_.ID);
+		final DataUnitSchemaEntity updatedSchema = testDAO.findById(savedSchemaId);
+		schemaAsserter.assertEquals(schema, updatedSchema);
 
-		service.deleteById(existingSchemaId);
+		testDAO.deleteById(savedSchemaId);
 	}
 
 	@Test
 	void deleteSchemaByIdTest() {
-		final DataUnitSchemaDTO existingSchema = service.save(dtoGenerator.generateObjectNullId());
-		final Long existingSchemaId = existingSchema.getId();
+		final DataUnitSchemaEntity savedSchema = testDAO.save(entityGenerator.generateObjectNullId());
+		final Long savedSchemaId = savedSchema.getId();
 		final ResponseEntity<GenericValidatedResponse<DataUnitSchemaDTO>> responseEntity = send(
 				HttpMethod.DELETE,
-				"/schema/" + existingSchemaId,
+				"/schema/" + savedSchemaId,
 				new ParameterizedTypeReference<>() {
 				});
 		Assertions.assertNotNull(responseEntity);
@@ -284,8 +281,8 @@ class DataUnitSchemaIT extends AbstractAPITest {
 		validationResultAsserter.assertEquals(successValidationResult, validationResult);
 
 		Assertions.assertNull(responseBody.getBody());
-		final Optional<DataUnitSchemaDTO> deletedSchemaOptional = service.findById(existingSchemaId);
-		Assertions.assertTrue(deletedSchemaOptional.isEmpty());
+		final DataUnitSchemaEntity deletedSchema = testDAO.findById(savedSchemaId);
+		Assertions.assertNull(deletedSchema);
 	}
 
 }
