@@ -62,7 +62,7 @@ class DataUnitFilterValidatorTest {
 	@BeforeEach
 	public void initValidator() {
 		validator = new DataUnitFilterValidator(schemaService, criteriaComparisonsByPropertyType,
-				valueCheckProcessor, new ValidationHelperImpl());
+				valueCheckProcessor, new ValidationErrorMessageBuilderImpl());
 	}
 
 	@Test

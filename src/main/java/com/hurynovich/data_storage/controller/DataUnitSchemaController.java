@@ -6,7 +6,7 @@ import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.dto_service.MassReadService;
 import com.hurynovich.data_storage.service.paginator.Paginator;
 import com.hurynovich.data_storage.service.paginator.model.GenericPage;
-import com.hurynovich.data_storage.validator.ValidationHelper;
+import com.hurynovich.data_storage.validator.ValidationErrorMessageBuilder;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
@@ -33,18 +33,18 @@ public class DataUnitSchemaController {
 
 	private final Validator<DataUnitSchemaDTO> validator;
 
-	private final ValidationHelper helper;
+	private final ValidationErrorMessageBuilder errorMessageBuilder;
 
 	private final MassReadService<DataUnitSchemaDTO, Long> service;
 
 	private final Paginator paginator;
 
 	public DataUnitSchemaController(final @NonNull Validator<DataUnitSchemaDTO> validator,
-									final @NonNull ValidationHelper helper,
+									final @NonNull ValidationErrorMessageBuilder errorMessageBuilder,
 									final @NonNull MassReadService<DataUnitSchemaDTO, Long> service,
 									final @NonNull Paginator paginator) {
 		this.validator = Objects.requireNonNull(validator);
-		this.helper = Objects.requireNonNull(helper);
+		this.errorMessageBuilder = Objects.requireNonNull(errorMessageBuilder);
 		this.service = Objects.requireNonNull(service);
 		this.paginator = Objects.requireNonNull(paginator);
 	}
@@ -57,7 +57,8 @@ public class DataUnitSchemaController {
 		final HttpStatus status;
 		if (dataUnitSchema.getId() != null) {
 			validationResult = new ValidationResult();
-			helper.applyIsNotNullError("dataUnitSchema.id", validationResult);
+			validationResult.setType(ValidationResultType.FAILURE);
+			validationResult.addError(errorMessageBuilder.buildIsNotNullErrorMessage("dataUnitSchema.id"));
 			body = null;
 			status = HttpStatus.BAD_REQUEST;
 		} else {
@@ -87,7 +88,8 @@ public class DataUnitSchemaController {
 			status = HttpStatus.OK;
 		} else {
 			validationResult = new ValidationResult();
-			helper.applyNotFoundByIdError("dataUnitSchema", id, validationResult);
+			validationResult.setType(ValidationResultType.FAILURE);
+			validationResult.addError(errorMessageBuilder.buildNotFoundByIdErrorMessage("dataUnitSchema", id));
 			body = null;
 			status = HttpStatus.NOT_FOUND;
 		}

@@ -9,7 +9,7 @@ import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPrope
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
-import com.hurynovich.data_storage.validator.ValidationHelper;
+import com.hurynovich.data_storage.validator.ValidationErrorMessageBuilder;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
@@ -34,16 +34,16 @@ class DataUnitFilterValidator implements Validator<DataUnitFilter> {
 
 	private final DataUnitPropertyValueCheckProcessor valueCheckProcessor;
 
-	private final ValidationHelper helper;
+	private final ValidationErrorMessageBuilder errorMessageBuilder;
 
 	public DataUnitFilterValidator(final @NonNull DataUnitSchemaService schemaService,
 								   final @NonNull Map<DataUnitPropertyType, Set<CriteriaComparison>> criteriaComparisonsByPropertyType,
 								   final @NonNull DataUnitPropertyValueCheckProcessor valueCheckProcessor,
-								   final @NonNull ValidationHelper helper) {
+								   final @NonNull ValidationErrorMessageBuilder errorMessageBuilder) {
 		this.schemaService = Objects.requireNonNull(schemaService);
 		this.criteriaComparisonsByPropertyType = Collections.unmodifiableMap(criteriaComparisonsByPropertyType);
 		this.valueCheckProcessor = valueCheckProcessor;
-		this.helper = helper;
+		this.errorMessageBuilder = errorMessageBuilder;
 	}
 
 	@Override
@@ -52,7 +52,8 @@ class DataUnitFilterValidator implements Validator<DataUnitFilter> {
 		final Long schemaId = filter.getSchemaId();
 		final Optional<DataUnitSchemaDTO> schemaOptional = schemaService.findById(schemaId);
 		if (schemaOptional.isEmpty()) {
-			helper.applyNotFoundByIdError("dataUnitSchema", schemaId, result);
+			result.setType(ValidationResultType.FAILURE);
+			result.addError(errorMessageBuilder.buildNotFoundByIdErrorMessage("dataUnitSchema", schemaId));
 		} else {
 			final DataUnitPropertyCriteriaValidationContext context =
 					DataUnitPropertyCriteriaValidationContext.of(schemaOptional.get());
@@ -68,11 +69,15 @@ class DataUnitFilterValidator implements Validator<DataUnitFilter> {
 								  final @NonNull ValidationResult result) {
 		final Long propertySchemaId = criteria.getPropertySchemaId();
 		if (!context.isValidPropertySchemaId(propertySchemaId)) {
-			helper.applyNotFoundByIdError("dataUnitPropertySchema", propertySchemaId, result);
+			result.setType(ValidationResultType.FAILURE);
+			result.addError(errorMessageBuilder.
+					buildNotFoundByIdErrorMessage("dataUnitPropertySchema", propertySchemaId));
 		}
 
 		if (!context.isUniquePropertySchemaId(propertySchemaId)) {
-			helper.applyFoundDuplicateError("filter.criteria.propertySchemaId", propertySchemaId, result);
+			result.setType(ValidationResultType.FAILURE);
+			result.addError(errorMessageBuilder.
+					buildFoundDuplicateErrorMessage("filter.criteria.propertySchemaId", propertySchemaId));
 		}
 
 		final DataUnitPropertySchemaDTO propertySchema = context.getPropertySchema(propertySchemaId);

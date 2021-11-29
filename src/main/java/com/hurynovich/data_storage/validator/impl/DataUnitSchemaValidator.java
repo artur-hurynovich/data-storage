@@ -4,9 +4,10 @@ import com.hurynovich.data_storage.model.AbstractDTO;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
-import com.hurynovich.data_storage.validator.ValidationHelper;
+import com.hurynovich.data_storage.validator.ValidationErrorMessageBuilder;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
+import com.hurynovich.data_storage.validator.model.ValidationResultType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -30,13 +31,13 @@ class DataUnitSchemaValidator implements Validator<DataUnitSchemaDTO> {
 
 	private static final int DATA_UNIT_PROPERTY_SCHEMA_NAME_MAX_LENGTH = DATA_UNIT_SCHEMA_NAME_MAX_LENGTH;
 
-	private final ValidationHelper helper;
+	private final ValidationErrorMessageBuilder errorMessageBuilder;
 
 	private final DataUnitSchemaService schemaService;
 
-	public DataUnitSchemaValidator(final @NonNull ValidationHelper helper,
+	public DataUnitSchemaValidator(final @NonNull ValidationErrorMessageBuilder errorMessageBuilder,
 								   final @NonNull DataUnitSchemaService schemaService) {
-		this.helper = Objects.requireNonNull(helper);
+		this.errorMessageBuilder = Objects.requireNonNull(errorMessageBuilder);
 		this.schemaService = Objects.requireNonNull(schemaService);
 	}
 
@@ -46,16 +47,19 @@ class DataUnitSchemaValidator implements Validator<DataUnitSchemaDTO> {
 		final Long id = schema.getId();
 		final String name = schema.getName();
 		if (StringUtils.isBlank(name)) {
-			helper.applyIsBlankError(DATA_UNIT_SCHEMA_NAME, result);
+			result.setType(ValidationResultType.FAILURE);
+			result.addError(errorMessageBuilder.buildIsBlankErrorMessage(DATA_UNIT_SCHEMA_NAME));
 		} else {
 			if (name.length() > DATA_UNIT_SCHEMA_NAME_MAX_LENGTH) {
-				helper.applyMaxLengthExceededError(DATA_UNIT_SCHEMA_NAME,
-						DATA_UNIT_SCHEMA_NAME_MAX_LENGTH, result);
+				result.setType(ValidationResultType.FAILURE);
+				result.addError(errorMessageBuilder.
+						buildMaxLengthExceededErrorMessage(DATA_UNIT_SCHEMA_NAME, DATA_UNIT_SCHEMA_NAME_MAX_LENGTH));
 			}
 
 			if ((id == null && schemaService.existsByName(name))
 					|| (id != null && schemaService.existsByNameAndNotId(name, id))) {
-				helper.applyFoundDuplicateError(DATA_UNIT_SCHEMA_NAME, name, result);
+				result.setType(ValidationResultType.FAILURE);
+				result.addError(errorMessageBuilder.buildFoundDuplicateErrorMessage(DATA_UNIT_SCHEMA_NAME, name));
 			}
 		}
 
@@ -70,7 +74,8 @@ class DataUnitSchemaValidator implements Validator<DataUnitSchemaDTO> {
 
 		final List<DataUnitPropertySchemaDTO> propertySchemas = schema.getPropertySchemas();
 		if (CollectionUtils.isEmpty(propertySchemas)) {
-			helper.applyIsEmptyError("dataUnitSchema.propertySchemas", result);
+			result.setType(ValidationResultType.FAILURE);
+			result.addError(errorMessageBuilder.buildIsEmptyErrorMessage("dataUnitSchema.propertySchemas"));
 		} else {
 			propertySchemas.forEach(propertySchema ->
 					validatePropertySchema(context, propertySchema, result));
@@ -83,18 +88,23 @@ class DataUnitSchemaValidator implements Validator<DataUnitSchemaDTO> {
 										final @Nullable DataUnitPropertySchemaDTO propertySchema,
 										final @NonNull ValidationResult result) {
 		if (propertySchema == null) {
-			helper.applyIsNullError("dataUnitSchema.propertySchema", result);
+			result.setType(ValidationResultType.FAILURE);
+			result.addError(errorMessageBuilder.buildIsNullErrorMessage("dataUnitSchema.propertySchema"));
 		} else {
 			final Long propertySchemaId = propertySchema.getId();
 			if (propertySchemaId != null
 					&& (context.getSchemaId() == null || !context.isValidPropertySchemaId(propertySchemaId))) {
-				helper.applyNotFoundByIdError("dataUnitPropertySchema", propertySchemaId, result);
+				result.setType(ValidationResultType.FAILURE);
+				result.addError(errorMessageBuilder.
+						buildNotFoundByIdErrorMessage("dataUnitPropertySchema", propertySchemaId));
 			}
 
 			validatePropertySchemaName(context, propertySchema.getName(), result);
 
 			if (propertySchema.getType() == null) {
-				helper.applyIsNullError("dataUnitSchema.propertySchema.type", result);
+				result.setType(ValidationResultType.FAILURE);
+				result.addError(errorMessageBuilder.
+						buildIsNullErrorMessage("dataUnitSchema.propertySchema.type"));
 			}
 		}
 	}
@@ -103,15 +113,20 @@ class DataUnitSchemaValidator implements Validator<DataUnitSchemaDTO> {
 	private void validatePropertySchemaName(final @NonNull DataUnitPropertySchemaValidationContext context,
 											final @Nullable String name, final @NonNull ValidationResult result) {
 		if (StringUtils.isBlank(name)) {
-			helper.applyIsBlankError(DATA_UNIT_PROPERTY_SCHEMA_NAME, result);
+			result.setType(ValidationResultType.FAILURE);
+			result.addError(errorMessageBuilder.buildIsBlankErrorMessage(DATA_UNIT_PROPERTY_SCHEMA_NAME));
 		} else {
 			if (name.length() > DATA_UNIT_PROPERTY_SCHEMA_NAME_MAX_LENGTH) {
-				helper.applyMaxLengthExceededError(DATA_UNIT_PROPERTY_SCHEMA_NAME,
-						DATA_UNIT_SCHEMA_NAME_MAX_LENGTH, result);
+				result.setType(ValidationResultType.FAILURE);
+				result.addError(errorMessageBuilder.
+						buildMaxLengthExceededErrorMessage(DATA_UNIT_PROPERTY_SCHEMA_NAME,
+								DATA_UNIT_SCHEMA_NAME_MAX_LENGTH));
 			}
 
 			if (!context.isUniquePropertySchemaName(name)) {
-				helper.applyFoundDuplicateError(DATA_UNIT_PROPERTY_SCHEMA_NAME, name, result);
+				result.setType(ValidationResultType.FAILURE);
+				result.addError(errorMessageBuilder.
+						buildFoundDuplicateErrorMessage(DATA_UNIT_PROPERTY_SCHEMA_NAME, name));
 			}
 		}
 	}

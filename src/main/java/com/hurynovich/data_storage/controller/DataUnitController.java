@@ -7,7 +7,7 @@ import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.service.dto_service.DataUnitService;
 import com.hurynovich.data_storage.service.paginator.Paginator;
 import com.hurynovich.data_storage.service.paginator.model.GenericPage;
-import com.hurynovich.data_storage.validator.ValidationHelper;
+import com.hurynovich.data_storage.validator.ValidationErrorMessageBuilder;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
@@ -36,7 +36,7 @@ public class DataUnitController {
 
 	private final Validator<DataUnitFilter> filterValidator;
 
-	private final ValidationHelper helper;
+	private final ValidationErrorMessageBuilder errorMessageBuilder;
 
 	private final DataUnitService service;
 
@@ -44,12 +44,12 @@ public class DataUnitController {
 
 	public DataUnitController(final @NonNull Validator<DataUnitDTO> dataUnitValidator,
 							  final @NonNull Validator<DataUnitFilter> filterValidator,
-							  final @NonNull ValidationHelper helper,
+							  final @NonNull ValidationErrorMessageBuilder errorMessageBuilder,
 							  final @NonNull DataUnitService service,
 							  final @NonNull Paginator paginator) {
 		this.dataUnitValidator = Objects.requireNonNull(dataUnitValidator);
 		this.filterValidator = Objects.requireNonNull(filterValidator);
-		this.helper = Objects.requireNonNull(helper);
+		this.errorMessageBuilder = Objects.requireNonNull(errorMessageBuilder);
 		this.service = Objects.requireNonNull(service);
 		this.paginator = Objects.requireNonNull(paginator);
 	}
@@ -62,7 +62,8 @@ public class DataUnitController {
 		final HttpStatus status;
 		if (dataUnit.getId() != null) {
 			validationResult = new ValidationResult();
-			helper.applyIsNotNullError("dataUnit.id", validationResult);
+			validationResult.setType(ValidationResultType.FAILURE);
+			validationResult.addError(errorMessageBuilder.buildIsNotNullErrorMessage("dataUnit.id"));
 			body = null;
 			status = HttpStatus.BAD_REQUEST;
 		} else {
@@ -92,7 +93,8 @@ public class DataUnitController {
 			status = HttpStatus.OK;
 		} else {
 			validationResult = new ValidationResult();
-			helper.applyNotFoundByIdError("dataUnit", id, validationResult);
+			validationResult.setType(ValidationResultType.FAILURE);
+			validationResult.addError(errorMessageBuilder.buildNotFoundByIdErrorMessage("dataUnit", id));
 			body = null;
 			status = HttpStatus.NOT_FOUND;
 		}

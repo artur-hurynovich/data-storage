@@ -17,7 +17,7 @@ import com.hurynovich.data_storage.test_objects_asserter.TestObjectsAsserter;
 import com.hurynovich.data_storage.test_objects_asserter.impl.DataUnitAsserter;
 import com.hurynovich.data_storage.test_objects_asserter.impl.ValidationResultAsserter;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
-import com.hurynovich.data_storage.validator.ValidationHelper;
+import com.hurynovich.data_storage.validator.ValidationErrorMessageBuilder;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
@@ -54,7 +54,7 @@ class DataUnitControllerTest {
 	private Validator<DataUnitFilter> filterValidator;
 
 	@Mock
-	private ValidationHelper helper;
+	private ValidationErrorMessageBuilder errorMessageBuilder;
 
 	@Mock
 	private DataUnitService service;
@@ -81,7 +81,7 @@ class DataUnitControllerTest {
 
 	@BeforeEach
 	public void initController() {
-		controller = new DataUnitController(dataUnitValidator, filterValidator, helper, service, paginator);
+		controller = new DataUnitController(dataUnitValidator, filterValidator, errorMessageBuilder, service, paginator);
 	}
 
 	@Test
@@ -107,13 +107,9 @@ class DataUnitControllerTest {
 
 	@Test
 	void postValidDataUnitIdIsNotNullTest() {
-		Mockito.doAnswer(invocationOnMock -> {
-			final ValidationResult validationResult = invocationOnMock.getArgument(1);
-			validationResult.setType(ValidationResultType.FAILURE);
-			validationResult.addError("'dataUnit.id' should be null");
-
-			return null;
-		}).when(helper).applyIsNotNullError(Mockito.eq("dataUnit.id"), Mockito.any(ValidationResult.class));
+		Mockito.doAnswer(invocationOnMock ->
+						"'" + invocationOnMock.getArgument(0) + "' should be null").
+				when(errorMessageBuilder).buildIsNotNullErrorMessage("dataUnit.id");
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateObject();
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.postDataUnit(dataUnit);
 		Assertions.assertNotNull(response);
@@ -196,14 +192,10 @@ class DataUnitControllerTest {
 	@Test
 	void getDataUnitByIdNotFoundTest() {
 		Mockito.when(service.findById(INCORRECT_STRING_ID)).thenReturn(Optional.empty());
-		Mockito.doAnswer(invocationOnMock -> {
-			final ValidationResult validationResult = invocationOnMock.getArgument(2);
-			validationResult.setType(ValidationResultType.FAILURE);
-			validationResult.addError("'dataUnit' with id = '" + INCORRECT_STRING_ID + "' not found");
-
-			return null;
-		}).when(helper).applyNotFoundByIdError(Mockito.eq("dataUnit"), Mockito.eq(INCORRECT_STRING_ID),
-				Mockito.any(ValidationResult.class));
+		Mockito.doAnswer(invocationOnMock ->
+						"'" + invocationOnMock.getArgument(0) +
+								"' with id = '" + invocationOnMock.getArgument(1) + "' not found").
+				when(errorMessageBuilder).buildNotFoundByIdErrorMessage("dataUnit", INCORRECT_STRING_ID);
 
 		final ResponseEntity<GenericValidatedResponse<DataUnitDTO>> response = controller.
 				getDataUnitById(INCORRECT_STRING_ID);

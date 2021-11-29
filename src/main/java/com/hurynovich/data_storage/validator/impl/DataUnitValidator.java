@@ -7,7 +7,7 @@ import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPrope
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
 import com.hurynovich.data_storage.service.dto_service.BaseService;
-import com.hurynovich.data_storage.validator.ValidationHelper;
+import com.hurynovich.data_storage.validator.ValidationErrorMessageBuilder;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
@@ -30,15 +30,15 @@ class DataUnitValidator implements Validator<DataUnitDTO> {
 
 	private final BaseService<DataUnitSchemaDTO, Long> schemaService;
 
-	private final ValidationHelper helper;
+	private final ValidationErrorMessageBuilder errorMessageBuilder;
 
 	private final DataUnitPropertyValueCheckProcessor valueCheckProcessor;
 
 	public DataUnitValidator(final @NonNull BaseService<DataUnitSchemaDTO, Long> schemaService,
-							 final @NonNull ValidationHelper helper,
+							 final @NonNull ValidationErrorMessageBuilder errorMessageBuilder,
 							 final @NonNull DataUnitPropertyValueCheckProcessor valueCheckProcessor) {
 		this.schemaService = Objects.requireNonNull(schemaService);
-		this.helper = Objects.requireNonNull(helper);
+		this.errorMessageBuilder = Objects.requireNonNull(errorMessageBuilder);
 		this.valueCheckProcessor = Objects.requireNonNull(valueCheckProcessor);
 	}
 
@@ -47,15 +47,18 @@ class DataUnitValidator implements Validator<DataUnitDTO> {
 		final ValidationResult result = new ValidationResult();
 		final Long schemaId = dataUnit.getSchemaId();
 		if (schemaId == null) {
-			helper.applyIsNullError("dataUnit.schemaId", result);
+			result.setType(ValidationResultType.FAILURE);
+			result.addError(errorMessageBuilder.buildIsNullErrorMessage("dataUnit.schemaId"));
 		} else {
 			final Optional<DataUnitSchemaDTO> schemaOptional = schemaService.findById(schemaId);
 			if (schemaOptional.isEmpty()) {
-				helper.applyNotFoundByIdError("dataUnitSchema", schemaId, result);
+				result.setType(ValidationResultType.FAILURE);
+				result.addError(errorMessageBuilder.buildNotFoundByIdErrorMessage("dataUnitSchema", schemaId));
 			} else {
 				final List<DataUnitPropertyDTO> properties = dataUnit.getProperties();
 				if (CollectionUtils.isEmpty(properties)) {
-					helper.applyIsEmptyError("dataUnit.properties", result);
+					result.setType(ValidationResultType.FAILURE);
+					result.addError(errorMessageBuilder.buildIsEmptyErrorMessage("dataUnit.properties"));
 				} else {
 					final DataUnitPropertyValidationContext context = DataUnitPropertyValidationContext.
 							of(schemaOptional.get());
@@ -72,21 +75,27 @@ class DataUnitValidator implements Validator<DataUnitDTO> {
 								  final @Nullable DataUnitPropertyDTO property,
 								  final @NonNull ValidationResult result) {
 		if (property == null) {
-			helper.applyIsNullError("dataUnit.property", result);
+			result.setType(ValidationResultType.FAILURE);
+			result.addError(errorMessageBuilder.buildIsNullErrorMessage("dataUnit.property"));
 		} else {
 			final Long propertySchemaId = property.getSchemaId();
 			if (propertySchemaId == null) {
-				helper.applyIsNullError("dataUnit.property.schemaId", result);
+				result.setType(ValidationResultType.FAILURE);
+				result.addError(errorMessageBuilder.buildIsNullErrorMessage("dataUnit.property.schemaId"));
 			} else {
 				if (context.isValidPropertySchemaId(propertySchemaId)) {
 					if (!context.isUniquePropertySchemaId(propertySchemaId)) {
-						helper.applyFoundDuplicateError("dataUnit.property.schemaId", propertySchemaId, result);
+						result.setType(ValidationResultType.FAILURE);
+						result.addError(errorMessageBuilder.
+								buildFoundDuplicateErrorMessage("dataUnit.property.schemaId", propertySchemaId));
 					} else {
 						validatePropertyValue(context.getPropertySchemaById(propertySchemaId),
 								property.getValue(), result);
 					}
 				} else {
-					helper.applyNotFoundByIdError("dataUnitPropertySchema", propertySchemaId, result);
+					result.setType(ValidationResultType.FAILURE);
+					result.addError(errorMessageBuilder.
+							buildNotFoundByIdErrorMessage("dataUnitPropertySchema", propertySchemaId));
 				}
 			}
 		}

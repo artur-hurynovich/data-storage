@@ -51,7 +51,7 @@ class DataUnitValidatorTest {
 
 	@BeforeEach
 	public void initValidator() {
-		validator = new DataUnitValidator(dataUnitSchemaService, new ValidationHelperImpl(), checkProcessor);
+		validator = new DataUnitValidator(dataUnitSchemaService, new ValidationErrorMessageBuilderImpl(), checkProcessor);
 	}
 
 	@Test
