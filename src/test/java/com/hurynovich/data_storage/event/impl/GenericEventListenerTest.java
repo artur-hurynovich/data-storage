@@ -47,5 +47,4 @@ class GenericEventListenerTest {
 
 		Mockito.verify(eventHandler, new Timeout(100, new Only())).handle(event);
 	}
-
 }

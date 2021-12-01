@@ -12,6 +12,7 @@ import org.springframework.lang.NonNull;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 class GenericEventListener<T extends AbstractDTO<?>> implements EventListener<T> {
@@ -31,7 +32,9 @@ class GenericEventListener<T extends AbstractDTO<?>> implements EventListener<T>
 
 	@Override
 	public void onEvent(final @NonNull Event<T> event) {
-		Executors.newSingleThreadExecutor(threadFactory).submit(() -> handleEvent(event));
+		final ExecutorService executorService = Executors.newSingleThreadExecutor(threadFactory);
+		executorService.submit(() -> handleEvent(event));
+		executorService.shutdown();
 	}
 
 	private void handleEvent(final @NonNull Event<T> event) {
@@ -49,7 +52,5 @@ class GenericEventListener<T extends AbstractDTO<?>> implements EventListener<T>
 		public void uncaughtException(final Thread thread, final Throwable throwable) {
 			logger.error("Uncaught exception in thread '" + thread.getName() + "':\n", throwable);
 		}
-
 	}
-
 }

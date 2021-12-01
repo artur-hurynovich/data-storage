@@ -22,5 +22,4 @@ class DataUnitSchemaDeleteEventHandler implements EventHandler<DataUnitSchemaDTO
 
 		dataUnitService.deleteAllBySchemaId(Objects.requireNonNull(schemaId));
 	}
-
 }
