@@ -28,7 +28,7 @@ class GetSchemasIT extends AbstractDataUnitSchemaIT {
 
 	@Test
 	void getSchemasTest() {
-		final List<DataUnitSchemaEntity> savedSchemas = entityGenerator.generateObjectsNullId().stream().
+		final List<DataUnitSchemaEntity> existingSchemas = entityGenerator.generateObjectsNullId().stream().
 				map(testDAO::save).
 				collect(Collectors.toList());
 		final ResponseEntity<String> responseEntity = send(
@@ -45,10 +45,10 @@ class GetSchemasIT extends AbstractDataUnitSchemaIT {
 		Assertions.assertNotNull(responsePage);
 		final List<DataUnitSchemaDTO> responseSchemas = responsePage.getElements();
 		Assertions.assertNotNull(responseSchemas);
-		Assertions.assertEquals(savedSchemas.size(), responseSchemas.size());
-		for (int i = 0; i < savedSchemas.size(); i++) {
+		Assertions.assertEquals(existingSchemas.size(), responseSchemas.size());
+		for (int i = 0; i < existingSchemas.size(); i++) {
 			final DataUnitSchemaDTO responseSchema = responseSchemas.get(i);
-			schemaAsserter.assertEquals(savedSchemas.get(i), responseSchema,
+			schemaAsserter.assertEquals(existingSchemas.get(i), responseSchema,
 					DataUnitSchemaEntity_.PROPERTY_SCHEMAS);
 
 			final List<DataUnitPropertySchemaDTO> propertySchemas = responseSchema.getPropertySchemas();
@@ -56,13 +56,52 @@ class GetSchemasIT extends AbstractDataUnitSchemaIT {
 			Assertions.assertTrue(propertySchemas.isEmpty());
 		}
 
-		Assertions.assertEquals(savedSchemas.size(), responsePage.getTotalElementsCount());
+		Assertions.assertEquals(existingSchemas.size(), responsePage.getTotalElementsCount());
 		Assertions.assertNull(responsePage.getPreviousPageNumber());
 		Assertions.assertEquals(1, responsePage.getCurrentPageNumber());
 		Assertions.assertNull(responsePage.getNextPageNumber());
 		Assertions.assertEquals(1, responsePage.getTotalPagesCount());
 
-		savedSchemas.forEach(savedSchema -> testDAO.deleteById(savedSchema.getId()));
+		existingSchemas.forEach(savedSchema -> testDAO.deleteById(savedSchema.getId()));
+	}
+
+	@Test
+	void getSchemasWithoutPageNumberTest() {
+		final List<DataUnitSchemaEntity> existingSchemas = entityGenerator.generateObjectsNullId().stream().
+				map(testDAO::save).
+				collect(Collectors.toList());
+		final ResponseEntity<String> responseEntity = send(
+				HttpMethod.GET,
+				"/dataUnitSchemas",
+				new ParameterizedTypeReference<>() {
+				});
+		Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+		Assertions.assertNotNull(responseEntity);
+
+		final String responseBodyJson = responseEntity.getBody();
+		Assertions.assertNotNull(responseBodyJson);
+		final GenericPage<DataUnitSchemaDTO> responsePage = parseGetSchemasResponseBody(responseBodyJson);
+		Assertions.assertNotNull(responsePage);
+		final List<DataUnitSchemaDTO> responseSchemas = responsePage.getElements();
+		Assertions.assertNotNull(responseSchemas);
+		Assertions.assertEquals(existingSchemas.size(), responseSchemas.size());
+		for (int i = 0; i < existingSchemas.size(); i++) {
+			final DataUnitSchemaDTO responseSchema = responseSchemas.get(i);
+			schemaAsserter.assertEquals(existingSchemas.get(i), responseSchema,
+					DataUnitSchemaEntity_.PROPERTY_SCHEMAS);
+
+			final List<DataUnitPropertySchemaDTO> propertySchemas = responseSchema.getPropertySchemas();
+			Assertions.assertNotNull(propertySchemas);
+			Assertions.assertTrue(propertySchemas.isEmpty());
+		}
+
+		Assertions.assertEquals(existingSchemas.size(), responsePage.getTotalElementsCount());
+		Assertions.assertNull(responsePage.getPreviousPageNumber());
+		Assertions.assertEquals(1, responsePage.getCurrentPageNumber());
+		Assertions.assertNull(responsePage.getNextPageNumber());
+		Assertions.assertEquals(1, responsePage.getTotalPagesCount());
+
+		existingSchemas.forEach(savedSchema -> testDAO.deleteById(savedSchema.getId()));
 	}
 
 	/*
