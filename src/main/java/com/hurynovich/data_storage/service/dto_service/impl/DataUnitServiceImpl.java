@@ -8,6 +8,7 @@ import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
 import com.hurynovich.data_storage.service.dto_service.DataUnitService;
 import com.hurynovich.data_storage.utils.MassProcessingUtils;
+import com.hurynovich.data_storage.utils.ValidationErrorMessageUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +51,8 @@ class DataUnitServiceImpl implements DataUnitService {
 		if (dataUnitOptional.isPresent()) {
 			dao.delete(dataUnitOptional.get());
 		} else {
-			throw new EntityNotFoundException("'dataUnit' with id = '" + id + "' not found");
+			throw new EntityNotFoundException(ValidationErrorMessageUtils.
+					buildNotFoundByIdErrorMessage("dataUnit", id));
 		}
 	}
 

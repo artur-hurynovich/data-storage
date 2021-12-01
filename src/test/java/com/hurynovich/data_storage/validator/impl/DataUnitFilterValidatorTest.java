@@ -62,7 +62,7 @@ class DataUnitFilterValidatorTest {
 	@BeforeEach
 	public void initValidator() {
 		validator = new DataUnitFilterValidator(schemaService, criteriaComparisonsByPropertyType,
-				valueCheckProcessor, new ValidationErrorMessageBuilderImpl());
+				valueCheckProcessor);
 	}
 
 	@Test
@@ -227,5 +227,4 @@ class DataUnitFilterValidatorTest {
 						"' is incorrect for dataUnitProperty with schemaId = '" + incorrectCriteria.getPropertySchemaId() + "'",
 				errors.iterator().next());
 	}
-
 }

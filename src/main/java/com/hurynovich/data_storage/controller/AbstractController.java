@@ -3,7 +3,7 @@ package com.hurynovich.data_storage.controller;
 import com.hurynovich.data_storage.controller.exception.ControllerValidationException;
 import com.hurynovich.data_storage.model.AbstractDTO;
 import com.hurynovich.data_storage.service.dto_service.BaseService;
-import com.hurynovich.data_storage.validator.ValidationErrorMessageBuilder;
+import com.hurynovich.data_storage.utils.ValidationErrorMessageUtils;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
@@ -24,16 +24,12 @@ public class AbstractController<T extends AbstractDTO<I>, I extends Serializable
 
 	private final BaseService<T, I> service;
 
-	private final ValidationErrorMessageBuilder errorMessageBuilder;
-
 	public AbstractController(final @NonNull String dtoName,
 							  final @NonNull Validator<T> validator,
-							  final @NonNull BaseService<T, I> service,
-							  final @NonNull ValidationErrorMessageBuilder errorMessageBuilder) {
+							  final @NonNull BaseService<T, I> service) {
 		this.dtoName = dtoName;
 		this.validator = validator;
 		this.service = service;
-		this.errorMessageBuilder = errorMessageBuilder;
 	}
 
 	protected ResponseEntity<T> post(final @NonNull T t) {
@@ -46,7 +42,7 @@ public class AbstractController<T extends AbstractDTO<I>, I extends Serializable
 			}
 		} else {
 			throw new ControllerValidationException(
-					Set.of(errorMessageBuilder.buildIsNotNullErrorMessage(dtoName + ".id")));
+					Set.of(ValidationErrorMessageUtils.buildIsNotNullErrorMessage(dtoName + ".id")));
 		}
 	}
 
@@ -56,7 +52,7 @@ public class AbstractController<T extends AbstractDTO<I>, I extends Serializable
 			return ResponseEntity.ok(optional.get());
 		} else {
 			throw new ControllerValidationException(HttpStatus.NOT_FOUND,
-					Set.of(errorMessageBuilder.buildNotFoundByIdErrorMessage(dtoName, id)));
+					Set.of(ValidationErrorMessageUtils.buildNotFoundByIdErrorMessage(dtoName, id)));
 		}
 	}
 

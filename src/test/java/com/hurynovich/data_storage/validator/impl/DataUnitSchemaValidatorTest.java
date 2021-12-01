@@ -45,7 +45,7 @@ class DataUnitSchemaValidatorTest {
 
 	@BeforeEach
 	public void initValidator() {
-		validator = new DataUnitSchemaValidator(new ValidationErrorMessageBuilderImpl(), service);
+		validator = new DataUnitSchemaValidator(service);
 	}
 
 	@Test
@@ -292,5 +292,4 @@ class DataUnitSchemaValidatorTest {
 		Assertions.assertEquals("'dataUnitSchema.propertySchema.type' can't be null",
 				errors.iterator().next());
 	}
-
 }

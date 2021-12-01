@@ -5,7 +5,6 @@ import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.dto_service.MassReadService;
 import com.hurynovich.data_storage.service.paginator.Paginator;
 import com.hurynovich.data_storage.service.paginator.model.GenericPage;
-import com.hurynovich.data_storage.validator.ValidationErrorMessageBuilder;
 import com.hurynovich.data_storage.validator.Validator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -33,10 +32,9 @@ public class DataUnitSchemaController extends AbstractController<DataUnitSchemaD
 	private final Paginator paginator;
 
 	public DataUnitSchemaController(final @NonNull Validator<DataUnitSchemaDTO> validator,
-									final @NonNull ValidationErrorMessageBuilder errorMessageBuilder,
 									final @NonNull MassReadService<DataUnitSchemaDTO, Long> service,
 									final @NonNull Paginator paginator) {
-		super(DATA_UNIT_SCHEMA, validator, service, errorMessageBuilder);
+		super(DATA_UNIT_SCHEMA, validator, service);
 		this.service = Objects.requireNonNull(service);
 		this.paginator = Objects.requireNonNull(paginator);
 	}

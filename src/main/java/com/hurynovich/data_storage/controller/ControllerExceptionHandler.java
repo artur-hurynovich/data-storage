@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Set;
 
 @ControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
@@ -15,12 +16,12 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(ControllerValidationException.class)
 	public ResponseEntity<Object> handleControllerValidationException(
 			final ControllerValidationException exception) {
-		return ResponseEntity.badRequest().body(exception.getErrors());
+		return new ResponseEntity<>(exception.getErrors(), exception.getStatus());
 	}
 
 	@ExceptionHandler(EntityNotFoundException.class)
 	public ResponseEntity<Object> handleEntityNotFoundException(
 			final EntityNotFoundException exception) {
-		return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(Set.of(exception.getMessage()), HttpStatus.NOT_FOUND);
 	}
 }

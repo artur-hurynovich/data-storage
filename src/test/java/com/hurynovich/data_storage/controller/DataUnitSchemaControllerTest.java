@@ -14,7 +14,6 @@ import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchema
 import com.hurynovich.data_storage.test_objects_asserter.TestIdentifiedObjectsAsserter;
 import com.hurynovich.data_storage.test_objects_asserter.impl.DataUnitSchemaAsserter;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
-import com.hurynovich.data_storage.validator.ValidationErrorMessageBuilder;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
@@ -49,9 +48,6 @@ class DataUnitSchemaControllerTest {
 	private Validator<DataUnitSchemaDTO> validator;
 
 	@Mock
-	private ValidationErrorMessageBuilder errorMessageBuilder;
-
-	@Mock
 	private MassReadService<DataUnitSchemaDTO, Long> service;
 
 	@Mock
@@ -70,7 +66,7 @@ class DataUnitSchemaControllerTest {
 
 	@BeforeEach
 	public void initController() {
-		controller = new DataUnitSchemaController(validator, errorMessageBuilder, service, paginator);
+		controller = new DataUnitSchemaController(validator, service, paginator);
 	}
 
 	@Test
@@ -93,9 +89,6 @@ class DataUnitSchemaControllerTest {
 
 	@Test
 	void postValidSchemaIdIsNotNullTest() {
-		Mockito.doAnswer(invocationOnMock ->
-						"'" + invocationOnMock.getArgument(0) + "' should be null").
-				when(errorMessageBuilder).buildIsNotNullErrorMessage("dataUnitSchema.id");
 		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
 		final ControllerValidationException exception = Assertions.
 				assertThrows(ControllerValidationException.class, () -> controller.postSchema(schema));
@@ -162,10 +155,6 @@ class DataUnitSchemaControllerTest {
 	@Test
 	void getSchemaByIdNotFoundTest() {
 		Mockito.when(service.findById(INCORRECT_LONG_ID)).thenReturn(Optional.empty());
-		Mockito.doAnswer(invocationOnMock ->
-						"'" + invocationOnMock.getArgument(0) +
-								"' with id = '" + invocationOnMock.getArgument(1) + "' not found").
-				when(errorMessageBuilder).buildNotFoundByIdErrorMessage("dataUnitSchema", INCORRECT_LONG_ID);
 
 		final ControllerValidationException exception = Assertions.
 				assertThrows(ControllerValidationException.class, () -> controller.getSchemaById(INCORRECT_LONG_ID));

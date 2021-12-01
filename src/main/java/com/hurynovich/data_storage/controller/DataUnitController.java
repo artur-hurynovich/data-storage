@@ -7,7 +7,6 @@ import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
 import com.hurynovich.data_storage.service.dto_service.DataUnitService;
 import com.hurynovich.data_storage.service.paginator.Paginator;
 import com.hurynovich.data_storage.service.paginator.model.GenericPage;
-import com.hurynovich.data_storage.validator.ValidationErrorMessageBuilder;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
@@ -40,10 +39,9 @@ public class DataUnitController extends AbstractController<DataUnitDTO, String> 
 
 	public DataUnitController(final @NonNull Validator<DataUnitDTO> dataUnitValidator,
 							  final @NonNull Validator<DataUnitFilter> filterValidator,
-							  final @NonNull ValidationErrorMessageBuilder errorMessageBuilder,
 							  final @NonNull DataUnitService service,
 							  final @NonNull Paginator paginator) {
-		super(DATA_UNIT, dataUnitValidator, service, errorMessageBuilder);
+		super(DATA_UNIT, dataUnitValidator, service);
 		this.filterValidator = Objects.requireNonNull(filterValidator);
 		this.service = Objects.requireNonNull(service);
 		this.paginator = Objects.requireNonNull(paginator);

@@ -12,6 +12,7 @@ import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
 import com.hurynovich.data_storage.utils.MassProcessingUtils;
+import com.hurynovich.data_storage.utils.ValidationErrorMessageUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,7 +84,8 @@ class DataUnitSchemaServiceImpl implements DataUnitSchemaService {
 
 			eventListener.onEvent(new Event<>(dataUnitSchemaDTO, EventType.DELETE));
 		} else {
-			throw new EntityNotFoundException("'dataUnitSchema' with id = '" + id + "' not found");
+			throw new EntityNotFoundException(ValidationErrorMessageUtils.
+					buildNotFoundByIdErrorMessage("dataUnitSchema", id));
 		}
 	}
 

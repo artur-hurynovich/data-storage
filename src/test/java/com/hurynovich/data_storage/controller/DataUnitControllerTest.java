@@ -15,7 +15,6 @@ import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGen
 import com.hurynovich.data_storage.test_objects_asserter.TestIdentifiedObjectsAsserter;
 import com.hurynovich.data_storage.test_objects_asserter.impl.DataUnitAsserter;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
-import com.hurynovich.data_storage.validator.ValidationErrorMessageBuilder;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
@@ -53,9 +52,6 @@ class DataUnitControllerTest {
 	private Validator<DataUnitFilter> filterValidator;
 
 	@Mock
-	private ValidationErrorMessageBuilder errorMessageBuilder;
-
-	@Mock
 	private DataUnitService service;
 
 	@Mock
@@ -77,7 +73,7 @@ class DataUnitControllerTest {
 
 	@BeforeEach
 	public void initController() {
-		controller = new DataUnitController(dataUnitValidator, filterValidator, errorMessageBuilder, service, paginator);
+		controller = new DataUnitController(dataUnitValidator, filterValidator, service, paginator);
 	}
 
 	@Test
@@ -101,9 +97,6 @@ class DataUnitControllerTest {
 
 	@Test
 	void postValidDataUnitIdIsNotNullTest() {
-		Mockito.doAnswer(invocationOnMock ->
-						"'" + invocationOnMock.getArgument(0) + "' should be null").
-				when(errorMessageBuilder).buildIsNotNullErrorMessage("dataUnit.id");
 		final DataUnitDTO dataUnit = dataUnitGenerator.generateObject();
 		final ControllerValidationException exception = Assertions.
 				assertThrows(ControllerValidationException.class, () -> controller.postDataUnit(dataUnit));
@@ -170,10 +163,6 @@ class DataUnitControllerTest {
 	@Test
 	void getDataUnitByIdNotFoundTest() {
 		Mockito.when(service.findById(INCORRECT_STRING_ID)).thenReturn(Optional.empty());
-		Mockito.doAnswer(invocationOnMock ->
-						"'" + invocationOnMock.getArgument(0) +
-								"' with id = '" + invocationOnMock.getArgument(1) + "' not found").
-				when(errorMessageBuilder).buildNotFoundByIdErrorMessage("dataUnit", INCORRECT_STRING_ID);
 
 		final ControllerValidationException exception = Assertions.
 				assertThrows(ControllerValidationException.class, () -> controller.getDataUnitById(INCORRECT_STRING_ID));

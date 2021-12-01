@@ -9,7 +9,7 @@ import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPrope
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
-import com.hurynovich.data_storage.validator.ValidationErrorMessageBuilder;
+import com.hurynovich.data_storage.utils.ValidationErrorMessageUtils;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
 import com.hurynovich.data_storage.validator.model.ValidationResultType;
@@ -34,16 +34,12 @@ class DataUnitFilterValidator implements Validator<DataUnitFilter> {
 
 	private final DataUnitPropertyValueCheckProcessor valueCheckProcessor;
 
-	private final ValidationErrorMessageBuilder errorMessageBuilder;
-
 	public DataUnitFilterValidator(final @NonNull DataUnitSchemaService schemaService,
 								   final @NonNull Map<DataUnitPropertyType, Set<CriteriaComparison>> criteriaComparisonsByPropertyType,
-								   final @NonNull DataUnitPropertyValueCheckProcessor valueCheckProcessor,
-								   final @NonNull ValidationErrorMessageBuilder errorMessageBuilder) {
+								   final @NonNull DataUnitPropertyValueCheckProcessor valueCheckProcessor) {
 		this.schemaService = Objects.requireNonNull(schemaService);
 		this.criteriaComparisonsByPropertyType = Collections.unmodifiableMap(criteriaComparisonsByPropertyType);
 		this.valueCheckProcessor = valueCheckProcessor;
-		this.errorMessageBuilder = errorMessageBuilder;
 	}
 
 	@Override
@@ -53,7 +49,8 @@ class DataUnitFilterValidator implements Validator<DataUnitFilter> {
 		final Optional<DataUnitSchemaDTO> schemaOptional = schemaService.findById(schemaId);
 		if (schemaOptional.isEmpty()) {
 			result.setType(ValidationResultType.FAILURE);
-			result.addError(errorMessageBuilder.buildNotFoundByIdErrorMessage("dataUnitSchema", schemaId));
+			result.addError(ValidationErrorMessageUtils.
+					buildNotFoundByIdErrorMessage("dataUnitSchema", schemaId));
 		} else {
 			final DataUnitPropertyCriteriaValidationContext context =
 					DataUnitPropertyCriteriaValidationContext.of(schemaOptional.get());
@@ -70,13 +67,13 @@ class DataUnitFilterValidator implements Validator<DataUnitFilter> {
 		final Long propertySchemaId = criteria.getPropertySchemaId();
 		if (!context.isValidPropertySchemaId(propertySchemaId)) {
 			result.setType(ValidationResultType.FAILURE);
-			result.addError(errorMessageBuilder.
+			result.addError(ValidationErrorMessageUtils.
 					buildNotFoundByIdErrorMessage("dataUnitPropertySchema", propertySchemaId));
 		}
 
 		if (!context.isUniquePropertySchemaId(propertySchemaId)) {
 			result.setType(ValidationResultType.FAILURE);
-			result.addError(errorMessageBuilder.
+			result.addError(ValidationErrorMessageUtils.
 					buildFoundDuplicateErrorMessage("filter.criteria.propertySchemaId", propertySchemaId));
 		}
 
@@ -126,7 +123,5 @@ class DataUnitFilterValidator implements Validator<DataUnitFilter> {
 		public DataUnitPropertySchemaDTO getPropertySchema(final @NonNull Long propertySchemaId) {
 			return propertySchemasById.get(propertySchemaId);
 		}
-
 	}
-
 }

@@ -51,7 +51,7 @@ class DataUnitValidatorTest {
 
 	@BeforeEach
 	public void initValidator() {
-		validator = new DataUnitValidator(dataUnitSchemaService, new ValidationErrorMessageBuilderImpl(), checkProcessor);
+		validator = new DataUnitValidator(dataUnitSchemaService, checkProcessor);
 	}
 
 	@Test
@@ -241,5 +241,4 @@ class DataUnitValidatorTest {
 						"' is incorrect for dataUnitProperty with schemaId = " + DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID,
 				errors.iterator().next());
 	}
-
 }
