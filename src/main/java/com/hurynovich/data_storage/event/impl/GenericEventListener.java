@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 class GenericEventListener<T extends AbstractDTO<?>> implements EventListener<T> {
 
@@ -35,6 +36,14 @@ class GenericEventListener<T extends AbstractDTO<?>> implements EventListener<T>
 		final ExecutorService executorService = Executors.newSingleThreadExecutor(threadFactory);
 		executorService.submit(() -> handleEvent(event));
 		executorService.shutdown();
+		try {
+			if (!executorService.awaitTermination(5L, TimeUnit.SECONDS)) {
+				executorService.shutdownNow();
+			}
+		} catch (final InterruptedException e) {
+			executorService.shutdownNow();
+			Thread.currentThread().interrupt();
+		}
 	}
 
 	private void handleEvent(final @NonNull Event<T> event) {
