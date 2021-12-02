@@ -34,7 +34,14 @@ class GenericEventListener<T extends AbstractDTO<?>> implements EventListener<T>
 	@Override
 	public void onEvent(final @NonNull Event<T> event) {
 		final ExecutorService executorService = Executors.newSingleThreadExecutor(threadFactory);
-		executorService.submit(() -> handleEvent(event));
+		try {
+			executorService.submit(() -> handleEvent(event));
+		} finally {
+			shutdown(executorService);
+		}
+	}
+
+	private void shutdown(final @NonNull ExecutorService executorService) {
 		executorService.shutdown();
 		try {
 			if (!executorService.awaitTermination(5L, TimeUnit.SECONDS)) {
