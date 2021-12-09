@@ -1,11 +1,11 @@
 package com.hurynovich.data_storage.model_asserter.impl;
 
-import com.hurynovich.data_storage.model.AbstractDocument_;
-import com.hurynovich.data_storage.model.data_unit.DataUnitDocument_;
+import com.hurynovich.data_storage.model.AbstractServiceModel_;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPersistentModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyPersistentModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyServiceModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModel;
+import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModelImpl_;
 import com.hurynovich.data_storage.model_asserter.ModelAsserter;
 import com.hurynovich.data_storage.utils.MassProcessingUtils;
 import org.junit.jupiter.api.Assertions;
@@ -26,15 +26,15 @@ public class DataUnitAsserter implements ModelAsserter<DataUnitServiceModel, Dat
 							  final String... ignoreProperties) {
 		final Set<String> ignorePropertiesSet = (ignoreProperties != null ?
 				Set.of(ignoreProperties) : Collections.emptySet());
-		if (!ignorePropertiesSet.contains(AbstractDocument_.ID)) {
+		if (!ignorePropertiesSet.contains(AbstractServiceModel_.ID)) {
 			Assertions.assertEquals(expected.getId(), actual.getId());
 		}
 
-		if (!ignorePropertiesSet.contains(DataUnitDocument_.SCHEMA_ID)) {
+		if (!ignorePropertiesSet.contains(DataUnitServiceModelImpl_.SCHEMA_ID)) {
 			Assertions.assertEquals(expected.getSchemaId(), actual.getSchemaId());
 		}
 
-		if (!ignorePropertiesSet.contains(DataUnitDocument_.PROPERTIES)) {
+		if (!ignorePropertiesSet.contains(DataUnitServiceModelImpl_.PROPERTIES)) {
 			final List<DataUnitPropertyWrapper> expectedProperties = expected.getProperties();
 			final List<DataUnitPropertyWrapper> actualProperties = actual.getProperties();
 			Assertions.assertEquals(expectedProperties.size(), actualProperties.size());

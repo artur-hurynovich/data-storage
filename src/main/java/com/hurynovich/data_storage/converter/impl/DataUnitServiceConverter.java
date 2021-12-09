@@ -1,16 +1,16 @@
 package com.hurynovich.data_storage.converter.impl;
 
 import com.hurynovich.data_storage.converter.ServiceConverter;
-import com.hurynovich.data_storage.model.AbstractDocument_;
+import com.hurynovich.data_storage.model.AbstractServiceModel_;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument.DataUnitPropertyDocument;
-import com.hurynovich.data_storage.model.data_unit.DataUnitDocument_;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPersistentModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyPersistentModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyServiceModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModelImpl;
 import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModelImpl.DataUnitPropertyServiceModelImpl;
+import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModelImpl_;
 import com.hurynovich.data_storage.utils.MassProcessingUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class DataUnitServiceConverter implements ServiceConverter<DataUnitServic
 
 			final Set<String> ignorePropertiesSet = resolveIgnoreProperties(ignoreProperties);
 			final String id;
-			if (!ignorePropertiesSet.contains(AbstractDocument_.ID)) {
+			if (!ignorePropertiesSet.contains(AbstractServiceModel_.ID)) {
 				id = source.getId();
 			} else {
 				id = null;
@@ -38,7 +38,7 @@ public class DataUnitServiceConverter implements ServiceConverter<DataUnitServic
 			target.setId(id);
 
 			final Long schemaId;
-			if (!ignorePropertiesSet.contains(DataUnitDocument_.SCHEMA_ID)) {
+			if (!ignorePropertiesSet.contains(DataUnitServiceModelImpl_.SCHEMA_ID)) {
 				schemaId = source.getSchemaId();
 			} else {
 				schemaId = null;
@@ -46,7 +46,7 @@ public class DataUnitServiceConverter implements ServiceConverter<DataUnitServic
 			target.setSchemaId(schemaId);
 
 			final List<DataUnitPropertyPersistentModel> properties;
-			if (!ignorePropertiesSet.contains(DataUnitDocument_.PROPERTIES)) {
+			if (!ignorePropertiesSet.contains(DataUnitServiceModelImpl_.PROPERTIES)) {
 				properties = MassProcessingUtils.
 						processQuietly(source.getProperties(), this::convertPropertyToPersistentModel);
 			} else {
@@ -86,21 +86,21 @@ public class DataUnitServiceConverter implements ServiceConverter<DataUnitServic
 		if (source != null) {
 			final Set<String> ignorePropertiesSet = resolveIgnoreProperties(ignoreProperties);
 			final String id;
-			if (!ignorePropertiesSet.contains(AbstractDocument_.ID)) {
+			if (!ignorePropertiesSet.contains(AbstractServiceModel_.ID)) {
 				id = source.getId();
 			} else {
 				id = null;
 			}
 
 			final Long schemaId;
-			if (!ignorePropertiesSet.contains(DataUnitDocument_.SCHEMA_ID)) {
+			if (!ignorePropertiesSet.contains(DataUnitServiceModelImpl_.SCHEMA_ID)) {
 				schemaId = source.getSchemaId();
 			} else {
 				schemaId = null;
 			}
 
 			final List<DataUnitPropertyServiceModel> properties;
-			if (!ignorePropertiesSet.contains(DataUnitDocument_.PROPERTIES)) {
+			if (!ignorePropertiesSet.contains(DataUnitServiceModelImpl_.PROPERTIES)) {
 				properties = MassProcessingUtils.
 						processQuietly(source.getProperties(), this::convertPropertyToDTOModel);
 			} else {

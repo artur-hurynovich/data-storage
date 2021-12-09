@@ -3,15 +3,15 @@ package com.hurynovich.data_storage.it.api.data_unit_schema;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hurynovich.data_storage.model.AbstractEntity_;
-import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaEntity_;
+import com.hurynovich.data_storage.model.AbstractServiceModel_;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModelImpl;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModelImpl_;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelImpl;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelImpl_;
 import com.hurynovich.data_storage.service.paginator.model.GenericPage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -52,7 +52,7 @@ class GetSchemasIT extends AbstractDataUnitSchemaIT {
 		for (int i = 0; i < existingSchemas.size(); i++) {
 			final DataUnitSchemaServiceModel responseSchema = responseSchemas.get(i);
 			schemaAsserter.assertEquals(existingSchemas.get(i), responseSchema,
-					DataUnitSchemaEntity_.PROPERTY_SCHEMAS);
+					DataUnitSchemaServiceModelImpl_.PROPERTY_SCHEMAS);
 
 			final List<DataUnitPropertySchemaServiceModel> propertySchemas = responseSchema.getPropertySchemas();
 			Assertions.assertNotNull(propertySchemas);
@@ -92,7 +92,7 @@ class GetSchemasIT extends AbstractDataUnitSchemaIT {
 		for (int i = 0; i < existingSchemas.size(); i++) {
 			final DataUnitSchemaServiceModel responseSchema = responseSchemas.get(i);
 			schemaAsserter.assertEquals(existingSchemas.get(i), responseSchema,
-					DataUnitSchemaEntity_.PROPERTY_SCHEMAS);
+					DataUnitSchemaServiceModelImpl_.PROPERTY_SCHEMAS);
 
 			final List<DataUnitPropertySchemaServiceModel> propertySchemas = responseSchema.getPropertySchemas();
 			Assertions.assertNotNull(propertySchemas);
@@ -141,9 +141,9 @@ class GetSchemasIT extends AbstractDataUnitSchemaIT {
 	}
 
 	private DataUnitSchemaServiceModel buildSchema(final JsonNode schemaNode) {
-		return new DataUnitSchemaServiceModelImpl(schemaNode.get(AbstractEntity_.ID).asLong(),
-				schemaNode.get(DataUnitSchemaEntity_.NAME).asText(),
-				buildPropertySchemas(schemaNode.get(DataUnitSchemaEntity_.PROPERTY_SCHEMAS)));
+		return new DataUnitSchemaServiceModelImpl(schemaNode.get(AbstractServiceModel_.ID).asLong(),
+				schemaNode.get(DataUnitSchemaServiceModelImpl_.NAME).asText(),
+				buildPropertySchemas(schemaNode.get(DataUnitSchemaServiceModelImpl_.PROPERTY_SCHEMAS)));
 	}
 
 	private List<DataUnitPropertySchemaServiceModel> buildPropertySchemas(final JsonNode propertySchemasNode) {
@@ -158,8 +158,8 @@ class GetSchemasIT extends AbstractDataUnitSchemaIT {
 	}
 
 	private DataUnitPropertySchemaServiceModel buildPropertySchema(final JsonNode propertySchemaNode) {
-		return new DataUnitPropertySchemaServiceModelImpl(propertySchemaNode.get(AbstractEntity_.ID).asLong(),
-				propertySchemaNode.get(DataUnitPropertySchemaEntity_.NAME).asText(),
-				DataUnitPropertyType.valueOf(propertySchemaNode.get(DataUnitPropertySchemaEntity_.TYPE).asText()));
+		return new DataUnitPropertySchemaServiceModelImpl(propertySchemaNode.get(AbstractServiceModel_.ID).asLong(),
+				propertySchemaNode.get(DataUnitPropertySchemaServiceModelImpl_.NAME).asText(),
+				DataUnitPropertyType.valueOf(propertySchemaNode.get(DataUnitPropertySchemaServiceModelImpl_.TYPE).asText()));
 	}
 }

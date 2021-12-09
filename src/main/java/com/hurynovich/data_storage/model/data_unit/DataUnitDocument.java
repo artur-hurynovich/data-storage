@@ -1,12 +1,10 @@
 package com.hurynovich.data_storage.model.data_unit;
 
-import com.hurynovich.GenerateMetamodel;
 import com.hurynovich.data_storage.model.AbstractDocument;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@GenerateMetamodel
 @Document
 public class DataUnitDocument extends AbstractDocument<String> implements DataUnitPersistentModel {
 
@@ -32,7 +30,6 @@ public class DataUnitDocument extends AbstractDocument<String> implements DataUn
 		this.properties = properties;
 	}
 
-	@GenerateMetamodel
 	public static class DataUnitPropertyDocument implements DataUnitPropertyPersistentModel {
 
 		private Long schemaId;

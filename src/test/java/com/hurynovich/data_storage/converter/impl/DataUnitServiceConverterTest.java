@@ -2,12 +2,12 @@ package com.hurynovich.data_storage.converter.impl;
 
 import com.hurynovich.data_storage.converter.ServiceConverter;
 import com.hurynovich.data_storage.model.ModelGenerator;
-import com.hurynovich.data_storage.model.data_unit.DataUnitDocument_;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPersistentModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPersistentModelGenerator;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyServiceModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModelGenerator;
+import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModelImpl_;
 import com.hurynovich.data_storage.model_asserter.ModelAsserter;
 import com.hurynovich.data_storage.model_asserter.impl.DataUnitAsserter;
 import org.junit.jupiter.api.Assertions;
@@ -44,8 +44,8 @@ class DataUnitServiceConverterTest {
 	void convertPersistentModelNotNullIgnorePropertiesTest() {
 		final DataUnitPersistentModel persistentModel = persistentModelGenerator.generate();
 		final DataUnitServiceModel serviceModel = converter.
-				convert(persistentModel, DataUnitDocument_.PROPERTIES);
-		asserter.assertEquals(persistentModel, serviceModel, DataUnitDocument_.PROPERTIES);
+				convert(persistentModel, DataUnitServiceModelImpl_.PROPERTIES);
+		asserter.assertEquals(persistentModel, serviceModel, DataUnitServiceModelImpl_.PROPERTIES);
 
 		final List<DataUnitPropertyServiceModel> properties = serviceModel.getProperties();
 		Assertions.assertNotNull(properties);
@@ -67,8 +67,9 @@ class DataUnitServiceConverterTest {
 	@Test
 	void convertServiceModelNotNullIgnoreSchemaIdTest() {
 		final DataUnitServiceModel serviceModel = serviceModelGenerator.generate();
-		final DataUnitPersistentModel persistentModel = converter.convert(serviceModel, DataUnitDocument_.SCHEMA_ID);
-		asserter.assertEquals(serviceModel, persistentModel, DataUnitDocument_.SCHEMA_ID);
+		final DataUnitPersistentModel persistentModel = converter.convert(serviceModel,
+				DataUnitServiceModelImpl_.SCHEMA_ID);
+		asserter.assertEquals(serviceModel, persistentModel, DataUnitServiceModelImpl_.SCHEMA_ID);
 
 		Assertions.assertNull(persistentModel.getSchemaId());
 	}

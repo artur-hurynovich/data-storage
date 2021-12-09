@@ -1,12 +1,12 @@
 package com.hurynovich.data_storage.model_asserter.impl;
 
-import com.hurynovich.data_storage.model.AbstractEntity_;
+import com.hurynovich.data_storage.model.AbstractServiceModel_;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaPersistentModel;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelImpl_;
 import com.hurynovich.data_storage.model_asserter.ModelAsserter;
 import com.hurynovich.data_storage.utils.MassProcessingUtils;
 import org.junit.jupiter.api.Assertions;
@@ -27,15 +27,15 @@ public class DataUnitSchemaAsserter implements ModelAsserter<DataUnitSchemaServi
 							  final String... ignoreProperties) {
 		final Set<String> ignorePropertiesSet = (ignoreProperties != null ?
 				Set.of(ignoreProperties) : Collections.emptySet());
-		if (!ignorePropertiesSet.contains(AbstractEntity_.ID)) {
+		if (!ignorePropertiesSet.contains(AbstractServiceModel_.ID)) {
 			Assertions.assertEquals(expected.getId(), actual.getId());
 		}
 
-		if (!ignorePropertiesSet.contains(DataUnitSchemaEntity_.NAME)) {
+		if (!ignorePropertiesSet.contains(DataUnitSchemaServiceModelImpl_.NAME)) {
 			Assertions.assertEquals(expected.getName(), actual.getName());
 		}
 
-		if (!ignorePropertiesSet.contains(DataUnitSchemaEntity_.PROPERTY_SCHEMAS)) {
+		if (!ignorePropertiesSet.contains(DataUnitSchemaServiceModelImpl_.PROPERTY_SCHEMAS)) {
 			final List<DataUnitPropertySchemaWrapper> expectedPropertySchemas = expected.getPropertySchemas();
 			final List<DataUnitPropertySchemaWrapper> actualPropertySchemas = actual.getPropertySchemas();
 			Assertions.assertEquals(expectedPropertySchemas.size(), actualPropertySchemas.size());
@@ -43,7 +43,7 @@ public class DataUnitSchemaAsserter implements ModelAsserter<DataUnitSchemaServi
 				final DataUnitPropertySchemaWrapper expectedPropertySchema = expectedPropertySchemas.get(i);
 				final DataUnitPropertySchemaWrapper actualPropertySchema = actualPropertySchemas.get(i);
 
-				if (!ignorePropertiesSet.contains(AbstractEntity_.ID)) {
+				if (!ignorePropertiesSet.contains(AbstractServiceModel_.ID)) {
 					Assertions.assertEquals(expectedPropertySchema.getId(), actualPropertySchema.getId());
 				}
 

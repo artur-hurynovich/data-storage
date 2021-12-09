@@ -1,11 +1,9 @@
 package com.hurynovich.data_storage.model;
 
-import com.hurynovich.GenerateMetamodel;
 import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
 
-@GenerateMetamodel
 public class AbstractDocument<T extends Serializable> implements PersistentModel<T> {
 
 	@Id

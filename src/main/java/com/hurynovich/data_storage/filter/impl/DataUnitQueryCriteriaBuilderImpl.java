@@ -5,8 +5,8 @@ import com.hurynovich.data_storage.filter.exception.DataUnitQueryCriteriaBuilder
 import com.hurynovich.data_storage.filter.model.CriteriaComparison;
 import com.hurynovich.data_storage.filter.model.DataUnitFilter;
 import com.hurynovich.data_storage.filter.model.DataUnitPropertyCriteria;
-import com.hurynovich.data_storage.model.data_unit.DataUnitDocument_;
-import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyDocument_;
+import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyServiceModelImpl_;
+import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModelImpl_;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.lang.NonNull;
 
@@ -37,17 +37,17 @@ class DataUnitQueryCriteriaBuilderImpl implements DataUnitQueryCriteriaBuilder {
 	}
 
 	private Criteria buildSchemaIdCriteria(final @NonNull DataUnitFilter filter) {
-		return Criteria.where(DataUnitDocument_.SCHEMA_ID).is(filter.getSchemaId());
+		return Criteria.where(DataUnitServiceModelImpl_.SCHEMA_ID).is(filter.getSchemaId());
 	}
 
 	private Criteria buildPropertyCriteria(final @NonNull DataUnitPropertyCriteria filterCriteria) {
 		final Criteria elemMatchCriteria = Criteria.
-				where(DataUnitPropertyDocument_.SCHEMA_ID).
+				where(DataUnitPropertyServiceModelImpl_.SCHEMA_ID).
 				is(filterCriteria.getPropertySchemaId());
 		applyValueCriteria(elemMatchCriteria, filterCriteria);
 
 		return Criteria.
-				where(DataUnitDocument_.PROPERTIES).
+				where(DataUnitServiceModelImpl_.PROPERTIES).
 				elemMatch(elemMatchCriteria);
 	}
 
@@ -56,11 +56,10 @@ class DataUnitQueryCriteriaBuilderImpl implements DataUnitQueryCriteriaBuilder {
 		final CriteriaComparison comparison = filterCriteria.getComparison();
 		final BiConsumer<Criteria, DataUnitPropertyCriteria> applier = valueCriteriaAppliersByComparison.get(comparison);
 		if (applier != null) {
-			applier.accept(elemMatchCriteria.and(DataUnitPropertyDocument_.VALUE), filterCriteria);
+			applier.accept(elemMatchCriteria.and(DataUnitPropertyServiceModelImpl_.VALUE), filterCriteria);
 		} else {
 			throw new DataUnitQueryCriteriaBuilderException("Value criteria applier for comparison = '" +
 					comparison + "' not found");
 		}
 	}
-
 }

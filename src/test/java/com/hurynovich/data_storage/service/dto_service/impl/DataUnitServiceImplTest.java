@@ -3,7 +3,7 @@ package com.hurynovich.data_storage.service.dto_service.impl;
 import com.hurynovich.data_storage.converter.ServiceConverter;
 import com.hurynovich.data_storage.dao.DataUnitDAO;
 import com.hurynovich.data_storage.filter.model.DataUnitFilter;
-import com.hurynovich.data_storage.model.AbstractDocument_;
+import com.hurynovich.data_storage.model.AbstractServiceModel_;
 import com.hurynovich.data_storage.model.ModelGenerator;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPersistentModel;
@@ -67,7 +67,7 @@ class DataUnitServiceImplTest {
 		Mockito.when(converter.convert(persistentModel)).thenReturn(serviceModelGenerator.generate());
 
 		final DataUnitServiceModel savedServiceModel = service.save(serviceModel);
-		asserter.assertEquals(serviceModel, savedServiceModel, AbstractDocument_.ID);
+		asserter.assertEquals(serviceModel, savedServiceModel, AbstractServiceModel_.ID);
 		Assertions.assertNotNull(savedServiceModel.getId());
 	}
 

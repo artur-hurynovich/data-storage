@@ -1,11 +1,13 @@
 package com.hurynovich.data_storage.model.data_unit;
 
+import com.hurynovich.GenerateMetamodel;
 import com.hurynovich.data_storage.model.AbstractServiceModel;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
 
+@GenerateMetamodel
 public class DataUnitServiceModelImpl extends AbstractServiceModel<String> implements DataUnitServiceModel {
 
 	private final Long schemaId;
@@ -29,6 +31,7 @@ public class DataUnitServiceModelImpl extends AbstractServiceModel<String> imple
 		return properties;
 	}
 
+	@GenerateMetamodel
 	public static class DataUnitPropertyServiceModelImpl implements DataUnitPropertyServiceModel {
 
 		private final Long schemaId;

@@ -6,14 +6,14 @@ import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
 import com.hurynovich.data_storage.event.EventListener;
 import com.hurynovich.data_storage.event.model.Event;
 import com.hurynovich.data_storage.event.model.EventType;
-import com.hurynovich.data_storage.model.AbstractEntity_;
+import com.hurynovich.data_storage.model.AbstractServiceModel_;
 import com.hurynovich.data_storage.model.ModelGenerator;
 import com.hurynovich.data_storage.model.PaginationParams;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModelGenerator;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelGenerator;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelImpl_;
 import com.hurynovich.data_storage.model_asserter.ModelAsserter;
 import com.hurynovich.data_storage.model_asserter.impl.DataUnitSchemaAsserter;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
@@ -81,7 +81,7 @@ class DataUnitSchemaServiceImplTest {
 		final DataUnitSchemaServiceModel savedServiceModel = service.save(serviceModel);
 		Mockito.verify(cache).store(savedServiceModel.getId(), savedServiceModel);
 
-		asserter.assertEquals(serviceModel, savedServiceModel, AbstractEntity_.ID);
+		asserter.assertEquals(serviceModel, savedServiceModel, AbstractServiceModel_.ID);
 		Assertions.assertNotNull(savedServiceModel.getId());
 	}
 
@@ -131,8 +131,8 @@ class DataUnitSchemaServiceImplTest {
 		final List<DataUnitSchemaServiceModel> serviceModels = serviceModelGenerator.generateList();
 		for (int i = 0; i < persistentModels.size(); i++) {
 			final DataUnitSchemaServiceModel serviceModel = serviceModels.get(i);
-			TestReflectionUtils.setField(serviceModel, DataUnitSchemaEntity_.PROPERTY_SCHEMAS, new ArrayList<>());
-			Mockito.when(converter.convert(persistentModels.get(i), DataUnitSchemaEntity_.PROPERTY_SCHEMAS)).
+			TestReflectionUtils.setField(serviceModel, DataUnitSchemaServiceModelImpl_.PROPERTY_SCHEMAS, new ArrayList<>());
+			Mockito.when(converter.convert(persistentModels.get(i), DataUnitSchemaServiceModelImpl_.PROPERTY_SCHEMAS)).
 					thenReturn(serviceModel);
 		}
 

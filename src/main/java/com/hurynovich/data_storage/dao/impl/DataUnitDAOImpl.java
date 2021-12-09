@@ -5,8 +5,8 @@ import com.hurynovich.data_storage.filter.DataUnitQueryCriteriaBuilder;
 import com.hurynovich.data_storage.filter.model.DataUnitFilter;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
-import com.hurynovich.data_storage.model.data_unit.DataUnitDocument_;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPersistentModel;
+import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModelImpl_;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -70,7 +70,7 @@ class DataUnitDAOImpl implements DataUnitDAO {
 	@Override
 	public void deleteAllBySchemaId(final @NonNull Long schemaId) {
 		final Query query = new Query();
-		query.addCriteria(Criteria.where(DataUnitDocument_.SCHEMA_ID).is(schemaId));
+		query.addCriteria(Criteria.where(DataUnitServiceModelImpl_.SCHEMA_ID).is(schemaId));
 		mongoTemplate.findAndRemove(query, DataUnitDocument.class);
 	}
 }

@@ -2,13 +2,13 @@ package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.controller.exception.ControllerValidationException;
 import com.hurynovich.data_storage.filter.model.DataUnitFilter;
-import com.hurynovich.data_storage.model.AbstractEntity_;
+import com.hurynovich.data_storage.model.AbstractServiceModel_;
 import com.hurynovich.data_storage.model.ModelGenerator;
 import com.hurynovich.data_storage.model.PaginationParams;
-import com.hurynovich.data_storage.model.data_unit.DataUnitDocument_;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPersistentModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModelGenerator;
+import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModelImpl_;
 import com.hurynovich.data_storage.model_asserter.ModelAsserter;
 import com.hurynovich.data_storage.model_asserter.impl.DataUnitAsserter;
 import com.hurynovich.data_storage.service.dto_service.DataUnitService;
@@ -89,7 +89,7 @@ class DataUnitControllerTest {
 		final DataUnitServiceModel responseBody = response.getBody();
 		Assertions.assertNotNull(responseBody);
 
-		dataUnitAsserter.assertEquals(newDataUnit, responseBody, AbstractEntity_.ID);
+		dataUnitAsserter.assertEquals(newDataUnit, responseBody, AbstractServiceModel_.ID);
 
 		Assertions.assertNotNull(responseBody.getId());
 	}
@@ -108,7 +108,7 @@ class DataUnitControllerTest {
 	@Test
 	void postValidDataUnitSchemaIdIsNullTest() {
 		final DataUnitServiceModel dataUnit = dataUnitGenerator.generateNullId();
-		TestReflectionUtils.setField(dataUnit, DataUnitDocument_.SCHEMA_ID, null);
+		TestReflectionUtils.setField(dataUnit, DataUnitServiceModelImpl_.SCHEMA_ID, null);
 
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
@@ -127,7 +127,7 @@ class DataUnitControllerTest {
 	@Test
 	void postNotValidDataUnitTest() {
 		final DataUnitServiceModel dataUnit = dataUnitGenerator.generateNullId();
-		TestReflectionUtils.setField(dataUnit, DataUnitDocument_.PROPERTIES, new ArrayList<>());
+		TestReflectionUtils.setField(dataUnit, DataUnitServiceModelImpl_.PROPERTIES, new ArrayList<>());
 
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
@@ -299,7 +299,7 @@ class DataUnitControllerTest {
 	@Test
 	void putNotValidDataUnitTest() {
 		final DataUnitServiceModel dataUnit = dataUnitGenerator.generate();
-		TestReflectionUtils.setField(dataUnit, DataUnitDocument_.PROPERTIES, null);
+		TestReflectionUtils.setField(dataUnit, DataUnitServiceModelImpl_.PROPERTIES, null);
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
 		final String error = "'dataUnit.properties' can't be null or empty";

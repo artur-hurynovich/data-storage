@@ -7,9 +7,9 @@ import com.hurynovich.data_storage.event.EventListener;
 import com.hurynovich.data_storage.event.model.Event;
 import com.hurynovich.data_storage.event.model.EventType;
 import com.hurynovich.data_storage.model.PaginationParams;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelImpl_;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
 import com.hurynovich.data_storage.utils.MassProcessingUtils;
 import com.hurynovich.data_storage.utils.ValidationErrorMessageUtils;
@@ -93,7 +93,7 @@ class DataUnitSchemaServiceImpl implements DataUnitSchemaService {
 	@Transactional(readOnly = true)
 	public List<DataUnitSchemaServiceModel> findAll(final @NonNull PaginationParams params) {
 		return MassProcessingUtils.processQuietly(dao.findAll(params), dataUnitSchema -> converter.
-				convert(dataUnitSchema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS));
+				convert(dataUnitSchema, DataUnitSchemaServiceModelImpl_.PROPERTY_SCHEMAS));
 	}
 
 	@Override

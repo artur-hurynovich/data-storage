@@ -1,13 +1,13 @@
 package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.controller.exception.ControllerValidationException;
-import com.hurynovich.data_storage.model.AbstractEntity_;
+import com.hurynovich.data_storage.model.AbstractServiceModel_;
 import com.hurynovich.data_storage.model.ModelGenerator;
 import com.hurynovich.data_storage.model.PaginationParams;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelGenerator;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelImpl_;
 import com.hurynovich.data_storage.model_asserter.ModelAsserter;
 import com.hurynovich.data_storage.model_asserter.impl.DataUnitSchemaAsserter;
 import com.hurynovich.data_storage.service.dto_service.MassReadService;
@@ -82,7 +82,7 @@ class DataUnitSchemaControllerTest {
 		final DataUnitSchemaServiceModel responseBody = response.getBody();
 		Assertions.assertNotNull(responseBody);
 
-		dataUnitSchemaAsserter.assertEquals(newSchema, responseBody, AbstractEntity_.ID);
+		dataUnitSchemaAsserter.assertEquals(newSchema, responseBody, AbstractServiceModel_.ID);
 
 		Assertions.assertNotNull(responseBody.getId());
 	}
@@ -101,7 +101,7 @@ class DataUnitSchemaControllerTest {
 	@Test
 	void postValidSchemaNameIsNullTest() {
 		final DataUnitSchemaServiceModel schema = schemaGenerator.generateNullId();
-		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.NAME, null);
+		TestReflectionUtils.setField(schema, DataUnitSchemaServiceModelImpl_.NAME, null);
 
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
@@ -120,7 +120,7 @@ class DataUnitSchemaControllerTest {
 	@Test
 	void postNotValidSchemaTest() {
 		final DataUnitSchemaServiceModel schema = schemaGenerator.generateNullId();
-		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS, new ArrayList<>());
+		TestReflectionUtils.setField(schema, DataUnitSchemaServiceModelImpl_.PROPERTY_SCHEMAS, new ArrayList<>());
 
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
@@ -275,7 +275,7 @@ class DataUnitSchemaControllerTest {
 	@Test
 	void putNotValidSchemaTest() {
 		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
-		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS, new ArrayList<>());
+		TestReflectionUtils.setField(schema, DataUnitSchemaServiceModelImpl_.PROPERTY_SCHEMAS, new ArrayList<>());
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
 		final String error = "'dataUnitSchema.propertySchemas' can't be null or empty";

@@ -1,14 +1,14 @@
 package com.hurynovich.data_storage.it.api.data_unit_schema;
 
-import com.hurynovich.data_storage.model.AbstractEntity_;
-import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaEntity_;
+import com.hurynovich.data_storage.model.AbstractServiceModel_;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaPersistentModel;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModelImpl;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModelImpl_;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelImpl;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelImpl_;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -66,7 +66,7 @@ class PutSchemaIT extends AbstractDataUnitSchemaIT {
 		final DataUnitSchemaPersistentModel existingSchema = testDAO.save(persistentModelGenerator.generateNullId());
 		final DataUnitSchemaServiceModel schema = buildUpdatedSchema(existingSchema);
 		final Long existingSchemaId = schema.getId();
-		TestReflectionUtils.setField(schema, AbstractEntity_.ID, null);
+		TestReflectionUtils.setField(schema, AbstractServiceModel_.ID, null);
 		final ResponseEntity<Set<String>> responseEntity = send(
 				HttpMethod.PUT,
 				"/dataUnitSchema/" + existingSchemaId,
@@ -92,7 +92,7 @@ class PutSchemaIT extends AbstractDataUnitSchemaIT {
 		final DataUnitSchemaPersistentModel existingSchema = testDAO.save(persistentModelGenerator.generateNullId());
 		final DataUnitSchemaServiceModel schema = buildUpdatedSchema(existingSchema);
 		final Long existingSchemaId = schema.getId();
-		TestReflectionUtils.setField(schema, AbstractEntity_.ID, INCORRECT_LONG_ID);
+		TestReflectionUtils.setField(schema, AbstractServiceModel_.ID, INCORRECT_LONG_ID);
 		final ResponseEntity<Set<String>> responseEntity = send(
 				HttpMethod.PUT,
 				"/dataUnitSchema/" + existingSchemaId,
@@ -121,7 +121,7 @@ class PutSchemaIT extends AbstractDataUnitSchemaIT {
 		final DataUnitSchemaPersistentModel existingSchema = testDAO.save(persistentModelGenerator.generateNullId());
 		final Long existingSchemaId = existingSchema.getId();
 		final DataUnitSchemaServiceModel schema = buildUpdatedSchema(existingSchema);
-		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.NAME, existingSchema.getName());
+		TestReflectionUtils.setField(schema, DataUnitSchemaServiceModelImpl_.NAME, existingSchema.getName());
 		final ResponseEntity<DataUnitSchemaServiceModel> responseEntity = send(
 				HttpMethod.PUT,
 				"/dataUnitSchema/" + existingSchema.getId(),
@@ -160,7 +160,7 @@ class PutSchemaIT extends AbstractDataUnitSchemaIT {
 		final DataUnitSchemaPersistentModel existingSchema = testDAO.save(persistentModelGenerator.generateNullId());
 		final DataUnitSchemaServiceModel schema = buildUpdatedSchema(existingSchema);
 		final Long existingSchemaId = schema.getId();
-		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.NAME, name);
+		TestReflectionUtils.setField(schema, DataUnitSchemaServiceModelImpl_.NAME, name);
 		final ResponseEntity<Set<String>> responseEntity = send(
 				HttpMethod.PUT,
 				"/dataUnitSchema/" + existingSchemaId,
@@ -187,7 +187,7 @@ class PutSchemaIT extends AbstractDataUnitSchemaIT {
 		final DataUnitSchemaPersistentModel existingSchema = testDAO.save(persistentModelGenerator.generateNullId());
 		final DataUnitSchemaServiceModel schema = buildUpdatedSchema(existingSchema);
 		final Long existingSchemaId = schema.getId();
-		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.NAME,
+		TestReflectionUtils.setField(schema, DataUnitSchemaServiceModelImpl_.NAME,
 				RandomStringUtils.randomAlphabetic(DATA_UNIT_SCHEMA_NAME_MAX_LENGTH + 1));
 		final ResponseEntity<Set<String>> responseEntity = send(
 				HttpMethod.PUT,
@@ -220,7 +220,7 @@ class PutSchemaIT extends AbstractDataUnitSchemaIT {
 		final DataUnitSchemaServiceModel schema = buildUpdatedSchema(existingSchema);
 		final Long existingSchemaId = schema.getId();
 		final String duplicateName = existingSchemas.get(1).getName();
-		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.NAME, duplicateName);
+		TestReflectionUtils.setField(schema, DataUnitSchemaServiceModelImpl_.NAME, duplicateName);
 		final ResponseEntity<Set<String>> responseEntity = send(
 				HttpMethod.PUT,
 				"/dataUnitSchema/" + existingSchemaId,
@@ -257,7 +257,7 @@ class PutSchemaIT extends AbstractDataUnitSchemaIT {
 		final DataUnitSchemaPersistentModel existingSchema = testDAO.save(persistentModelGenerator.generateNullId());
 		final DataUnitSchemaServiceModel schema = buildUpdatedSchema(existingSchema);
 		final Long existingSchemaId = schema.getId();
-		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS, propertySchemas);
+		TestReflectionUtils.setField(schema, DataUnitSchemaServiceModelImpl_.PROPERTY_SCHEMAS, propertySchemas);
 		final ResponseEntity<Set<String>> responseEntity = send(
 				HttpMethod.PUT,
 				"/dataUnitSchema/" + existingSchemaId,
@@ -287,7 +287,7 @@ class PutSchemaIT extends AbstractDataUnitSchemaIT {
 		final List<DataUnitPropertySchemaServiceModel> propertySchemas =
 				new ArrayList<>(schema.getPropertySchemas());
 		propertySchemas.add(null);
-		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS, propertySchemas);
+		TestReflectionUtils.setField(schema, DataUnitSchemaServiceModelImpl_.PROPERTY_SCHEMAS, propertySchemas);
 		final ResponseEntity<Set<String>> responseEntity = send(
 				HttpMethod.PUT,
 				"/dataUnitSchema/" + existingSchemaId,
@@ -329,7 +329,7 @@ class PutSchemaIT extends AbstractDataUnitSchemaIT {
 		final DataUnitSchemaServiceModel schema = buildUpdatedSchema(existingSchema);
 		final Long existingSchemaId = schema.getId();
 		TestReflectionUtils.setField(schema.getPropertySchemas().iterator().next(),
-				DataUnitPropertySchemaEntity_.NAME, name);
+				DataUnitPropertySchemaServiceModelImpl_.NAME, name);
 		final ResponseEntity<Set<String>> responseEntity = send(
 				HttpMethod.PUT,
 				"/dataUnitSchema/" + existingSchemaId,
@@ -356,7 +356,8 @@ class PutSchemaIT extends AbstractDataUnitSchemaIT {
 		final DataUnitSchemaPersistentModel existingSchema = testDAO.save(persistentModelGenerator.generateNullId());
 		final DataUnitSchemaServiceModel schema = buildUpdatedSchema(existingSchema);
 		final Long existingSchemaId = schema.getId();
-		TestReflectionUtils.setField(schema.getPropertySchemas().iterator().next(), DataUnitPropertySchemaEntity_.NAME,
+		TestReflectionUtils.setField(schema.getPropertySchemas().iterator().next(),
+				DataUnitPropertySchemaServiceModelImpl_.NAME,
 				RandomStringUtils.randomAlphabetic(DATA_UNIT_PROPERTY_SCHEMA_NAME_MAX_LENGTH + 1));
 		final ResponseEntity<Set<String>> responseEntity = send(
 				HttpMethod.PUT,
@@ -387,8 +388,8 @@ class PutSchemaIT extends AbstractDataUnitSchemaIT {
 		final Long existingSchemaId = schema.getId();
 		final List<DataUnitPropertySchemaServiceModel> propertySchemas = schema.getPropertySchemas();
 		final String duplicateName = propertySchemas.get(0).getName();
-		TestReflectionUtils.setField(propertySchemas.get(1),
-				DataUnitPropertySchemaEntity_.NAME, duplicateName);
+		TestReflectionUtils.setField(propertySchemas.get(1), DataUnitPropertySchemaServiceModelImpl_.NAME,
+				duplicateName);
 		final ResponseEntity<Set<String>> responseEntity = send(
 				HttpMethod.PUT,
 				"/dataUnitSchema/" + existingSchemaId,
@@ -417,7 +418,7 @@ class PutSchemaIT extends AbstractDataUnitSchemaIT {
 		final DataUnitSchemaServiceModel schema = buildUpdatedSchema(existingSchema);
 		final Long existingSchemaId = schema.getId();
 		TestReflectionUtils.setField(schema.getPropertySchemas().iterator().next(),
-				DataUnitPropertySchemaEntity_.TYPE, null);
+				DataUnitPropertySchemaServiceModelImpl_.TYPE, null);
 		final ResponseEntity<Set<String>> responseEntity = send(
 				HttpMethod.PUT,
 				"/dataUnitSchema/" + existingSchemaId,

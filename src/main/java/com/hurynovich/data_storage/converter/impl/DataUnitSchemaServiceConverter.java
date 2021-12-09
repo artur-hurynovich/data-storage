@@ -1,14 +1,14 @@
 package com.hurynovich.data_storage.converter.impl;
 
 import com.hurynovich.data_storage.converter.ServiceConverter;
-import com.hurynovich.data_storage.model.AbstractEntity_;
+import com.hurynovich.data_storage.model.AbstractServiceModel_;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaPersistentModel;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelImpl;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelImpl_;
 import com.hurynovich.data_storage.utils.MassProcessingUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -38,7 +38,7 @@ public class DataUnitSchemaServiceConverter
 
 			final Set<String> ignorePropertiesSet = resolveIgnoreProperties(ignoreProperties);
 			final Long id;
-			if (!ignorePropertiesSet.contains(AbstractEntity_.ID)) {
+			if (!ignorePropertiesSet.contains(AbstractServiceModel_.ID)) {
 				id = source.getId();
 			} else {
 				id = null;
@@ -46,7 +46,7 @@ public class DataUnitSchemaServiceConverter
 			target.setId(id);
 
 			final String name;
-			if (!ignorePropertiesSet.contains(DataUnitSchemaEntity_.NAME)) {
+			if (!ignorePropertiesSet.contains(DataUnitSchemaServiceModelImpl_.NAME)) {
 				name = source.getName();
 			} else {
 				name = null;
@@ -54,7 +54,7 @@ public class DataUnitSchemaServiceConverter
 			target.setName(name);
 
 			final List<DataUnitPropertySchemaPersistentModel> propertySchemas;
-			if (!ignorePropertiesSet.contains(DataUnitSchemaEntity_.PROPERTY_SCHEMAS)) {
+			if (!ignorePropertiesSet.contains(DataUnitSchemaServiceModelImpl_.PROPERTY_SCHEMAS)) {
 				propertySchemas = MassProcessingUtils.
 						processQuietly(source.getPropertySchemas(), propertySchemaConverter::convert);
 			} else {
@@ -80,21 +80,21 @@ public class DataUnitSchemaServiceConverter
 		if (source != null) {
 			final Set<String> ignorePropertiesSet = resolveIgnoreProperties(ignoreProperties);
 			final Long id;
-			if (!ignorePropertiesSet.contains(AbstractEntity_.ID)) {
+			if (!ignorePropertiesSet.contains(AbstractServiceModel_.ID)) {
 				id = source.getId();
 			} else {
 				id = null;
 			}
 
 			final String name;
-			if (!ignorePropertiesSet.contains(DataUnitSchemaEntity_.NAME)) {
+			if (!ignorePropertiesSet.contains(DataUnitSchemaServiceModelImpl_.NAME)) {
 				name = source.getName();
 			} else {
 				name = null;
 			}
 
 			final List<DataUnitPropertySchemaServiceModel> propertySchemas;
-			if (!ignorePropertiesSet.contains(DataUnitSchemaEntity_.PROPERTY_SCHEMAS)) {
+			if (!ignorePropertiesSet.contains(DataUnitSchemaServiceModelImpl_.PROPERTY_SCHEMAS)) {
 				propertySchemas = MassProcessingUtils.processQuietly(source.getPropertySchemas(),
 						propertySchemaConverter::convert);
 			} else {
