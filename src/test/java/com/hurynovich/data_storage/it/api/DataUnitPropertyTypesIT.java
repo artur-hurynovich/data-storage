@@ -28,5 +28,4 @@ class DataUnitPropertyTypesIT extends AbstractAPITest {
 		Assertions.assertNotNull(body);
 		Assertions.assertTrue(body.containsAll(Arrays.asList(DataUnitPropertyType.values())));
 	}
-
 }

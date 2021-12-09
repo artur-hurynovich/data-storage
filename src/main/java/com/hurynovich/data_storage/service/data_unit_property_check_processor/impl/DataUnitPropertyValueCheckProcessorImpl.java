@@ -1,6 +1,6 @@
 package com.hurynovich.data_storage.service.data_unit_property_check_processor.impl;
 
-import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.exception.DataUnitPropertyValueCheckProcessorException;
@@ -23,7 +23,7 @@ class DataUnitPropertyValueCheckProcessorImpl implements DataUnitPropertyValueCh
 	}
 
 	@Override
-	public boolean processCheck(final @NonNull DataUnitPropertySchemaDTO propertySchema, final @Nullable Object value) {
+	public boolean processCheck(final @NonNull DataUnitPropertySchemaServiceModel propertySchema, final @Nullable Object value) {
 		boolean checkResult;
 
 		final DataUnitPropertyType type = propertySchema.getType();
@@ -38,5 +38,4 @@ class DataUnitPropertyValueCheckProcessorImpl implements DataUnitPropertyValueCh
 
 		return checkResult;
 	}
-
 }

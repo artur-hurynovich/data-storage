@@ -3,10 +3,10 @@ package com.hurynovich.data_storage.validator.impl;
 import com.hurynovich.data_storage.filter.model.CriteriaComparison;
 import com.hurynovich.data_storage.filter.model.DataUnitFilter;
 import com.hurynovich.data_storage.filter.model.DataUnitPropertyCriteria;
-import com.hurynovich.data_storage.model.AbstractDTO;
-import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
+import com.hurynovich.data_storage.model.Identified;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
 import com.hurynovich.data_storage.utils.ValidationErrorMessageUtils;
@@ -46,7 +46,7 @@ class DataUnitFilterValidator implements Validator<DataUnitFilter> {
 	public ValidationResult validate(final @NonNull DataUnitFilter filter) {
 		final ValidationResult result = new ValidationResult();
 		final Long schemaId = filter.getSchemaId();
-		final Optional<DataUnitSchemaDTO> schemaOptional = schemaService.findById(schemaId);
+		final Optional<DataUnitSchemaServiceModel> schemaOptional = schemaService.findById(schemaId);
 		if (schemaOptional.isEmpty()) {
 			result.setType(ValidationResultType.FAILURE);
 			result.addError(ValidationErrorMessageUtils.
@@ -77,7 +77,7 @@ class DataUnitFilterValidator implements Validator<DataUnitFilter> {
 					buildFoundDuplicateErrorMessage("filter.criteria.propertySchemaId", propertySchemaId));
 		}
 
-		final DataUnitPropertySchemaDTO propertySchema = context.getPropertySchema(propertySchemaId);
+		final DataUnitPropertySchemaServiceModel propertySchema = context.getPropertySchema(propertySchemaId);
 		if (propertySchema != null) {
 			final Set<CriteriaComparison> criteriaComparisons = criteriaComparisonsByPropertyType.get(propertySchema.getType());
 			final CriteriaComparison criteriaComparison = criteria.getComparison();
@@ -100,16 +100,16 @@ class DataUnitFilterValidator implements Validator<DataUnitFilter> {
 
 		private final Set<Long> uniquePropertySchemaIds = new HashSet<>();
 
-		private final Map<Long, DataUnitPropertySchemaDTO> propertySchemasById;
+		private final Map<Long, DataUnitPropertySchemaServiceModel> propertySchemasById;
 
 		private DataUnitPropertyCriteriaValidationContext(
-				final @NonNull Map<Long, DataUnitPropertySchemaDTO> propertySchemasById) {
+				final @NonNull Map<Long, DataUnitPropertySchemaServiceModel> propertySchemasById) {
 			this.propertySchemasById = propertySchemasById;
 		}
 
-		public static DataUnitPropertyCriteriaValidationContext of(final @NonNull DataUnitSchemaDTO schema) {
+		public static DataUnitPropertyCriteriaValidationContext of(final @NonNull DataUnitSchemaServiceModel schema) {
 			return new DataUnitPropertyCriteriaValidationContext(schema.getPropertySchemas().stream().
-					collect(Collectors.toMap(AbstractDTO::getId, Function.identity())));
+					collect(Collectors.toMap(Identified::getId, Function.identity())));
 		}
 
 		public boolean isValidPropertySchemaId(final @NonNull Long propertySchemaId) {
@@ -120,7 +120,7 @@ class DataUnitFilterValidator implements Validator<DataUnitFilter> {
 			return uniquePropertySchemaIds.add(propertySchemaId);
 		}
 
-		public DataUnitPropertySchemaDTO getPropertySchema(final @NonNull Long propertySchemaId) {
+		public DataUnitPropertySchemaServiceModel getPropertySchema(final @NonNull Long propertySchemaId) {
 			return propertySchemasById.get(propertySchemaId);
 		}
 	}

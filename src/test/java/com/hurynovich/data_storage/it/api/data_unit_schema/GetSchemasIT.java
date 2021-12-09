@@ -4,12 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hurynovich.data_storage.model.AbstractEntity_;
-import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaEntity_;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModelImpl;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelImpl;
 import com.hurynovich.data_storage.service.paginator.model.GenericPage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -28,7 +30,8 @@ class GetSchemasIT extends AbstractDataUnitSchemaIT {
 
 	@Test
 	void getSchemasTest() {
-		final List<DataUnitSchemaEntity> existingSchemas = entityGenerator.generateObjectsNullId().stream().
+		final List<DataUnitSchemaPersistentModel> existingSchemas = persistentModelGenerator.
+				generateListNullId().stream().
 				map(testDAO::save).
 				collect(Collectors.toList());
 		final ResponseEntity<String> responseEntity = send(
@@ -41,17 +44,17 @@ class GetSchemasIT extends AbstractDataUnitSchemaIT {
 
 		final String responseBodyJson = responseEntity.getBody();
 		Assertions.assertNotNull(responseBodyJson);
-		final GenericPage<DataUnitSchemaDTO> responsePage = parseGetSchemasResponseBody(responseBodyJson);
+		final GenericPage<DataUnitSchemaServiceModel> responsePage = parseGetSchemasResponseBody(responseBodyJson);
 		Assertions.assertNotNull(responsePage);
-		final List<DataUnitSchemaDTO> responseSchemas = responsePage.getElements();
+		final List<DataUnitSchemaServiceModel> responseSchemas = responsePage.getElements();
 		Assertions.assertNotNull(responseSchemas);
 		Assertions.assertEquals(existingSchemas.size(), responseSchemas.size());
 		for (int i = 0; i < existingSchemas.size(); i++) {
-			final DataUnitSchemaDTO responseSchema = responseSchemas.get(i);
+			final DataUnitSchemaServiceModel responseSchema = responseSchemas.get(i);
 			schemaAsserter.assertEquals(existingSchemas.get(i), responseSchema,
 					DataUnitSchemaEntity_.PROPERTY_SCHEMAS);
 
-			final List<DataUnitPropertySchemaDTO> propertySchemas = responseSchema.getPropertySchemas();
+			final List<DataUnitPropertySchemaServiceModel> propertySchemas = responseSchema.getPropertySchemas();
 			Assertions.assertNotNull(propertySchemas);
 			Assertions.assertTrue(propertySchemas.isEmpty());
 		}
@@ -67,7 +70,8 @@ class GetSchemasIT extends AbstractDataUnitSchemaIT {
 
 	@Test
 	void getSchemasWithoutPageNumberTest() {
-		final List<DataUnitSchemaEntity> existingSchemas = entityGenerator.generateObjectsNullId().stream().
+		final List<DataUnitSchemaPersistentModel> existingSchemas = persistentModelGenerator.
+				generateListNullId().stream().
 				map(testDAO::save).
 				collect(Collectors.toList());
 		final ResponseEntity<String> responseEntity = send(
@@ -80,17 +84,17 @@ class GetSchemasIT extends AbstractDataUnitSchemaIT {
 
 		final String responseBodyJson = responseEntity.getBody();
 		Assertions.assertNotNull(responseBodyJson);
-		final GenericPage<DataUnitSchemaDTO> responsePage = parseGetSchemasResponseBody(responseBodyJson);
+		final GenericPage<DataUnitSchemaServiceModel> responsePage = parseGetSchemasResponseBody(responseBodyJson);
 		Assertions.assertNotNull(responsePage);
-		final List<DataUnitSchemaDTO> responseSchemas = responsePage.getElements();
+		final List<DataUnitSchemaServiceModel> responseSchemas = responsePage.getElements();
 		Assertions.assertNotNull(responseSchemas);
 		Assertions.assertEquals(existingSchemas.size(), responseSchemas.size());
 		for (int i = 0; i < existingSchemas.size(); i++) {
-			final DataUnitSchemaDTO responseSchema = responseSchemas.get(i);
+			final DataUnitSchemaServiceModel responseSchema = responseSchemas.get(i);
 			schemaAsserter.assertEquals(existingSchemas.get(i), responseSchema,
 					DataUnitSchemaEntity_.PROPERTY_SCHEMAS);
 
-			final List<DataUnitPropertySchemaDTO> propertySchemas = responseSchema.getPropertySchemas();
+			final List<DataUnitPropertySchemaServiceModel> propertySchemas = responseSchema.getPropertySchemas();
 			Assertions.assertNotNull(propertySchemas);
 			Assertions.assertTrue(propertySchemas.isEmpty());
 		}
@@ -105,15 +109,15 @@ class GetSchemasIT extends AbstractDataUnitSchemaIT {
 	}
 
 	/*
-	 * Unfortunately TestRestTemplate can't build GenericPage from JSON because GenericPage can only
+	 * TestRestTemplate can't build GenericPage from JSON because GenericPage can only
 	 * be built with GenericPageBuilder. So we have to parse JSON ourselves.
 	 */
-	private GenericPage<DataUnitSchemaDTO> parseGetSchemasResponseBody(
+	private GenericPage<DataUnitSchemaServiceModel> parseGetSchemasResponseBody(
 			final String responseBodyJson) {
 		try {
 			final JsonNode rootNode = objectMapper.readTree(responseBodyJson);
 			final JsonNode elementsNode = rootNode.get("elements");
-			final List<DataUnitSchemaDTO> schemas = StreamSupport.stream(elementsNode.spliterator(), false).
+			final List<DataUnitSchemaServiceModel> schemas = StreamSupport.stream(elementsNode.spliterator(), false).
 					map(this::buildSchema).
 					collect(Collectors.toList());
 
@@ -136,13 +140,13 @@ class GetSchemasIT extends AbstractDataUnitSchemaIT {
 		}
 	}
 
-	private DataUnitSchemaDTO buildSchema(final JsonNode schemaNode) {
-		return new DataUnitSchemaDTO(schemaNode.get(AbstractEntity_.ID).asLong(),
+	private DataUnitSchemaServiceModel buildSchema(final JsonNode schemaNode) {
+		return new DataUnitSchemaServiceModelImpl(schemaNode.get(AbstractEntity_.ID).asLong(),
 				schemaNode.get(DataUnitSchemaEntity_.NAME).asText(),
 				buildPropertySchemas(schemaNode.get(DataUnitSchemaEntity_.PROPERTY_SCHEMAS)));
 	}
 
-	private List<DataUnitPropertySchemaDTO> buildPropertySchemas(final JsonNode propertySchemasNode) {
+	private List<DataUnitPropertySchemaServiceModel> buildPropertySchemas(final JsonNode propertySchemasNode) {
 		return StreamSupport.stream(propertySchemasNode.spliterator(), false).
 				map(this::buildPropertySchema).
 				collect(Collectors.toList());
@@ -153,8 +157,8 @@ class GetSchemasIT extends AbstractDataUnitSchemaIT {
 		return asText.equals("null") ? null : Long.valueOf(asText);
 	}
 
-	private DataUnitPropertySchemaDTO buildPropertySchema(final JsonNode propertySchemaNode) {
-		return new DataUnitPropertySchemaDTO(propertySchemaNode.get(AbstractEntity_.ID).asLong(),
+	private DataUnitPropertySchemaServiceModel buildPropertySchema(final JsonNode propertySchemaNode) {
+		return new DataUnitPropertySchemaServiceModelImpl(propertySchemaNode.get(AbstractEntity_.ID).asLong(),
 				propertySchemaNode.get(DataUnitPropertySchemaEntity_.NAME).asText(),
 				DataUnitPropertyType.valueOf(propertySchemaNode.get(DataUnitPropertySchemaEntity_.TYPE).asText()));
 	}

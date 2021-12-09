@@ -5,6 +5,7 @@ import com.hurynovich.data_storage.model.AbstractEntity_;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
 import org.hibernate.annotations.QueryHints;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
@@ -16,6 +17,7 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 class DataUnitSchemaDAOImpl implements DataUnitSchemaDAO {
@@ -36,22 +38,22 @@ class DataUnitSchemaDAOImpl implements DataUnitSchemaDAO {
 	}
 
 	@Override
-	public DataUnitSchemaEntity save(final @NonNull DataUnitSchemaEntity dataUnitSchema) {
+	public DataUnitSchemaPersistentModel save(final @NonNull DataUnitSchemaPersistentModel dataUnitSchema) {
 		return entityManager.merge(dataUnitSchema);
 	}
 
 	@Override
-	public Optional<DataUnitSchemaEntity> findById(final @NonNull Long id) {
+	public Optional<DataUnitSchemaPersistentModel> findById(final @NonNull Long id) {
 		return Optional.ofNullable(entityManager.find(DataUnitSchemaEntity.class, id));
 	}
 
 	@Override
-	public void delete(final @NonNull DataUnitSchemaEntity dataUnitSchema) {
+	public void delete(final @NonNull DataUnitSchemaPersistentModel dataUnitSchema) {
 		entityManager.remove(entityManager.merge(dataUnitSchema));
 	}
 
 	@Override
-	public List<DataUnitSchemaEntity> findAll(final @NonNull PaginationParams params) {
+	public List<DataUnitSchemaPersistentModel> findAll(final @NonNull PaginationParams params) {
 		final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		final CriteriaQuery<DataUnitSchemaEntity> criteriaQuery = criteriaBuilder.
 				createQuery(DataUnitSchemaEntity.class);
@@ -64,7 +66,10 @@ class DataUnitSchemaDAOImpl implements DataUnitSchemaDAO {
 				setFirstResult(params.getOffset()).
 				setMaxResults(params.getLimit()).
 				setHint(QueryHints.READ_ONLY, true).
-				getResultList();
+				getResultList().
+				stream().
+				map(DataUnitSchemaPersistentModel.class::cast).
+				collect(Collectors.toList());
 	}
 
 	@Override
@@ -123,5 +128,4 @@ class DataUnitSchemaDAOImpl implements DataUnitSchemaDAO {
 				getResultList().
 				isEmpty();
 	}
-
 }

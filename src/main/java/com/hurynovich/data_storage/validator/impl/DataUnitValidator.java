@@ -1,10 +1,10 @@
 package com.hurynovich.data_storage.validator.impl;
 
-import com.hurynovich.data_storage.model.AbstractDTO;
-import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
-import com.hurynovich.data_storage.model.data_unit.DataUnitDTO.DataUnitPropertyDTO;
-import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
+import com.hurynovich.data_storage.model.Identified;
+import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyServiceModel;
+import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModel;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
 import com.hurynovich.data_storage.service.dto_service.BaseService;
 import com.hurynovich.data_storage.utils.ValidationErrorMessageUtils;
@@ -26,32 +26,32 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-class DataUnitValidator implements Validator<DataUnitDTO> {
+class DataUnitValidator implements Validator<DataUnitServiceModel> {
 
-	private final BaseService<DataUnitSchemaDTO, Long> schemaService;
+	private final BaseService<DataUnitSchemaServiceModel, Long> schemaService;
 
 	private final DataUnitPropertyValueCheckProcessor valueCheckProcessor;
 
-	public DataUnitValidator(final @NonNull BaseService<DataUnitSchemaDTO, Long> schemaService,
+	public DataUnitValidator(final @NonNull BaseService<DataUnitSchemaServiceModel, Long> schemaService,
 							 final @NonNull DataUnitPropertyValueCheckProcessor valueCheckProcessor) {
 		this.schemaService = Objects.requireNonNull(schemaService);
 		this.valueCheckProcessor = Objects.requireNonNull(valueCheckProcessor);
 	}
 
 	@Override
-	public ValidationResult validate(final @NonNull DataUnitDTO dataUnit) {
+	public ValidationResult validate(final @NonNull DataUnitServiceModel dataUnit) {
 		final ValidationResult result = new ValidationResult();
 		final Long schemaId = dataUnit.getSchemaId();
 		if (schemaId == null) {
 			result.setType(ValidationResultType.FAILURE);
 			result.addError(ValidationErrorMessageUtils.buildIsNullErrorMessage("dataUnit.schemaId"));
 		} else {
-			final Optional<DataUnitSchemaDTO> schemaOptional = schemaService.findById(schemaId);
+			final Optional<DataUnitSchemaServiceModel> schemaOptional = schemaService.findById(schemaId);
 			if (schemaOptional.isEmpty()) {
 				result.setType(ValidationResultType.FAILURE);
 				result.addError(ValidationErrorMessageUtils.buildNotFoundByIdErrorMessage("dataUnitSchema", schemaId));
 			} else {
-				final List<DataUnitPropertyDTO> properties = dataUnit.getProperties();
+				final List<DataUnitPropertyServiceModel> properties = dataUnit.getProperties();
 				if (CollectionUtils.isEmpty(properties)) {
 					result.setType(ValidationResultType.FAILURE);
 					result.addError(ValidationErrorMessageUtils.buildIsEmptyErrorMessage("dataUnit.properties"));
@@ -68,7 +68,7 @@ class DataUnitValidator implements Validator<DataUnitDTO> {
 	}
 
 	private void validateProperty(final @NonNull DataUnitPropertyValidationContext context,
-								  final @Nullable DataUnitPropertyDTO property,
+								  final @Nullable DataUnitPropertyServiceModel property,
 								  final @NonNull ValidationResult result) {
 		if (property == null) {
 			result.setType(ValidationResultType.FAILURE);
@@ -97,7 +97,7 @@ class DataUnitValidator implements Validator<DataUnitDTO> {
 		}
 	}
 
-	private void validatePropertyValue(final @NonNull DataUnitPropertySchemaDTO propertySchema,
+	private void validatePropertyValue(final @NonNull DataUnitPropertySchemaServiceModel propertySchema,
 									   final @NonNull Object value, final @NonNull ValidationResult result) {
 		if (!valueCheckProcessor.processCheck(propertySchema, value)) {
 			result.setType(ValidationResultType.FAILURE);
@@ -108,17 +108,17 @@ class DataUnitValidator implements Validator<DataUnitDTO> {
 
 	private static class DataUnitPropertyValidationContext {
 
-		private final Map<Long, DataUnitPropertySchemaDTO> propertySchemasById;
+		private final Map<Long, DataUnitPropertySchemaServiceModel> propertySchemasById;
 
 		private final Set<Long> uniquePropertySchemaIds = new HashSet<>();
 
-		private DataUnitPropertyValidationContext(final @NonNull Map<Long, DataUnitPropertySchemaDTO> propertySchemasById) {
+		private DataUnitPropertyValidationContext(final @NonNull Map<Long, DataUnitPropertySchemaServiceModel> propertySchemasById) {
 			this.propertySchemasById = propertySchemasById;
 		}
 
-		public static DataUnitPropertyValidationContext of(final @NonNull DataUnitSchemaDTO schema) {
+		public static DataUnitPropertyValidationContext of(final @NonNull DataUnitSchemaServiceModel schema) {
 			return new DataUnitPropertyValidationContext(schema.getPropertySchemas().stream().
-					collect(Collectors.toMap(AbstractDTO::getId, Function.identity())));
+					collect(Collectors.toMap(Identified::getId, Function.identity())));
 		}
 
 		public boolean isValidPropertySchemaId(final @NonNull Long propertySchemaId) {
@@ -129,7 +129,7 @@ class DataUnitValidator implements Validator<DataUnitDTO> {
 			return uniquePropertySchemaIds.add(propertySchemaId);
 		}
 
-		public DataUnitPropertySchemaDTO getPropertySchemaById(final @NonNull Long propertySchemaId) {
+		public DataUnitPropertySchemaServiceModel getPropertySchemaById(final @NonNull Long propertySchemaId) {
 			return propertySchemasById.get(propertySchemaId);
 		}
 	}

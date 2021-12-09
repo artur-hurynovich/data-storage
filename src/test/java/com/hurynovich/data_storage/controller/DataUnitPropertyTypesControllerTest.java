@@ -27,5 +27,4 @@ class DataUnitPropertyTypesControllerTest {
 			Assertions.assertTrue(propertyTypes.contains(expectedPropertyType));
 		}
 	}
-
 }

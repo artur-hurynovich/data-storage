@@ -1,15 +1,15 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
 import com.hurynovich.data_storage.cache.Cache;
-import com.hurynovich.data_storage.converter.Converter;
+import com.hurynovich.data_storage.converter.ServiceConverter;
 import com.hurynovich.data_storage.dao.DataUnitSchemaDAO;
 import com.hurynovich.data_storage.event.EventListener;
 import com.hurynovich.data_storage.event.model.Event;
 import com.hurynovich.data_storage.event.model.EventType;
 import com.hurynovich.data_storage.model.PaginationParams;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
 import com.hurynovich.data_storage.utils.MassProcessingUtils;
 import com.hurynovich.data_storage.utils.ValidationErrorMessageUtils;
@@ -28,16 +28,16 @@ class DataUnitSchemaServiceImpl implements DataUnitSchemaService {
 
 	private final DataUnitSchemaDAO dao;
 
-	private final Converter<DataUnitSchemaDTO, DataUnitSchemaEntity, Long> converter;
+	private final ServiceConverter<DataUnitSchemaServiceModel, DataUnitSchemaPersistentModel> converter;
 
-	private final Cache<Long, DataUnitSchemaDTO> cache;
+	private final Cache<Long, DataUnitSchemaServiceModel> cache;
 
-	private final EventListener<DataUnitSchemaDTO> eventListener;
+	private final EventListener<DataUnitSchemaServiceModel> eventListener;
 
 	public DataUnitSchemaServiceImpl(final @NonNull DataUnitSchemaDAO dao,
-									 final @NonNull Converter<DataUnitSchemaDTO, DataUnitSchemaEntity, Long> converter,
-									 final @NonNull Cache<Long, DataUnitSchemaDTO> cache,
-									 final @NonNull EventListener<DataUnitSchemaDTO> eventListener) {
+									 final @NonNull ServiceConverter<DataUnitSchemaServiceModel, DataUnitSchemaPersistentModel> converter,
+									 final @NonNull Cache<Long, DataUnitSchemaServiceModel> cache,
+									 final @NonNull EventListener<DataUnitSchemaServiceModel> eventListener) {
 		this.dao = Objects.requireNonNull(dao);
 		this.converter = Objects.requireNonNull(converter);
 		this.cache = Objects.requireNonNull(cache);
@@ -45,8 +45,8 @@ class DataUnitSchemaServiceImpl implements DataUnitSchemaService {
 	}
 
 	@Override
-	public DataUnitSchemaDTO save(final @NonNull DataUnitSchemaDTO dataUnitSchema) {
-		final DataUnitSchemaDTO savedDataUnitSchema = converter.convert(
+	public DataUnitSchemaServiceModel save(final @NonNull DataUnitSchemaServiceModel dataUnitSchema) {
+		final DataUnitSchemaServiceModel savedDataUnitSchema = converter.convert(
 				dao.save(converter.convert(dataUnitSchema)));
 
 		cache.store(savedDataUnitSchema.getId(), savedDataUnitSchema);
@@ -56,15 +56,10 @@ class DataUnitSchemaServiceImpl implements DataUnitSchemaService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Optional<DataUnitSchemaDTO> findById(final @NonNull Long id) {
+	public Optional<DataUnitSchemaServiceModel> findById(final @NonNull Long id) {
 		if (!cache.contains(id)) {
-			final Optional<DataUnitSchemaEntity> dataUnitSchemaEntityOptional = dao.findById(id);
-			if (dataUnitSchemaEntityOptional.isPresent()) {
-				final DataUnitSchemaEntity dataUnitSchemaEntity = dataUnitSchemaEntityOptional.get();
-				final DataUnitSchemaDTO dataUnitSchemaDTO = converter.convert(dataUnitSchemaEntity);
-
-				cache.store(id, dataUnitSchemaDTO);
-			}
+			dao.findById(id).ifPresent(dataUnitSchemaPersistentModel -> cache.
+					store(id, converter.convert(dataUnitSchemaPersistentModel)));
 		}
 
 		return cache.get(id);
@@ -72,17 +67,17 @@ class DataUnitSchemaServiceImpl implements DataUnitSchemaService {
 
 	@Override
 	public void deleteById(final @NonNull Long id) {
-		final Optional<DataUnitSchemaEntity> dataUnitSchemaOptional = dao.findById(id);
-		if (dataUnitSchemaOptional.isPresent()) {
-			final DataUnitSchemaEntity dataUnitSchemaEntity = dataUnitSchemaOptional.get();
-			final DataUnitSchemaDTO dataUnitSchemaDTO = converter.convert(dataUnitSchemaEntity);
-			dao.delete(dataUnitSchemaEntity);
+		final Optional<DataUnitSchemaPersistentModel> schemaOptional = dao.findById(id);
+		if (schemaOptional.isPresent()) {
+			final DataUnitSchemaPersistentModel schemaPersistentModel = schemaOptional.get();
+			final DataUnitSchemaServiceModel schemaServiceModel = converter.convert(schemaPersistentModel);
+			dao.delete(schemaPersistentModel);
 
 			if (cache.contains(id)) {
 				cache.invalidate(id);
 			}
 
-			eventListener.onEvent(new Event<>(dataUnitSchemaDTO, EventType.DELETE));
+			eventListener.onEvent(new Event<>(schemaServiceModel, EventType.DELETE));
 		} else {
 			throw new EntityNotFoundException(ValidationErrorMessageUtils.
 					buildNotFoundByIdErrorMessage("dataUnitSchema", id));
@@ -96,7 +91,7 @@ class DataUnitSchemaServiceImpl implements DataUnitSchemaService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<DataUnitSchemaDTO> findAll(final @NonNull PaginationParams params) {
+	public List<DataUnitSchemaServiceModel> findAll(final @NonNull PaginationParams params) {
 		return MassProcessingUtils.processQuietly(dao.findAll(params), dataUnitSchema -> converter.
 				convert(dataUnitSchema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS));
 	}

@@ -8,12 +8,13 @@ import java.util.List;
 
 @GenerateMetamodel
 @Document
-public class DataUnitDocument extends AbstractDocument<String> {
+public class DataUnitDocument extends AbstractDocument<String> implements DataUnitPersistentModel {
 
 	private Long schemaId;
 
-	private List<DataUnitPropertyDocument> properties;
+	private List<DataUnitPropertyPersistentModel> properties;
 
+	@Override
 	public Long getSchemaId() {
 		return schemaId;
 	}
@@ -22,21 +23,23 @@ public class DataUnitDocument extends AbstractDocument<String> {
 		this.schemaId = schemaId;
 	}
 
-	public List<DataUnitPropertyDocument> getProperties() {
+	@Override
+	public List<DataUnitPropertyPersistentModel> getProperties() {
 		return properties;
 	}
 
-	public void setProperties(final List<DataUnitPropertyDocument> properties) {
+	public void setProperties(final List<DataUnitPropertyPersistentModel> properties) {
 		this.properties = properties;
 	}
 
 	@GenerateMetamodel
-	public static class DataUnitPropertyDocument {
+	public static class DataUnitPropertyDocument implements DataUnitPropertyPersistentModel {
 
 		private Long schemaId;
 
 		private Object value;
 
+		@Override
 		public Long getSchemaId() {
 			return schemaId;
 		}
@@ -45,6 +48,7 @@ public class DataUnitDocument extends AbstractDocument<String> {
 			this.schemaId = schemaId;
 		}
 
+		@Override
 		public Object getValue() {
 			return value;
 		}
@@ -52,7 +56,5 @@ public class DataUnitDocument extends AbstractDocument<String> {
 		public void setValue(final Object value) {
 			this.value = value;
 		}
-
 	}
-
 }

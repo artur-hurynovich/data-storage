@@ -2,17 +2,17 @@ package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.controller.exception.ControllerValidationException;
 import com.hurynovich.data_storage.model.AbstractEntity_;
+import com.hurynovich.data_storage.model.ModelGenerator;
 import com.hurynovich.data_storage.model.PaginationParams;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelGenerator;
+import com.hurynovich.data_storage.model_asserter.ModelAsserter;
+import com.hurynovich.data_storage.model_asserter.impl.DataUnitSchemaAsserter;
 import com.hurynovich.data_storage.service.dto_service.MassReadService;
 import com.hurynovich.data_storage.service.paginator.Paginator;
 import com.hurynovich.data_storage.service.paginator.model.GenericPage;
-import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGenerator;
-import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
-import com.hurynovich.data_storage.test_objects_asserter.TestIdentifiedObjectsAsserter;
-import com.hurynovich.data_storage.test_objects_asserter.impl.DataUnitSchemaAsserter;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_LONG_ID;
+import static com.hurynovich.data_storage.model.ModelConstants.INCORRECT_LONG_ID;
 
 @ExtendWith(MockitoExtension.class)
 class DataUnitSchemaControllerTest {
@@ -45,10 +45,10 @@ class DataUnitSchemaControllerTest {
 	private static final long TOTAL_ELEMENTS_COUNT = 10;
 
 	@Mock
-	private Validator<DataUnitSchemaDTO> validator;
+	private Validator<DataUnitSchemaServiceModel> validator;
 
 	@Mock
-	private MassReadService<DataUnitSchemaDTO, Long> service;
+	private MassReadService<DataUnitSchemaServiceModel, Long> service;
 
 	@Mock
 	private Paginator paginator;
@@ -58,10 +58,10 @@ class DataUnitSchemaControllerTest {
 
 	private DataUnitSchemaController controller;
 
-	private final TestIdentifiedObjectGenerator<DataUnitSchemaDTO> schemaGenerator =
-			new TestDataUnitSchemaDTOGenerator();
+	private final ModelGenerator<DataUnitSchemaServiceModel> schemaGenerator =
+			new DataUnitSchemaServiceModelGenerator();
 
-	private final TestIdentifiedObjectsAsserter<DataUnitSchemaDTO, DataUnitSchemaEntity> dataUnitSchemaAsserter =
+	private final ModelAsserter<DataUnitSchemaServiceModel, DataUnitSchemaPersistentModel> dataUnitSchemaAsserter =
 			new DataUnitSchemaAsserter();
 
 	@BeforeEach
@@ -71,15 +71,15 @@ class DataUnitSchemaControllerTest {
 
 	@Test
 	void postValidSchemaTest() {
-		final DataUnitSchemaDTO newSchema = schemaGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel newSchema = schemaGenerator.generateNullId();
 		Mockito.when(validator.validate(newSchema)).thenReturn(new ValidationResult());
-		Mockito.when(service.save(newSchema)).thenReturn(schemaGenerator.generateObject());
+		Mockito.when(service.save(newSchema)).thenReturn(schemaGenerator.generate());
 
-		final ResponseEntity<DataUnitSchemaDTO> response = controller.postSchema(newSchema);
+		final ResponseEntity<DataUnitSchemaServiceModel> response = controller.postSchema(newSchema);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-		final DataUnitSchemaDTO responseBody = response.getBody();
+		final DataUnitSchemaServiceModel responseBody = response.getBody();
 		Assertions.assertNotNull(responseBody);
 
 		dataUnitSchemaAsserter.assertEquals(newSchema, responseBody, AbstractEntity_.ID);
@@ -89,7 +89,7 @@ class DataUnitSchemaControllerTest {
 
 	@Test
 	void postValidSchemaIdIsNotNullTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		final ControllerValidationException exception = Assertions.
 				assertThrows(ControllerValidationException.class, () -> controller.postSchema(schema));
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -100,7 +100,7 @@ class DataUnitSchemaControllerTest {
 
 	@Test
 	void postValidSchemaNameIsNullTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generateNullId();
 		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.NAME, null);
 
 		final ValidationResult validationResult = new ValidationResult();
@@ -119,7 +119,7 @@ class DataUnitSchemaControllerTest {
 
 	@Test
 	void postNotValidSchemaTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generateNullId();
 		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS, new ArrayList<>());
 
 		final ValidationResult validationResult = new ValidationResult();
@@ -138,15 +138,15 @@ class DataUnitSchemaControllerTest {
 
 	@Test
 	void getSchemaByIdTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		final Long id = schema.getId();
 		Mockito.when(service.findById(id)).thenReturn(Optional.of(schema));
 
-		final ResponseEntity<DataUnitSchemaDTO> response = controller.getSchemaById(id);
+		final ResponseEntity<DataUnitSchemaServiceModel> response = controller.getSchemaById(id);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		final DataUnitSchemaDTO responseBody = response.getBody();
+		final DataUnitSchemaServiceModel responseBody = response.getBody();
 		Assertions.assertNotNull(responseBody);
 
 		dataUnitSchemaAsserter.assertEquals(schema, responseBody);
@@ -166,7 +166,7 @@ class DataUnitSchemaControllerTest {
 
 	@Test
 	void getSchemasTest() {
-		final List<DataUnitSchemaDTO> schemas = schemaGenerator.generateObjects();
+		final List<DataUnitSchemaServiceModel> schemas = schemaGenerator.generateList();
 		Mockito.when(paginator.buildParams(PAGE_NUMBER, ELEMENTS_PER_PAGE)).thenReturn(params);
 		Mockito.when(service.findAll(params)).thenReturn(schemas);
 		Mockito.when(service.count()).thenReturn(TOTAL_ELEMENTS_COUNT);
@@ -179,11 +179,11 @@ class DataUnitSchemaControllerTest {
 						withTotalPagesCount(1L).
 						build());
 
-		final ResponseEntity<GenericPage<DataUnitSchemaDTO>> response = controller.getSchemas(PAGE_NUMBER);
+		final ResponseEntity<GenericPage<DataUnitSchemaServiceModel>> response = controller.getSchemas(PAGE_NUMBER);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		final GenericPage<DataUnitSchemaDTO> responseBody = response.getBody();
+		final GenericPage<DataUnitSchemaServiceModel> responseBody = response.getBody();
 		Assertions.assertNotNull(responseBody);
 
 		Assertions.assertEquals(schemas.size(), responseBody.getElements().size());
@@ -201,7 +201,7 @@ class DataUnitSchemaControllerTest {
 	@Test
 	void getSchemasEmptyTest() {
 		Mockito.when(paginator.buildParams(PAGE_NUMBER, ELEMENTS_PER_PAGE)).thenReturn(params);
-		final List<DataUnitSchemaDTO> schemas = new ArrayList<>();
+		final List<DataUnitSchemaServiceModel> schemas = new ArrayList<>();
 		Mockito.when(service.findAll(params)).thenReturn(schemas);
 		Mockito.when(service.count()).thenReturn(0L);
 		Mockito.when(paginator.buildPage(schemas, 0L, params)).
@@ -213,12 +213,12 @@ class DataUnitSchemaControllerTest {
 						withTotalPagesCount(0L).
 						build());
 
-		final ResponseEntity<GenericPage<DataUnitSchemaDTO>> response = controller.
+		final ResponseEntity<GenericPage<DataUnitSchemaServiceModel>> response = controller.
 				getSchemas(PAGE_NUMBER);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		final GenericPage<DataUnitSchemaDTO> responseBody = response.getBody();
+		final GenericPage<DataUnitSchemaServiceModel> responseBody = response.getBody();
 		Assertions.assertNotNull(responseBody);
 
 		Assertions.assertTrue(responseBody.getElements().isEmpty());
@@ -231,17 +231,17 @@ class DataUnitSchemaControllerTest {
 
 	@Test
 	void putValidSchemaTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		final ValidationResult validationResult = new ValidationResult();
 		Mockito.when(validator.validate(schema)).thenReturn(validationResult);
 		Mockito.when(service.save(schema)).thenReturn(schema);
 
 		final Long id = schema.getId();
-		final ResponseEntity<DataUnitSchemaDTO> response = controller.putSchema(id, schema);
+		final ResponseEntity<DataUnitSchemaServiceModel> response = controller.putSchema(id, schema);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		final DataUnitSchemaDTO responseBody = response.getBody();
+		final DataUnitSchemaServiceModel responseBody = response.getBody();
 		Assertions.assertNotNull(responseBody);
 
 		dataUnitSchemaAsserter.assertEquals(schema, responseBody);
@@ -249,9 +249,9 @@ class DataUnitSchemaControllerTest {
 
 	@Test
 	void putValidSchemaIdIsNullTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		final Long id = schema.getId();
-		final DataUnitSchemaDTO schemaWithNullId = schemaGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schemaWithNullId = schemaGenerator.generateNullId();
 		final ControllerValidationException exception = Assertions.
 				assertThrows(ControllerValidationException.class, () -> controller.putSchema(id, schemaWithNullId));
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -262,7 +262,7 @@ class DataUnitSchemaControllerTest {
 
 	@Test
 	void putValidSchemaIncorrectIdTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		final ControllerValidationException exception = Assertions.
 				assertThrows(ControllerValidationException.class,
 						() -> controller.putSchema(INCORRECT_LONG_ID, schema));
@@ -274,7 +274,7 @@ class DataUnitSchemaControllerTest {
 
 	@Test
 	void putNotValidSchemaTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS, new ArrayList<>());
 		final ValidationResult validationResult = new ValidationResult();
 		validationResult.setType(ValidationResultType.FAILURE);
@@ -294,15 +294,15 @@ class DataUnitSchemaControllerTest {
 
 	@Test
 	void deleteSchemaByIdTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		final Long id = schema.getId();
 
-		final ResponseEntity<DataUnitSchemaDTO> response = controller.deleteSchemaById(id);
+		final ResponseEntity<DataUnitSchemaServiceModel> response = controller.deleteSchemaById(id);
 		Mockito.verify(service).deleteById(id);
 		Assertions.assertNotNull(response);
 		Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
-		final DataUnitSchemaDTO responseBody = response.getBody();
+		final DataUnitSchemaServiceModel responseBody = response.getBody();
 		Assertions.assertNull(responseBody);
 	}
 

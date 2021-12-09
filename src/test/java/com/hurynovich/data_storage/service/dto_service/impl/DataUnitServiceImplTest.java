@@ -1,18 +1,18 @@
 package com.hurynovich.data_storage.service.dto_service.impl;
 
-import com.hurynovich.data_storage.converter.Converter;
+import com.hurynovich.data_storage.converter.ServiceConverter;
 import com.hurynovich.data_storage.dao.DataUnitDAO;
 import com.hurynovich.data_storage.filter.model.DataUnitFilter;
 import com.hurynovich.data_storage.model.AbstractDocument_;
+import com.hurynovich.data_storage.model.ModelGenerator;
 import com.hurynovich.data_storage.model.PaginationParams;
-import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
-import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
+import com.hurynovich.data_storage.model.data_unit.DataUnitPersistentModel;
+import com.hurynovich.data_storage.model.data_unit.DataUnitPersistentModelGenerator;
+import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModel;
+import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModelGenerator;
+import com.hurynovich.data_storage.model_asserter.ModelAsserter;
+import com.hurynovich.data_storage.model_asserter.impl.DataUnitAsserter;
 import com.hurynovich.data_storage.service.dto_service.DataUnitService;
-import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGenerator;
-import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
-import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDocumentGenerator;
-import com.hurynovich.data_storage.test_objects_asserter.TestIdentifiedObjectsAsserter;
-import com.hurynovich.data_storage.test_objects_asserter.impl.DataUnitAsserter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_STRING_ID;
+import static com.hurynovich.data_storage.model.ModelConstants.INCORRECT_STRING_ID;
 
 @ExtendWith(MockitoExtension.class)
 class DataUnitServiceImplTest {
@@ -35,7 +35,7 @@ class DataUnitServiceImplTest {
 	private DataUnitDAO dao;
 
 	@Mock
-	private Converter<DataUnitDTO, DataUnitDocument, String> converter;
+	private ServiceConverter<DataUnitServiceModel, DataUnitPersistentModel> converter;
 
 	@Mock
 	private PaginationParams params;
@@ -45,13 +45,13 @@ class DataUnitServiceImplTest {
 
 	private DataUnitService service;
 
-	private final TestIdentifiedObjectGenerator<DataUnitDTO> dtoGenerator =
-			new TestDataUnitDTOGenerator();
+	private final ModelGenerator<DataUnitServiceModel> serviceModelGenerator =
+			new DataUnitServiceModelGenerator();
 
-	private final TestIdentifiedObjectGenerator<DataUnitDocument> entityGenerator =
-			new TestDataUnitDocumentGenerator();
+	private final ModelGenerator<DataUnitPersistentModel> persistentModelGenerator =
+			new DataUnitPersistentModelGenerator();
 
-	private final TestIdentifiedObjectsAsserter<DataUnitDTO, DataUnitDocument> asserter = new DataUnitAsserter();
+	private final ModelAsserter<DataUnitServiceModel, DataUnitPersistentModel> asserter = new DataUnitAsserter();
 
 	@BeforeEach
 	public void initService() {
@@ -60,48 +60,48 @@ class DataUnitServiceImplTest {
 
 	@Test
 	void saveTest() {
-		final DataUnitDTO dto = dtoGenerator.generateObjectNullId();
-		final DataUnitDocument document = entityGenerator.generateObject();
-		Mockito.when(converter.convert(dto)).thenReturn(document);
-		Mockito.when(dao.save(document)).thenReturn(document);
-		Mockito.when(converter.convert(document)).thenReturn(dtoGenerator.generateObject());
+		final DataUnitServiceModel serviceModel = serviceModelGenerator.generateNullId();
+		final DataUnitPersistentModel persistentModel = persistentModelGenerator.generate();
+		Mockito.when(converter.convert(serviceModel)).thenReturn(persistentModel);
+		Mockito.when(dao.save(persistentModel)).thenReturn(persistentModel);
+		Mockito.when(converter.convert(persistentModel)).thenReturn(serviceModelGenerator.generate());
 
-		final DataUnitDTO savedDTO = service.save(dto);
-		asserter.assertEquals(dto, savedDTO, AbstractDocument_.ID);
-		Assertions.assertNotNull(savedDTO.getId());
+		final DataUnitServiceModel savedServiceModel = service.save(serviceModel);
+		asserter.assertEquals(serviceModel, savedServiceModel, AbstractDocument_.ID);
+		Assertions.assertNotNull(savedServiceModel.getId());
 	}
 
 	@Test
 	void findByIdTest() {
-		final DataUnitDocument document = entityGenerator.generateObject();
-		final String id = document.getId();
-		Mockito.when(dao.findById(id)).thenReturn(Optional.of(document));
+		final DataUnitPersistentModel persistentModel = persistentModelGenerator.generate();
+		final String id = persistentModel.getId();
+		Mockito.when(dao.findById(id)).thenReturn(Optional.of(persistentModel));
 
-		final DataUnitDTO dto = dtoGenerator.generateObject();
-		Mockito.when(converter.convert(document)).thenReturn(dto);
+		final DataUnitServiceModel serviceModel = serviceModelGenerator.generate();
+		Mockito.when(converter.convert(persistentModel)).thenReturn(serviceModel);
 
-		final Optional<DataUnitDTO> savedDTOOptional = service.findById(id);
+		final Optional<DataUnitServiceModel> savedDTOOptional = service.findById(id);
 		Assertions.assertTrue(savedDTOOptional.isPresent());
-		asserter.assertEquals(dto, savedDTOOptional.get());
+		asserter.assertEquals(serviceModel, savedDTOOptional.get());
 	}
 
 	@Test
 	void findByIdEmptyTest() {
 		Mockito.when(dao.findById(INCORRECT_STRING_ID)).thenReturn(Optional.empty());
 
-		final Optional<DataUnitDTO> savedDTOOptional = service.findById(INCORRECT_STRING_ID);
+		final Optional<DataUnitServiceModel> savedDTOOptional = service.findById(INCORRECT_STRING_ID);
 		Assertions.assertFalse(savedDTOOptional.isPresent());
 	}
 
 	@Test
 	void deleteSuccessTest() {
-		final DataUnitDocument document = entityGenerator.generateObject();
-		final String id = document.getId();
-		Mockito.when(dao.findById(id)).thenReturn(Optional.of(document));
+		final DataUnitPersistentModel persistentModel = persistentModelGenerator.generate();
+		final String id = persistentModel.getId();
+		Mockito.when(dao.findById(id)).thenReturn(Optional.of(persistentModel));
 
 		service.deleteById(id);
 
-		Mockito.verify(dao).delete(document);
+		Mockito.verify(dao).delete(persistentModel);
 	}
 
 	@Test
@@ -114,38 +114,38 @@ class DataUnitServiceImplTest {
 
 	@Test
 	void findAllTest() {
-		final List<DataUnitDocument> documents = entityGenerator.generateObjects();
-		Mockito.when(dao.findAll(params, filter)).thenReturn(documents);
+		final List<DataUnitPersistentModel> persistentModels = persistentModelGenerator.generateList();
+		Mockito.when(dao.findAll(params, filter)).thenReturn(persistentModels);
 
-		final List<DataUnitDTO> dtos = dtoGenerator.generateObjects();
-		for (int i = 0; i < documents.size(); i++) {
-			final DataUnitDTO dto = dtos.get(i);
-			Mockito.when(converter.convert(documents.get(i))).thenReturn(dto);
+		final List<DataUnitServiceModel> serviceModels = serviceModelGenerator.generateList();
+		for (int i = 0; i < persistentModels.size(); i++) {
+			final DataUnitServiceModel serviceModel = serviceModels.get(i);
+			Mockito.when(converter.convert(persistentModels.get(i))).thenReturn(serviceModel);
 		}
 
-		final List<DataUnitDTO> savedDTOs = service.findAll(params, filter);
-		Assertions.assertNotNull(savedDTOs);
-		Assertions.assertFalse(savedDTOs.isEmpty());
-		Assertions.assertEquals(dtos.size(), savedDTOs.size());
-		for (int i = 0; i < dtos.size(); i++) {
-			asserter.assertEquals(dtos.get(i), savedDTOs.get(i));
+		final List<DataUnitServiceModel> savedServiceModels = service.findAll(params, filter);
+		Assertions.assertNotNull(savedServiceModels);
+		Assertions.assertFalse(savedServiceModels.isEmpty());
+		Assertions.assertEquals(serviceModels.size(), savedServiceModels.size());
+		for (int i = 0; i < serviceModels.size(); i++) {
+			asserter.assertEquals(serviceModels.get(i), savedServiceModels.get(i));
 		}
 	}
 
 	@Test
 	void findAllEmptyTest() {
-		final List<DataUnitDocument> documents = new ArrayList<>();
-		Mockito.when(dao.findAll(params, filter)).thenReturn(documents);
+		final List<DataUnitPersistentModel> persistentModels = new ArrayList<>();
+		Mockito.when(dao.findAll(params, filter)).thenReturn(persistentModels);
 
-		final List<DataUnitDTO> savedDTOs = service.findAll(params, filter);
-		Assertions.assertNotNull(savedDTOs);
-		Assertions.assertTrue(savedDTOs.isEmpty());
+		final List<DataUnitServiceModel> savedServiceModels = service.findAll(params, filter);
+		Assertions.assertNotNull(savedServiceModels);
+		Assertions.assertTrue(savedServiceModels.isEmpty());
 	}
 
 	@Test
 	void countTest() {
-		final List<DataUnitDocument> documents = entityGenerator.generateObjects();
-		final long count = documents.size();
+		final List<DataUnitPersistentModel> persistentModels = persistentModelGenerator.generateList();
+		final long count = persistentModels.size();
 		Mockito.when(dao.count(filter)).thenReturn(count);
 
 		Assertions.assertEquals(count, service.count(filter));
@@ -153,11 +153,10 @@ class DataUnitServiceImplTest {
 
 	@Test
 	void deleteAllBySchemaIdTest() {
-		final DataUnitDocument document = entityGenerator.generateObject();
-		final Long schemaId = document.getSchemaId();
+		final DataUnitPersistentModel persistentModel = persistentModelGenerator.generate();
+		final Long schemaId = persistentModel.getSchemaId();
 		service.deleteAllBySchemaId(schemaId);
 
 		Mockito.verify(dao).deleteAllBySchemaId(schemaId);
 	}
-
 }

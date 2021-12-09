@@ -6,6 +6,7 @@ import com.hurynovich.data_storage.filter.model.DataUnitFilter;
 import com.hurynovich.data_storage.model.PaginationParams;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument_;
+import com.hurynovich.data_storage.model.data_unit.DataUnitPersistentModel;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 class DataUnitDAOImpl implements DataUnitDAO {
@@ -30,29 +32,32 @@ class DataUnitDAOImpl implements DataUnitDAO {
 	}
 
 	@Override
-	public DataUnitDocument save(final @NonNull DataUnitDocument dataUnit) {
+	public DataUnitPersistentModel save(final @NonNull DataUnitPersistentModel dataUnit) {
 		return mongoTemplate.save(dataUnit);
 	}
 
 	@Override
-	public Optional<DataUnitDocument> findById(final @NonNull String id) {
+	public Optional<DataUnitPersistentModel> findById(final @NonNull String id) {
 		return Optional.ofNullable(mongoTemplate.findById(id, DataUnitDocument.class));
 	}
 
 	@Override
-	public void delete(final @NonNull DataUnitDocument dataUnit) {
+	public void delete(final @NonNull DataUnitPersistentModel dataUnit) {
 		mongoTemplate.remove(dataUnit);
 	}
 
 	@Override
-	public List<DataUnitDocument> findAll(final @NonNull PaginationParams params,
-										  final @NonNull DataUnitFilter filter) {
+	public List<DataUnitPersistentModel> findAll(final @NonNull PaginationParams params,
+												 final @NonNull DataUnitFilter filter) {
 		final Query query = new Query().
 				addCriteria(criteriaBuilder.build(filter)).
 				skip(params.getOffset()).
 				limit(params.getLimit());
 
-		return mongoTemplate.find(query, DataUnitDocument.class);
+		return mongoTemplate.find(query, DataUnitDocument.class).
+				stream().
+				map(DataUnitPersistentModel.class::cast).
+				collect(Collectors.toList());
 	}
 
 	@Override
@@ -68,5 +73,4 @@ class DataUnitDAOImpl implements DataUnitDAO {
 		query.addCriteria(Criteria.where(DataUnitDocument_.SCHEMA_ID).is(schemaId));
 		mongoTemplate.findAndRemove(query, DataUnitDocument.class);
 	}
-
 }

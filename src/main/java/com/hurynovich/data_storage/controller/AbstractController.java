@@ -1,7 +1,7 @@
 package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.controller.exception.ControllerValidationException;
-import com.hurynovich.data_storage.model.AbstractDTO;
+import com.hurynovich.data_storage.model.ServiceModel;
 import com.hurynovich.data_storage.service.dto_service.BaseService;
 import com.hurynovich.data_storage.utils.ValidationErrorMessageUtils;
 import com.hurynovich.data_storage.validator.Validator;
@@ -16,18 +16,18 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 
-public class AbstractController<T extends AbstractDTO<I>, I extends Serializable> {
+public class AbstractController<T extends ServiceModel<I>, I extends Serializable> {
 
-	private final String dtoName;
+	private final String serviceModelName;
 
 	private final Validator<T> validator;
 
 	private final BaseService<T, I> service;
 
-	public AbstractController(final @NonNull String dtoName,
+	public AbstractController(final @NonNull String serviceModelName,
 							  final @NonNull Validator<T> validator,
 							  final @NonNull BaseService<T, I> service) {
-		this.dtoName = dtoName;
+		this.serviceModelName = serviceModelName;
 		this.validator = validator;
 		this.service = service;
 	}
@@ -42,7 +42,7 @@ public class AbstractController<T extends AbstractDTO<I>, I extends Serializable
 			}
 		} else {
 			throw new ControllerValidationException(
-					Set.of(ValidationErrorMessageUtils.buildIsNotNullErrorMessage(dtoName + ".id")));
+					Set.of(ValidationErrorMessageUtils.buildIsNotNullErrorMessage(serviceModelName + ".id")));
 		}
 	}
 
@@ -52,7 +52,7 @@ public class AbstractController<T extends AbstractDTO<I>, I extends Serializable
 			return ResponseEntity.ok(optional.get());
 		} else {
 			throw new ControllerValidationException(HttpStatus.NOT_FOUND,
-					Set.of(ValidationErrorMessageUtils.buildNotFoundByIdErrorMessage(dtoName, id)));
+					Set.of(ValidationErrorMessageUtils.buildNotFoundByIdErrorMessage(serviceModelName, id)));
 		}
 	}
 
@@ -66,7 +66,7 @@ public class AbstractController<T extends AbstractDTO<I>, I extends Serializable
 				throw new ControllerValidationException(validationResult.getErrors());
 			}
 		} else {
-			throw new ControllerValidationException(Set.of("'" + dtoName + ".id' should be equal to path variable 'id'"));
+			throw new ControllerValidationException(Set.of("'" + serviceModelName + ".id' should be equal to path variable 'id'"));
 		}
 	}
 

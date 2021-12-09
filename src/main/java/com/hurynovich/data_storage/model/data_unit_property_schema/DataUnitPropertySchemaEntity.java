@@ -10,7 +10,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "DS_DATA_UNIT_PROPERTY_SCHEMA")
-public class DataUnitPropertySchemaEntity extends AbstractEntity<Long> {
+public class DataUnitPropertySchemaEntity extends AbstractEntity<Long>
+		implements DataUnitPropertySchemaPersistentModel {
 
 	@Column(name = "NAME", nullable = false)
 	private String name;
@@ -19,6 +20,7 @@ public class DataUnitPropertySchemaEntity extends AbstractEntity<Long> {
 	@Enumerated(EnumType.STRING)
 	private DataUnitPropertyType type;
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -27,6 +29,7 @@ public class DataUnitPropertySchemaEntity extends AbstractEntity<Long> {
 		this.name = name;
 	}
 
+	@Override
 	public DataUnitPropertyType getType() {
 		return type;
 	}
@@ -34,5 +37,4 @@ public class DataUnitPropertySchemaEntity extends AbstractEntity<Long> {
 	public void setType(final DataUnitPropertyType type) {
 		this.type = type;
 	}
-
 }

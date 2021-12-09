@@ -66,5 +66,4 @@ class DataUnitPropertyCriteriaComparisonControllerTest {
 		Assertions.assertEquals(expectedComparisons.size(), actualComparisons.size());
 		Assertions.assertTrue(actualComparisons.containsAll(expectedComparisons));
 	}
-
 }

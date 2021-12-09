@@ -2,6 +2,7 @@ package com.hurynovich.data_storage.model.data_unit_schema;
 
 import com.hurynovich.data_storage.model.AbstractEntity;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaEntity;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaPersistentModel;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,15 +14,16 @@ import java.util.List;
 
 @Entity
 @Table(name = "DS_DATA_UNIT_SCHEMA")
-public class DataUnitSchemaEntity extends AbstractEntity<Long> {
+public class DataUnitSchemaEntity extends AbstractEntity<Long> implements DataUnitSchemaPersistentModel {
 
 	@Column(name = "NAME", nullable = false)
 	private String name;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = DataUnitPropertySchemaEntity.class)
 	@JoinColumn(name = "SCHEMA_ID", nullable = false)
-	private List<DataUnitPropertySchemaEntity> propertySchemas;
+	private List<DataUnitPropertySchemaPersistentModel> propertySchemas;
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -30,12 +32,12 @@ public class DataUnitSchemaEntity extends AbstractEntity<Long> {
 		this.name = name;
 	}
 
-	public List<DataUnitPropertySchemaEntity> getPropertySchemas() {
+	@Override
+	public List<DataUnitPropertySchemaPersistentModel> getPropertySchemas() {
 		return propertySchemas;
 	}
 
-	public void setPropertySchemas(final List<DataUnitPropertySchemaEntity> propertySchemas) {
+	public void setPropertySchemas(final List<DataUnitPropertySchemaPersistentModel> propertySchemas) {
 		this.propertySchemas = propertySchemas;
 	}
-
 }

@@ -23,5 +23,4 @@ public class TestReflectionUtils {
 			throw new IllegalArgumentException("Field with name = '" + fieldName + "' not found");
 		}
 	}
-
 }

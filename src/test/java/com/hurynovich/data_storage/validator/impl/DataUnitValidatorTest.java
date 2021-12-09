@@ -1,15 +1,16 @@
 package com.hurynovich.data_storage.validator.impl;
 
-import com.hurynovich.data_storage.model.data_unit.DataUnitDTO;
+import com.hurynovich.data_storage.model.ModelGenerator;
 import com.hurynovich.data_storage.model.data_unit.DataUnitDocument_;
-import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
+import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyServiceModel;
+import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModel;
+import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModelGenerator;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelGenerator;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
 import com.hurynovich.data_storage.service.dto_service.BaseService;
-import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGenerator;
-import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitDTOGenerator;
-import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
@@ -28,26 +29,26 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TEXT_PROPERTY_VALUE;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_LONG_ID;
+import static com.hurynovich.data_storage.model.ModelConstants.DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID;
+import static com.hurynovich.data_storage.model.ModelConstants.DATA_UNIT_TEXT_PROPERTY_VALUE;
+import static com.hurynovich.data_storage.model.ModelConstants.INCORRECT_LONG_ID;
 
 @ExtendWith(MockitoExtension.class)
 class DataUnitValidatorTest {
 
 	@Mock
-	private BaseService<DataUnitSchemaDTO, Long> dataUnitSchemaService;
+	private BaseService<DataUnitSchemaServiceModel, Long> dataUnitSchemaService;
 
 	@Mock
 	private DataUnitPropertyValueCheckProcessor checkProcessor;
 
-	private Validator<DataUnitDTO> validator;
+	private Validator<DataUnitServiceModel> validator;
 
-	private final TestIdentifiedObjectGenerator<DataUnitDTO> dataUnitGenerator =
-			new TestDataUnitDTOGenerator();
+	private final ModelGenerator<DataUnitServiceModel> dataUnitGenerator =
+			new DataUnitServiceModelGenerator();
 
-	private final TestIdentifiedObjectGenerator<DataUnitSchemaDTO> dataUnitSchemaGenerator =
-			new TestDataUnitSchemaDTOGenerator();
+	private final ModelGenerator<DataUnitSchemaServiceModel> dataUnitSchemaGenerator =
+			new DataUnitSchemaServiceModelGenerator();
 
 	@BeforeEach
 	public void initValidator() {
@@ -56,11 +57,11 @@ class DataUnitValidatorTest {
 
 	@Test
 	void validateTest() {
-		final DataUnitDTO dataUnit = dataUnitGenerator.generateObject();
-		final DataUnitSchemaDTO dataUnitSchema = dataUnitSchemaGenerator.generateObject();
+		final DataUnitServiceModel dataUnit = dataUnitGenerator.generate();
+		final DataUnitSchemaServiceModel dataUnitSchema = dataUnitSchemaGenerator.generate();
 		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.of(dataUnitSchema));
-		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
-				thenReturn(true);
+		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaServiceModel.class),
+				Mockito.any(Object.class))).thenReturn(true);
 
 		final ValidationResult validationResult = validator.validate(dataUnit);
 		Assertions.assertNotNull(validationResult);
@@ -70,7 +71,7 @@ class DataUnitValidatorTest {
 
 	@Test
 	void validateSchemaIdIsNullTest() {
-		final DataUnitDTO dataUnit = dataUnitGenerator.generateObject();
+		final DataUnitServiceModel dataUnit = dataUnitGenerator.generate();
 		TestReflectionUtils.setField(dataUnit, DataUnitDocument_.SCHEMA_ID, null);
 
 		final ValidationResult validationResult = validator.validate(dataUnit);
@@ -84,7 +85,7 @@ class DataUnitValidatorTest {
 
 	@Test
 	void validateSchemaEmptyTest() {
-		final DataUnitDTO dataUnit = dataUnitGenerator.generateObject();
+		final DataUnitServiceModel dataUnit = dataUnitGenerator.generate();
 		TestReflectionUtils.setField(dataUnit, DataUnitDocument_.SCHEMA_ID, INCORRECT_LONG_ID);
 		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.empty());
 
@@ -100,9 +101,9 @@ class DataUnitValidatorTest {
 
 	@Test
 	void validatePropertiesIsNullTest() {
-		final DataUnitDTO dataUnit = dataUnitGenerator.generateObject();
+		final DataUnitServiceModel dataUnit = dataUnitGenerator.generate();
 		TestReflectionUtils.setField(dataUnit, DataUnitDocument_.PROPERTIES, null);
-		final DataUnitSchemaDTO dataUnitSchema = dataUnitSchemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel dataUnitSchema = dataUnitSchemaGenerator.generate();
 		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.of(dataUnitSchema));
 
 		final ValidationResult validationResult = validator.validate(dataUnit);
@@ -116,9 +117,9 @@ class DataUnitValidatorTest {
 
 	@Test
 	void validatePropertiesIsEmptyTest() {
-		final DataUnitDTO dataUnit = dataUnitGenerator.generateObject();
+		final DataUnitServiceModel dataUnit = dataUnitGenerator.generate();
 		TestReflectionUtils.setField(dataUnit, DataUnitDocument_.PROPERTIES, new ArrayList<>());
-		final DataUnitSchemaDTO dataUnitSchema = dataUnitSchemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel dataUnitSchema = dataUnitSchemaGenerator.generate();
 		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.of(dataUnitSchema));
 
 		final ValidationResult validationResult = validator.validate(dataUnit);
@@ -132,15 +133,15 @@ class DataUnitValidatorTest {
 
 	@Test
 	void validatePropertyIsNullTest() {
-		final DataUnitDTO dataUnit = dataUnitGenerator.generateObject();
-		final List<DataUnitDTO.DataUnitPropertyDTO> properties = new ArrayList<>(dataUnit.getProperties());
+		final DataUnitServiceModel dataUnit = dataUnitGenerator.generate();
+		final List<DataUnitPropertyServiceModel> properties = new ArrayList<>(dataUnit.getProperties());
 		properties.add(null);
 		TestReflectionUtils.setField(dataUnit, DataUnitDocument_.PROPERTIES, properties);
 
-		final DataUnitSchemaDTO dataUnitSchema = dataUnitSchemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel dataUnitSchema = dataUnitSchemaGenerator.generate();
 		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.of(dataUnitSchema));
-		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
-				thenReturn(true);
+		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaServiceModel.class),
+				Mockito.any(Object.class))).thenReturn(true);
 
 		final ValidationResult validationResult = validator.validate(dataUnit);
 		Assertions.assertNotNull(validationResult);
@@ -153,12 +154,12 @@ class DataUnitValidatorTest {
 
 	@Test
 	void validatePropertySchemaIdIsNullTest() {
-		final DataUnitDTO dataUnit = dataUnitGenerator.generateObject();
+		final DataUnitServiceModel dataUnit = dataUnitGenerator.generate();
 		TestReflectionUtils.setField(dataUnit.getProperties().get(0), DataUnitDocument_.SCHEMA_ID, null);
-		final DataUnitSchemaDTO dataUnitSchema = dataUnitSchemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel dataUnitSchema = dataUnitSchemaGenerator.generate();
 		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.of(dataUnitSchema));
-		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
-				thenReturn(true);
+		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaServiceModel.class),
+				Mockito.any(Object.class))).thenReturn(true);
 
 		final ValidationResult validationResult = validator.validate(dataUnit);
 		Assertions.assertNotNull(validationResult);
@@ -171,13 +172,13 @@ class DataUnitValidatorTest {
 
 	@Test
 	void validatePropertySchemaIdDuplicateTest() {
-		final DataUnitDTO dataUnit = dataUnitGenerator.generateObject();
+		final DataUnitServiceModel dataUnit = dataUnitGenerator.generate();
 		final Long schemaId = dataUnit.getProperties().get(1).getSchemaId();
 		TestReflectionUtils.setField(dataUnit.getProperties().get(0), DataUnitDocument_.SCHEMA_ID, schemaId);
-		final DataUnitSchemaDTO dataUnitSchema = dataUnitSchemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel dataUnitSchema = dataUnitSchemaGenerator.generate();
 		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.of(dataUnitSchema));
-		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
-				thenReturn(true);
+		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaServiceModel.class),
+				Mockito.any(Object.class))).thenReturn(true);
 
 		final ValidationResult validationResult = validator.validate(dataUnit);
 		Assertions.assertNotNull(validationResult);
@@ -191,15 +192,15 @@ class DataUnitValidatorTest {
 
 	@Test
 	void validatePropertySchemaIsNullTest() {
-		final DataUnitDTO dataUnit = dataUnitGenerator.generateObject();
-		final DataUnitSchemaDTO dataUnitSchema = dataUnitSchemaGenerator.generateObject();
-		final List<DataUnitPropertySchemaDTO> propertySchemas = dataUnitSchema.getPropertySchemas().stream().
+		final DataUnitServiceModel dataUnit = dataUnitGenerator.generate();
+		final DataUnitSchemaServiceModel dataUnitSchema = dataUnitSchemaGenerator.generate();
+		final List<DataUnitPropertySchemaServiceModel> propertySchemas = dataUnitSchema.getPropertySchemas().stream().
 				filter(propertySchema -> !propertySchema.getId().equals(DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID)).
 				collect(Collectors.toList());
 		TestReflectionUtils.setField(dataUnitSchema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS, propertySchemas);
 		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.of(dataUnitSchema));
-		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
-				thenReturn(true);
+		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaServiceModel.class),
+				Mockito.any(Object.class))).thenReturn(true);
 
 		final ValidationResult validationResult = validator.validate(dataUnit);
 		Assertions.assertNotNull(validationResult);
@@ -213,15 +214,16 @@ class DataUnitValidatorTest {
 
 	@Test
 	void validateIncorrectPropertyValueTest() {
-		final DataUnitDTO dataUnit = dataUnitGenerator.generateObject();
-		final DataUnitSchemaDTO dataUnitSchema = dataUnitSchemaGenerator.generateObject();
+		final DataUnitServiceModel dataUnit = dataUnitGenerator.generate();
+		final DataUnitSchemaServiceModel dataUnitSchema = dataUnitSchemaGenerator.generate();
 		Mockito.when(dataUnitSchemaService.findById(dataUnit.getSchemaId())).thenReturn(Optional.of(dataUnitSchema));
-		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
+		Mockito.when(checkProcessor.processCheck(Mockito.any(DataUnitPropertySchemaServiceModel.class),
+						Mockito.any(Object.class))).
 				thenAnswer(invocation -> {
 					final boolean result;
 
-					final DataUnitPropertySchemaDTO propertySchema = invocation.
-							getArgument(0, DataUnitPropertySchemaDTO.class);
+					final DataUnitPropertySchemaServiceModel propertySchema = invocation.
+							getArgument(0, DataUnitPropertySchemaServiceModel.class);
 					if (propertySchema != null) {
 						result = !propertySchema.getId().equals(DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID);
 					} else {

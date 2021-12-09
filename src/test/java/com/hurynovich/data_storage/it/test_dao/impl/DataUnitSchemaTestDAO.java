@@ -3,6 +3,7 @@ package com.hurynovich.data_storage.it.test_dao.impl;
 import com.hurynovich.data_storage.it.test_dao.TestDAO;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,7 +13,7 @@ import java.util.Map;
 
 @Repository
 @Transactional
-public class DataUnitSchemaTestDAO implements TestDAO<DataUnitSchemaEntity, Long> {
+public class DataUnitSchemaTestDAO implements TestDAO<DataUnitSchemaPersistentModel, Long> {
 
 	private static final String ENTITY_GRAPH_KEY = "javax.persistence.fetchgraph";
 
@@ -23,12 +24,12 @@ public class DataUnitSchemaTestDAO implements TestDAO<DataUnitSchemaEntity, Long
 	}
 
 	@Override
-	public DataUnitSchemaEntity save(final DataUnitSchemaEntity schema) {
+	public DataUnitSchemaPersistentModel save(final DataUnitSchemaPersistentModel schema) {
 		return entityManager.merge(schema);
 	}
 
 	@Override
-	public DataUnitSchemaEntity findById(final Long id) {
+	public DataUnitSchemaPersistentModel findById(final Long id) {
 		final EntityGraph<DataUnitSchemaEntity> entityGraph = entityManager.
 				createEntityGraph(DataUnitSchemaEntity.class);
 		entityGraph.addAttributeNodes(DataUnitSchemaEntity_.PROPERTY_SCHEMAS);

@@ -1,11 +1,10 @@
 package com.hurynovich.data_storage.event.model;
 
-import com.hurynovich.data_storage.model.AbstractDTO;
 import org.springframework.lang.NonNull;
 
 import java.util.Objects;
 
-public class Event<T extends AbstractDTO<?>> {
+public class Event<T> {
 
 	private final T payload;
 
@@ -23,5 +22,4 @@ public class Event<T extends AbstractDTO<?>> {
 	public EventType getEventType() {
 		return eventType;
 	}
-
 }

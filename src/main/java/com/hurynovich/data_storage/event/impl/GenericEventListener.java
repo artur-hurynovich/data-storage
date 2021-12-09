@@ -4,7 +4,6 @@ import com.hurynovich.data_storage.event.EventHandler;
 import com.hurynovich.data_storage.event.EventListener;
 import com.hurynovich.data_storage.event.model.Event;
 import com.hurynovich.data_storage.event.model.EventType;
-import com.hurynovich.data_storage.model.AbstractDTO;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-class GenericEventListener<T extends AbstractDTO<?>> implements EventListener<T> {
+class GenericEventListener<T> implements EventListener<T> {
 
 	private final BasicThreadFactory threadFactory = new BasicThreadFactory.
 			Builder().

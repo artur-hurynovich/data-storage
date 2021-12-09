@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id;
 import java.io.Serializable;
 
 @GenerateMetamodel
-public class AbstractDocument<T extends Serializable> implements Identified<T> {
+public class AbstractDocument<T extends Serializable> implements PersistentModel<T> {
 
 	@Id
 	private T id;
@@ -19,5 +19,4 @@ public class AbstractDocument<T extends Serializable> implements Identified<T> {
 	public void setId(final T id) {
 		this.id = id;
 	}
-
 }

@@ -4,9 +4,9 @@ import com.hurynovich.data_storage.event.EventHandler;
 import com.hurynovich.data_storage.event.EventListener;
 import com.hurynovich.data_storage.event.model.Event;
 import com.hurynovich.data_storage.event.model.EventType;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
-import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGenerator;
-import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
+import com.hurynovich.data_storage.model.ModelGenerator;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,17 +22,17 @@ import java.util.Map;
 @ExtendWith(MockitoExtension.class)
 class GenericEventListenerTest {
 
-	private EventListener<DataUnitSchemaDTO> eventListener;
+	private EventListener<DataUnitSchemaServiceModel> eventListener;
 
 	@Mock
-	private EventHandler<DataUnitSchemaDTO> eventHandler;
+	private EventHandler<DataUnitSchemaServiceModel> eventHandler;
 
-	private final TestIdentifiedObjectGenerator<DataUnitSchemaDTO> schemaGenerator =
-			new TestDataUnitSchemaDTOGenerator();
+	private final ModelGenerator<DataUnitSchemaServiceModel> schemaGenerator =
+			new DataUnitSchemaServiceModelGenerator();
 
 	@BeforeEach
 	public void initEventListener() {
-		final Map<EventType, EventHandler<DataUnitSchemaDTO>> handlersByEventType =
+		final Map<EventType, EventHandler<DataUnitSchemaServiceModel>> handlersByEventType =
 				new EnumMap<>(EventType.class);
 		handlersByEventType.put(EventType.DELETE, eventHandler);
 
@@ -41,8 +41,8 @@ class GenericEventListenerTest {
 
 	@Test
 	void onEventTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
-		final Event<DataUnitSchemaDTO> event = new Event<>(schema, EventType.DELETE);
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
+		final Event<DataUnitSchemaServiceModel> event = new Event<>(schema, EventType.DELETE);
 		eventListener.onEvent(event);
 
 		Mockito.verify(eventHandler, new Timeout(100, new Only())).handle(event);

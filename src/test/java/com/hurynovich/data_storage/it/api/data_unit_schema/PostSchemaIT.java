@@ -1,11 +1,11 @@
 package com.hurynovich.data_storage.it.api.data_unit_schema;
 
 import com.hurynovich.data_storage.model.AbstractEntity_;
-import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaEntity_;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,8 +28,8 @@ class PostSchemaIT extends AbstractDataUnitSchemaIT {
 
 	@Test
 	void postSchemaTest() {
-		final DataUnitSchemaDTO schema = dtoGenerator.generateObjectNullId();
-		final ResponseEntity<DataUnitSchemaDTO> responseEntity = send(
+		final DataUnitSchemaServiceModel schema = serviceModelGenerator.generateNullId();
+		final ResponseEntity<DataUnitSchemaServiceModel> responseEntity = send(
 				HttpMethod.POST,
 				"/dataUnitSchema",
 				schema,
@@ -38,13 +38,13 @@ class PostSchemaIT extends AbstractDataUnitSchemaIT {
 		Assertions.assertNotNull(responseEntity);
 		Assertions.assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
 
-		final DataUnitSchemaDTO responseSchema = responseEntity.getBody();
+		final DataUnitSchemaServiceModel responseSchema = responseEntity.getBody();
 		Assertions.assertNotNull(responseSchema);
 		final Long responseSchemaId = responseSchema.getId();
 		Assertions.assertNotNull(responseSchemaId);
 		schemaAsserter.assertEquals(schema, responseSchema, AbstractEntity_.ID);
 
-		final DataUnitSchemaEntity savedSchema = testDAO.findById(responseSchemaId);
+		final DataUnitSchemaPersistentModel savedSchema = testDAO.findById(responseSchemaId);
 		Assertions.assertNotNull(savedSchema);
 		schemaAsserter.assertEquals(savedSchema, responseSchema);
 
@@ -53,7 +53,7 @@ class PostSchemaIT extends AbstractDataUnitSchemaIT {
 
 	@Test
 	void postSchemaNotNullIdTest() {
-		final DataUnitSchemaDTO schema = dtoGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = serviceModelGenerator.generate();
 		final ResponseEntity<Set<String>> responseEntity = send(
 				HttpMethod.POST,
 				"/dataUnitSchema",
@@ -68,7 +68,7 @@ class PostSchemaIT extends AbstractDataUnitSchemaIT {
 		Assertions.assertEquals(1, errors.size());
 		Assertions.assertTrue(errors.contains("'dataUnitSchema.id' should be null"));
 
-		final DataUnitSchemaEntity savedSchema = testDAO.findById(schema.getId());
+		final DataUnitSchemaPersistentModel savedSchema = testDAO.findById(schema.getId());
 		Assertions.assertNull(savedSchema);
 	}
 
@@ -88,7 +88,7 @@ class PostSchemaIT extends AbstractDataUnitSchemaIT {
 	}
 
 	private void processPostSchemaNotValidNameTest(final String name) {
-		final DataUnitSchemaDTO schema = dtoGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = serviceModelGenerator.generateNullId();
 		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.NAME, name);
 		final ResponseEntity<Set<String>> responseEntity = send(
 				HttpMethod.POST,
@@ -108,7 +108,7 @@ class PostSchemaIT extends AbstractDataUnitSchemaIT {
 
 	@Test
 	void postSchemaNameMaxLengthTest() {
-		final DataUnitSchemaDTO schema = dtoGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = serviceModelGenerator.generateNullId();
 		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.NAME,
 				RandomStringUtils.randomAlphabetic(DATA_UNIT_SCHEMA_NAME_MAX_LENGTH + 1));
 		final ResponseEntity<Set<String>> responseEntity = send(
@@ -130,10 +130,10 @@ class PostSchemaIT extends AbstractDataUnitSchemaIT {
 
 	@Test
 	void postSchemaNameDuplicateTest() {
-		final DataUnitSchemaEntity savedSchema = testDAO.save(entityGenerator.generateObjectNullId());
+		final DataUnitSchemaPersistentModel savedSchema = testDAO.save(persistentModelGenerator.generateNullId());
 		final String savedSchemaName = savedSchema.getName();
 
-		final DataUnitSchemaDTO schema = dtoGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = serviceModelGenerator.generateNullId();
 		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.NAME, savedSchemaName);
 		final ResponseEntity<Set<String>> responseEntity = send(
 				HttpMethod.POST,
@@ -163,8 +163,9 @@ class PostSchemaIT extends AbstractDataUnitSchemaIT {
 		processPostSchemaNotValidPropertySchemasTest(new ArrayList<>());
 	}
 
-	private void processPostSchemaNotValidPropertySchemasTest(final List<DataUnitPropertySchemaDTO> propertySchemas) {
-		final DataUnitSchemaDTO schema = dtoGenerator.generateObjectNullId();
+	private void processPostSchemaNotValidPropertySchemasTest(
+			final List<DataUnitPropertySchemaServiceModel> propertySchemas) {
+		final DataUnitSchemaServiceModel schema = serviceModelGenerator.generateNullId();
 		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS, propertySchemas);
 		final ResponseEntity<Set<String>> responseEntity = send(
 				HttpMethod.POST,
@@ -184,8 +185,8 @@ class PostSchemaIT extends AbstractDataUnitSchemaIT {
 
 	@Test
 	void postSchemaNullPropertySchemaTest() {
-		final DataUnitSchemaDTO schema = dtoGenerator.generateObjectNullId();
-		final List<DataUnitPropertySchemaDTO> propertySchemas = new ArrayList<>(schema.getPropertySchemas());
+		final DataUnitSchemaServiceModel schema = serviceModelGenerator.generateNullId();
+		final List<DataUnitPropertySchemaServiceModel> propertySchemas = new ArrayList<>(schema.getPropertySchemas());
 		propertySchemas.add(null);
 		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS, propertySchemas);
 		final ResponseEntity<Set<String>> responseEntity = send(
@@ -206,9 +207,9 @@ class PostSchemaIT extends AbstractDataUnitSchemaIT {
 
 	@Test
 	void postSchemaNotNullPropertySchemaIdTest() {
-		final DataUnitSchemaDTO schema = dtoGenerator.generateObjectNullId();
-		final List<DataUnitPropertySchemaDTO> propertySchemas = new ArrayList<>(schema.getPropertySchemas());
-		final Long id = dtoGenerator.generateObject().getPropertySchemas().
+		final DataUnitSchemaServiceModel schema = serviceModelGenerator.generateNullId();
+		final List<DataUnitPropertySchemaServiceModel> propertySchemas = new ArrayList<>(schema.getPropertySchemas());
+		final Long id = serviceModelGenerator.generate().getPropertySchemas().
 				iterator().next().getId();
 		TestReflectionUtils.setField(propertySchemas.iterator().next(), AbstractEntity_.ID, id);
 		final ResponseEntity<Set<String>> responseEntity = send(
@@ -243,7 +244,7 @@ class PostSchemaIT extends AbstractDataUnitSchemaIT {
 	}
 
 	private void processPostSchemaNotValidPropertySchemaNameTest(final String name) {
-		final DataUnitSchemaDTO schema = dtoGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = serviceModelGenerator.generateNullId();
 		TestReflectionUtils.setField(schema.getPropertySchemas().iterator().next(),
 				DataUnitPropertySchemaEntity_.NAME, name);
 		final ResponseEntity<Set<String>> responseEntity = send(
@@ -264,7 +265,7 @@ class PostSchemaIT extends AbstractDataUnitSchemaIT {
 
 	@Test
 	void postSchemaPropertySchemaNameMaxLengthTest() {
-		final DataUnitSchemaDTO schema = dtoGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = serviceModelGenerator.generateNullId();
 		TestReflectionUtils.setField(schema.getPropertySchemas().iterator().next(), DataUnitPropertySchemaEntity_.NAME,
 				RandomStringUtils.randomAlphabetic(DATA_UNIT_PROPERTY_SCHEMA_NAME_MAX_LENGTH + 1));
 		final ResponseEntity<Set<String>> responseEntity = send(
@@ -286,8 +287,8 @@ class PostSchemaIT extends AbstractDataUnitSchemaIT {
 
 	@Test
 	void postSchemaPropertySchemaNameDuplicateTest() {
-		final DataUnitSchemaDTO schema = dtoGenerator.generateObjectNullId();
-		final List<DataUnitPropertySchemaDTO> propertySchemas = schema.getPropertySchemas();
+		final DataUnitSchemaServiceModel schema = serviceModelGenerator.generateNullId();
+		final List<DataUnitPropertySchemaServiceModel> propertySchemas = schema.getPropertySchemas();
 		final String duplicateName = propertySchemas.get(0).getName();
 		TestReflectionUtils.setField(propertySchemas.get(1),
 				DataUnitPropertySchemaEntity_.NAME, duplicateName);
@@ -310,7 +311,7 @@ class PostSchemaIT extends AbstractDataUnitSchemaIT {
 
 	@Test
 	void postSchemaNullPropertySchemaTypeTest() {
-		final DataUnitSchemaDTO schema = dtoGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = serviceModelGenerator.generateNullId();
 		TestReflectionUtils.setField(schema.getPropertySchemas().iterator().next(),
 				DataUnitPropertySchemaEntity_.TYPE, null);
 		final ResponseEntity<Set<String>> responseEntity = send(

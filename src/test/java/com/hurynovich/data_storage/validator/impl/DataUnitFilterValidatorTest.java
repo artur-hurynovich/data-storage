@@ -4,13 +4,13 @@ import com.hurynovich.data_storage.filter.impl.DataUnitPropertyCriteriaConfig;
 import com.hurynovich.data_storage.filter.model.CriteriaComparison;
 import com.hurynovich.data_storage.filter.model.DataUnitFilter;
 import com.hurynovich.data_storage.filter.model.DataUnitPropertyCriteria;
-import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
+import com.hurynovich.data_storage.model.ModelGenerator;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelGenerator;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
-import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGenerator;
-import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
@@ -29,24 +29,25 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_BOOLEAN_PROPERTY_SCHEMA_ID;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_BOOLEAN_PROPERTY_VALUE;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_DATE_PROPERTY_SCHEMA_ID;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_DATE_PROPERTY_VALUE;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_FLOAT_PROPERTY_SCHEMA_ID;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_FLOAT_PROPERTY_VALUE;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_INTEGER_PROPERTY_SCHEMA_ID;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_INTEGER_PROPERTY_VALUE;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TEXT_PROPERTY_VALUE;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TIME_PROPERTY_SCHEMA_ID;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TIME_PROPERTY_VALUE;
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.INCORRECT_LONG_ID;
+import static com.hurynovich.data_storage.model.ModelConstants.DATA_UNIT_BOOLEAN_PROPERTY_SCHEMA_ID;
+import static com.hurynovich.data_storage.model.ModelConstants.DATA_UNIT_BOOLEAN_PROPERTY_VALUE;
+import static com.hurynovich.data_storage.model.ModelConstants.DATA_UNIT_DATE_PROPERTY_SCHEMA_ID;
+import static com.hurynovich.data_storage.model.ModelConstants.DATA_UNIT_DATE_PROPERTY_VALUE;
+import static com.hurynovich.data_storage.model.ModelConstants.DATA_UNIT_FLOAT_PROPERTY_SCHEMA_ID;
+import static com.hurynovich.data_storage.model.ModelConstants.DATA_UNIT_FLOAT_PROPERTY_VALUE;
+import static com.hurynovich.data_storage.model.ModelConstants.DATA_UNIT_INTEGER_PROPERTY_SCHEMA_ID;
+import static com.hurynovich.data_storage.model.ModelConstants.DATA_UNIT_INTEGER_PROPERTY_VALUE;
+import static com.hurynovich.data_storage.model.ModelConstants.DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID;
+import static com.hurynovich.data_storage.model.ModelConstants.DATA_UNIT_TEXT_PROPERTY_VALUE;
+import static com.hurynovich.data_storage.model.ModelConstants.DATA_UNIT_TIME_PROPERTY_SCHEMA_ID;
+import static com.hurynovich.data_storage.model.ModelConstants.DATA_UNIT_TIME_PROPERTY_VALUE;
+import static com.hurynovich.data_storage.model.ModelConstants.INCORRECT_LONG_ID;
 
 @ExtendWith(MockitoExtension.class)
 class DataUnitFilterValidatorTest {
 
-	private final TestIdentifiedObjectGenerator<DataUnitSchemaDTO> schemaGenerator = new TestDataUnitSchemaDTOGenerator();
+	private final ModelGenerator<DataUnitSchemaServiceModel> schemaGenerator =
+			new DataUnitSchemaServiceModelGenerator();
 
 	@Mock
 	private DataUnitSchemaService schemaService;
@@ -67,7 +68,7 @@ class DataUnitFilterValidatorTest {
 
 	@Test
 	void validateEmptyCriteriaTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		final Long schemaId = schema.getId();
 		final DataUnitFilter filter = new DataUnitFilter(schemaId, new ArrayList<>());
 		Mockito.when(schemaService.findById(schemaId)).thenReturn(Optional.of(schema));
@@ -80,13 +81,13 @@ class DataUnitFilterValidatorTest {
 
 	@Test
 	void validateNotEmptyCriteriaTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		final List<DataUnitPropertyCriteria> criteria = buildCriteria();
 		final Long schemaId = schema.getId();
 		final DataUnitFilter filter = new DataUnitFilter(schemaId, criteria);
 		Mockito.when(schemaService.findById(schemaId)).thenReturn(Optional.of(schema));
-		Mockito.when(valueCheckProcessor.processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
-				thenReturn(true);
+		Mockito.when(valueCheckProcessor.processCheck(Mockito.any(DataUnitPropertySchemaServiceModel.class),
+				Mockito.any(Object.class))).thenReturn(true);
 
 		final ValidationResult validationResult = validator.validate(filter);
 		Assertions.assertNotNull(validationResult);
@@ -131,13 +132,13 @@ class DataUnitFilterValidatorTest {
 		final List<DataUnitPropertyCriteria> criteria = buildCriteria();
 		TestReflectionUtils.setField(criteria.iterator().next(), "propertySchemaId", INCORRECT_LONG_ID);
 
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		final Long schemaId = schema.getId();
 		final DataUnitFilter filter = new DataUnitFilter(schemaId, criteria);
 		Mockito.when(schemaService.findById(schemaId)).thenReturn(Optional.of(schema));
 		Mockito.when(valueCheckProcessor.
-						processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
-				thenReturn(true);
+				processCheck(Mockito.any(DataUnitPropertySchemaServiceModel.class),
+						Mockito.any(Object.class))).thenReturn(true);
 
 		final ValidationResult validationResult = validator.validate(filter);
 		Assertions.assertNotNull(validationResult);
@@ -155,13 +156,13 @@ class DataUnitFilterValidatorTest {
 		final Long propertySchemaId = criteria.get(2).getPropertySchemaId();
 		TestReflectionUtils.setField(criteria.get(1), "propertySchemaId", propertySchemaId);
 
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		final Long schemaId = schema.getId();
 		final DataUnitFilter filter = new DataUnitFilter(schemaId, criteria);
 		Mockito.when(schemaService.findById(schemaId)).thenReturn(Optional.of(schema));
 		Mockito.when(valueCheckProcessor.
-						processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
-				thenReturn(true);
+				processCheck(Mockito.any(DataUnitPropertySchemaServiceModel.class),
+						Mockito.any(Object.class))).thenReturn(true);
 
 		final ValidationResult validationResult = validator.validate(filter);
 		Assertions.assertNotNull(validationResult);
@@ -179,13 +180,13 @@ class DataUnitFilterValidatorTest {
 		final DataUnitPropertyCriteria incorrectCriteria = criteria.get(0);
 		TestReflectionUtils.setField(incorrectCriteria, "comparison", CriteriaComparison.GT);
 
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		final Long schemaId = schema.getId();
 		final DataUnitFilter filter = new DataUnitFilter(schemaId, criteria);
 		Mockito.when(schemaService.findById(schemaId)).thenReturn(Optional.of(schema));
 		Mockito.when(valueCheckProcessor.
-						processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
-				thenReturn(true);
+				processCheck(Mockito.any(DataUnitPropertySchemaServiceModel.class),
+						Mockito.any(Object.class))).thenReturn(true);
 
 		final ValidationResult validationResult = validator.validate(filter);
 		Assertions.assertNotNull(validationResult);
@@ -205,14 +206,15 @@ class DataUnitFilterValidatorTest {
 		final Object incorrectComparisonPattern = 100;
 		TestReflectionUtils.setField(incorrectCriteria, "comparisonPattern", incorrectComparisonPattern);
 
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		final Long schemaId = schema.getId();
 		final DataUnitFilter filter = new DataUnitFilter(schemaId, criteria);
 		Mockito.when(schemaService.findById(schemaId)).thenReturn(Optional.of(schema));
 		Mockito.when(valueCheckProcessor.
-						processCheck(Mockito.any(DataUnitPropertySchemaDTO.class), Mockito.any(Object.class))).
+						processCheck(Mockito.any(DataUnitPropertySchemaServiceModel.class),
+								Mockito.any(Object.class))).
 				thenAnswer(invocation -> {
-					final DataUnitPropertySchemaDTO propertySchema = invocation.getArgument(0);
+					final DataUnitPropertySchemaServiceModel propertySchema = invocation.getArgument(0);
 
 					return !propertySchema.getId().equals(incorrectCriteria.getPropertySchemaId());
 				});

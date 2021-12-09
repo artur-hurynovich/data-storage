@@ -1,8 +1,8 @@
 package com.hurynovich.data_storage.validator.impl;
 
-import com.hurynovich.data_storage.model.AbstractDTO;
-import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
+import com.hurynovich.data_storage.model.Identified;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
 import com.hurynovich.data_storage.utils.ValidationErrorMessageUtils;
 import com.hurynovich.data_storage.validator.Validator;
@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-class DataUnitSchemaValidator implements Validator<DataUnitSchemaDTO> {
+class DataUnitSchemaValidator implements Validator<DataUnitSchemaServiceModel> {
 
 	private static final String DATA_UNIT_SCHEMA_NAME = "dataUnitSchema.name";
 
@@ -38,7 +38,7 @@ class DataUnitSchemaValidator implements Validator<DataUnitSchemaDTO> {
 	}
 
 	@Override
-	public ValidationResult validate(final @NonNull DataUnitSchemaDTO schema) {
+	public ValidationResult validate(final @NonNull DataUnitSchemaServiceModel schema) {
 		final ValidationResult result = new ValidationResult();
 		final Long id = schema.getId();
 		final String name = schema.getName();
@@ -68,7 +68,7 @@ class DataUnitSchemaValidator implements Validator<DataUnitSchemaDTO> {
 			context = DataUnitPropertySchemaValidationContext.empty();
 		}
 
-		final List<DataUnitPropertySchemaDTO> propertySchemas = schema.getPropertySchemas();
+		final List<DataUnitPropertySchemaServiceModel> propertySchemas = schema.getPropertySchemas();
 		if (CollectionUtils.isEmpty(propertySchemas)) {
 			result.setType(ValidationResultType.FAILURE);
 			result.addError(ValidationErrorMessageUtils.buildIsEmptyErrorMessage("dataUnitSchema.propertySchemas"));
@@ -81,7 +81,7 @@ class DataUnitSchemaValidator implements Validator<DataUnitSchemaDTO> {
 	}
 
 	private void validatePropertySchema(final @NonNull DataUnitPropertySchemaValidationContext context,
-										final @Nullable DataUnitPropertySchemaDTO propertySchema,
+										final @Nullable DataUnitPropertySchemaServiceModel propertySchema,
 										final @NonNull ValidationResult result) {
 		if (propertySchema == null) {
 			result.setType(ValidationResultType.FAILURE);
@@ -141,10 +141,10 @@ class DataUnitSchemaValidator implements Validator<DataUnitSchemaDTO> {
 			this.validPropertySchemaIds = validPropertySchemaIds;
 		}
 
-		public static DataUnitPropertySchemaValidationContext of(final @NonNull DataUnitSchemaDTO schema) {
+		public static DataUnitPropertySchemaValidationContext of(final @NonNull DataUnitSchemaServiceModel schema) {
 			return new DataUnitPropertySchemaValidationContext(schema.getId(), schema.getPropertySchemas().stream().
 					filter(Objects::nonNull).
-					map(AbstractDTO::getId).
+					map(Identified::getId).
 					collect(Collectors.toSet()));
 		}
 

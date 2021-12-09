@@ -88,5 +88,4 @@ class DataUnitPropertyCriteriaComparisonIT extends AbstractAPITest {
 	private String buildUrlTemplate(final DataUnitPropertyType type) {
 		return "/criteriaComparisons?propertyType=" + type;
 	}
-
 }

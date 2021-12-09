@@ -38,5 +38,4 @@ class DataUnitQueryCriteriaBuilderImplTest {
 
 		Assertions.assertEquals(EXPECTED_QUERY, query.toString());
 	}
-
 }

@@ -31,5 +31,4 @@ public abstract class AbstractAPITest {
 
 		return testRestTemplate.exchange(urlTemplate, method, requestEntity, responseClass);
 	}
-
 }

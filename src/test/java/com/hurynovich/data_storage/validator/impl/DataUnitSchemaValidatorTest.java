@@ -1,12 +1,12 @@
 package com.hurynovich.data_storage.validator.impl;
 
-import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaDTO;
+import com.hurynovich.data_storage.model.ModelGenerator;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaEntity_;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaDTO;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaEntity_;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelGenerator;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
-import com.hurynovich.data_storage.test_object_generator.TestIdentifiedObjectGenerator;
-import com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitSchemaDTOGenerator;
 import com.hurynovich.data_storage.utils.TestReflectionUtils;
 import com.hurynovich.data_storage.validator.Validator;
 import com.hurynovich.data_storage.validator.model.ValidationResult;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.hurynovich.data_storage.test_object_generator.impl.TestDataUnitConstants.DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID;
+import static com.hurynovich.data_storage.model.ModelConstants.DATA_UNIT_TEXT_PROPERTY_SCHEMA_ID;
 
 @ExtendWith(MockitoExtension.class)
 class DataUnitSchemaValidatorTest {
@@ -38,10 +38,10 @@ class DataUnitSchemaValidatorTest {
 	@Mock
 	private DataUnitSchemaService service;
 
-	private Validator<DataUnitSchemaDTO> validator;
+	private Validator<DataUnitSchemaServiceModel> validator;
 
-	private final TestIdentifiedObjectGenerator<DataUnitSchemaDTO> schemaGenerator =
-			new TestDataUnitSchemaDTOGenerator();
+	private final ModelGenerator<DataUnitSchemaServiceModel> schemaGenerator =
+			new DataUnitSchemaServiceModelGenerator();
 
 	@BeforeEach
 	public void initValidator() {
@@ -50,7 +50,7 @@ class DataUnitSchemaValidatorTest {
 
 	@Test
 	void validateTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generateNullId();
 		Mockito.when(service.existsByName(schema.getName())).thenReturn(false);
 
 		final ValidationResult validationResult = validator.validate(schema);
@@ -65,7 +65,7 @@ class DataUnitSchemaValidatorTest {
 	}
 
 	private void processValidateSchemaNameTest(final String schemaName) {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generateNullId();
 		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.NAME, schemaName);
 
 		final ValidationResult validationResult = validator.validate(schema);
@@ -90,7 +90,7 @@ class DataUnitSchemaValidatorTest {
 
 	@Test
 	void validateSchemaNameExceedsMaxLengthTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generateNullId();
 		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.NAME,
 				RandomStringUtils.randomAlphabetic(DATA_UNIT_SCHEMA_NAME_MAX_LENGTH + 1));
 
@@ -107,7 +107,7 @@ class DataUnitSchemaValidatorTest {
 
 	@Test
 	void validateSchemaNameExistsIdIsNull() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generateNullId();
 		final String name = schema.getName();
 		Mockito.when(service.existsByName(name)).thenReturn(true);
 
@@ -123,7 +123,7 @@ class DataUnitSchemaValidatorTest {
 
 	@Test
 	void validateSchemaNameExistsIdIsNotNull() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		Mockito.when(service.findById(schema.getId())).thenReturn(Optional.of(schema));
 		final String name = schema.getName();
 		Mockito.when(service.existsByNameAndNotId(name, schema.getId())).thenReturn(true);
@@ -140,7 +140,7 @@ class DataUnitSchemaValidatorTest {
 
 	@Test
 	void validatePropertySchemasIsNullTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS, null);
 		Mockito.when(service.existsByNameAndNotId(schema.getName(), schema.getId())).thenReturn(false);
 
@@ -156,7 +156,7 @@ class DataUnitSchemaValidatorTest {
 
 	@Test
 	void validatePropertySchemasIsEmptyTest() {
-		final DataUnitSchemaDTO dataUnitSchema = schemaGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel dataUnitSchema = schemaGenerator.generateNullId();
 		TestReflectionUtils.setField(dataUnitSchema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS, new ArrayList<>());
 		Mockito.when(service.existsByName(dataUnitSchema.getName())).thenReturn(false);
 
@@ -172,8 +172,8 @@ class DataUnitSchemaValidatorTest {
 
 	@Test
 	void validatePropertySchemaIsNullTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
-		final List<DataUnitPropertySchemaDTO> propertySchemas = new ArrayList<>(schema.getPropertySchemas());
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
+		final List<DataUnitPropertySchemaServiceModel> propertySchemas = new ArrayList<>(schema.getPropertySchemas());
 		propertySchemas.add(null);
 		TestReflectionUtils.setField(schema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS, propertySchemas);
 		Mockito.when(service.findById(schema.getId())).thenReturn(Optional.of(schema));
@@ -191,11 +191,11 @@ class DataUnitSchemaValidatorTest {
 
 	@Test
 	void validatePropertySchemaNotFoundTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObject();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generate();
 		Mockito.when(service.existsByNameAndNotId(schema.getName(), schema.getId())).thenReturn(false);
 
-		final DataUnitSchemaDTO existingSchema = schemaGenerator.generateObject();
-		final List<DataUnitPropertySchemaDTO> existingPropertySchemas = existingSchema.getPropertySchemas();
+		final DataUnitSchemaServiceModel existingSchema = schemaGenerator.generate();
+		final List<DataUnitPropertySchemaServiceModel> existingPropertySchemas = existingSchema.getPropertySchemas();
 		TestReflectionUtils.setField(existingSchema, DataUnitSchemaEntity_.PROPERTY_SCHEMAS,
 				existingPropertySchemas.subList(1, existingPropertySchemas.size()));
 		Mockito.when(service.findById(existingSchema.getId())).thenReturn(Optional.of(existingSchema));
@@ -216,7 +216,7 @@ class DataUnitSchemaValidatorTest {
 	}
 
 	private void processValidatePropertySchemaNameTest(final String propertySchemaName) {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generateNullId();
 		TestReflectionUtils.setField(schema.getPropertySchemas().iterator().next(),
 				DataUnitSchemaEntity_.NAME, propertySchemaName);
 		Mockito.when(service.existsByName(schema.getName())).thenReturn(false);
@@ -243,9 +243,10 @@ class DataUnitSchemaValidatorTest {
 
 	@Test
 	void validatePropertySchemaNameExceedsMaxLengthTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generateNullId();
 		TestReflectionUtils.setField(schema.getPropertySchemas().iterator().next(),
-				DataUnitSchemaEntity_.NAME, RandomStringUtils.randomAlphabetic(26));
+				DataUnitSchemaEntity_.NAME,
+				RandomStringUtils.randomAlphabetic(DATA_UNIT_PROPERTY_SCHEMA_NAME_MAX_LENGTH + 1));
 		Mockito.when(service.existsByName(schema.getName())).thenReturn(false);
 
 		final ValidationResult validationResult = validator.validate(schema);
@@ -254,13 +255,14 @@ class DataUnitSchemaValidatorTest {
 
 		final Set<String> errors = validationResult.getErrors();
 		Assertions.assertEquals(1, errors.size());
-		Assertions.assertEquals("'dataUnitSchema.propertySchema.name' can't exceed 25 characters",
+		Assertions.assertEquals("'dataUnitSchema.propertySchema.name' can't exceed " +
+						DATA_UNIT_PROPERTY_SCHEMA_NAME_MAX_LENGTH + " characters",
 				errors.iterator().next());
 	}
 
 	@Test
 	void validatePropertySchemaNameDuplicateTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generateNullId();
 		final String name = schema.getPropertySchemas().get(0).getName();
 		TestReflectionUtils.setField(schema.getPropertySchemas().get(1),
 				DataUnitSchemaEntity_.NAME, name);
@@ -278,7 +280,7 @@ class DataUnitSchemaValidatorTest {
 
 	@Test
 	void validatePropertySchemaTypeIsNullTest() {
-		final DataUnitSchemaDTO schema = schemaGenerator.generateObjectNullId();
+		final DataUnitSchemaServiceModel schema = schemaGenerator.generateNullId();
 		TestReflectionUtils.setField(schema.getPropertySchemas().iterator().next(),
 				DataUnitPropertySchemaEntity_.TYPE, null);
 		Mockito.when(service.existsByName(schema.getName())).thenReturn(false);
