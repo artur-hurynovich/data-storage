@@ -1,8 +1,10 @@
 package com.hurynovich.data_storage.controller;
 
 import com.hurynovich.data_storage.controller.exception.ControllerValidationException;
+import com.hurynovich.data_storage.converter.ApiConverter;
 import com.hurynovich.data_storage.filter.model.DataUnitFilter;
 import com.hurynovich.data_storage.model.PaginationParams;
+import com.hurynovich.data_storage.model.data_unit.DataUnitApiModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModel;
 import com.hurynovich.data_storage.service.dto_service.DataUnitService;
 import com.hurynovich.data_storage.service.paginator.Paginator;
@@ -23,9 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
-public class DataUnitController extends AbstractController<DataUnitServiceModel, String> {
+public class DataUnitController extends AbstractController<DataUnitApiModel, DataUnitServiceModel, String> {
 
 	private static final String DATA_UNIT = "dataUnit";
 
@@ -37,33 +40,39 @@ public class DataUnitController extends AbstractController<DataUnitServiceModel,
 
 	private final Paginator paginator;
 
-	public DataUnitController(final @NonNull Validator<DataUnitServiceModel> dataUnitValidator,
+	final ApiConverter<DataUnitApiModel, DataUnitServiceModel> converter;
+
+	public DataUnitController(final @NonNull Validator<DataUnitApiModel> dataUnitValidator,
 							  final @NonNull Validator<DataUnitFilter> filterValidator,
 							  final @NonNull DataUnitService service,
-							  final @NonNull Paginator paginator) {
-		super(DATA_UNIT, dataUnitValidator, service);
+							  final @NonNull Paginator paginator,
+							  final @NonNull ApiConverter<DataUnitApiModel, DataUnitServiceModel> converter) {
+		super(DATA_UNIT, dataUnitValidator, service, converter);
 		this.filterValidator = Objects.requireNonNull(filterValidator);
 		this.service = Objects.requireNonNull(service);
 		this.paginator = Objects.requireNonNull(paginator);
+		this.converter = Objects.requireNonNull(converter);
 	}
 
 	@PostMapping("/" + DATA_UNIT)
-	public ResponseEntity<DataUnitServiceModel> postDataUnit(final @RequestBody DataUnitServiceModel dataUnit) {
+	public ResponseEntity<DataUnitApiModel> postDataUnit(final @RequestBody DataUnitApiModel dataUnit) {
 		return post(dataUnit);
 	}
 
 	@GetMapping("/" + DATA_UNIT + "/{id}")
-	public ResponseEntity<DataUnitServiceModel> getDataUnitById(final @PathVariable String id) {
+	public ResponseEntity<DataUnitApiModel> getDataUnitById(final @PathVariable String id) {
 		return getById(id);
 	}
 
 	@GetMapping("/" + DATA_UNIT + "s")
-	public ResponseEntity<GenericPage<DataUnitServiceModel>> getDataUnits(
+	public ResponseEntity<GenericPage<DataUnitApiModel>> getDataUnits(
 			final @RequestParam(required = false) Integer pageNumber, final @RequestBody DataUnitFilter filter) {
 		final ValidationResult validationResult = filterValidator.validate(filter);
 		if (validationResult.getType() == ValidationResultType.SUCCESS) {
 			final PaginationParams params = paginator.buildParams(pageNumber, ELEMENTS_PER_PAGE);
-			final List<DataUnitServiceModel> dataUnits = service.findAll(params, filter);
+			final List<DataUnitApiModel> dataUnits = service.findAll(params, filter).stream().
+					map(converter::convert).
+					collect(Collectors.toList());
 
 			return ResponseEntity.ok(paginator.buildPage(dataUnits, service.count(filter), params));
 		} else {
@@ -72,13 +81,13 @@ public class DataUnitController extends AbstractController<DataUnitServiceModel,
 	}
 
 	@PutMapping("/" + DATA_UNIT + "/{id}")
-	public ResponseEntity<DataUnitServiceModel> putDataUnit(final @PathVariable String id,
-															final @RequestBody DataUnitServiceModel dataUnit) {
+	public ResponseEntity<DataUnitApiModel> putDataUnit(final @PathVariable String id,
+														final @RequestBody DataUnitApiModel dataUnit) {
 		return put(id, dataUnit);
 	}
 
 	@DeleteMapping("/" + DATA_UNIT + "/{id}")
-	public ResponseEntity<DataUnitServiceModel> deleteDataUnitById(final @PathVariable String id) {
+	public ResponseEntity<DataUnitApiModel> deleteDataUnitById(final @PathVariable String id) {
 		return deleteById(id);
 	}
 }

@@ -1,7 +1,9 @@
 package com.hurynovich.data_storage.model_asserter.impl;
 
 import com.hurynovich.data_storage.model.AbstractServiceModel_;
+import com.hurynovich.data_storage.model.data_unit.DataUnitApiModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPersistentModel;
+import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyApiModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyPersistentModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyServiceModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModel;
@@ -14,10 +16,59 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class DataUnitAsserter implements ModelAsserter<DataUnitServiceModel, DataUnitPersistentModel> {
+public class DataUnitAsserter
+		implements ModelAsserter<DataUnitApiModel, DataUnitServiceModel, DataUnitPersistentModel> {
+
+	@Override
+	public void assertEquals(final DataUnitApiModel expected, final DataUnitApiModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitWrapper.of(expected), DataUnitWrapper.of(actual), ignoreProperties);
+	}
 
 	@Override
 	public void assertEquals(final DataUnitServiceModel expected, final DataUnitServiceModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitWrapper.of(expected), DataUnitWrapper.of(actual), ignoreProperties);
+	}
+
+	@Override
+	public void assertEquals(final DataUnitPersistentModel expected, final DataUnitPersistentModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitWrapper.of(expected), DataUnitWrapper.of(actual), ignoreProperties);
+	}
+
+	@Override
+	public void assertEquals(final DataUnitApiModel expected, final DataUnitServiceModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitWrapper.of(expected), DataUnitWrapper.of(actual), ignoreProperties);
+	}
+
+	@Override
+	public void assertEquals(final DataUnitApiModel expected, final DataUnitPersistentModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitWrapper.of(expected), DataUnitWrapper.of(actual), ignoreProperties);
+	}
+
+	@Override
+	public void assertEquals(final DataUnitServiceModel expected, final DataUnitApiModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitWrapper.of(expected), DataUnitWrapper.of(actual), ignoreProperties);
+	}
+
+	@Override
+	public void assertEquals(final DataUnitServiceModel expected, final DataUnitPersistentModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitWrapper.of(expected), DataUnitWrapper.of(actual), ignoreProperties);
+	}
+
+	@Override
+	public void assertEquals(final DataUnitPersistentModel expected, final DataUnitApiModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitWrapper.of(expected), DataUnitWrapper.of(actual), ignoreProperties);
+	}
+
+	@Override
+	public void assertEquals(final DataUnitPersistentModel expected, final DataUnitServiceModel actual,
 							 final String... ignoreProperties) {
 		assertEquals(DataUnitWrapper.of(expected), DataUnitWrapper.of(actual), ignoreProperties);
 	}
@@ -47,24 +98,6 @@ public class DataUnitAsserter implements ModelAsserter<DataUnitServiceModel, Dat
 		}
 	}
 
-	@Override
-	public void assertEquals(final DataUnitServiceModel expected, final DataUnitPersistentModel actual,
-							 final String... ignoreProperties) {
-		assertEquals(DataUnitWrapper.of(expected), DataUnitWrapper.of(actual), ignoreProperties);
-	}
-
-	@Override
-	public void assertEquals(final DataUnitPersistentModel expected, final DataUnitServiceModel actual,
-							 final String... ignoreProperties) {
-		assertEquals(DataUnitWrapper.of(expected), DataUnitWrapper.of(actual), ignoreProperties);
-	}
-
-	@Override
-	public void assertEquals(final DataUnitPersistentModel expected, final DataUnitPersistentModel actual,
-							 final String... ignoreProperties) {
-		assertEquals(DataUnitWrapper.of(expected), DataUnitWrapper.of(actual), ignoreProperties);
-	}
-
 	private static class DataUnitWrapper {
 
 		private final String id;
@@ -79,12 +112,17 @@ public class DataUnitAsserter implements ModelAsserter<DataUnitServiceModel, Dat
 			this.properties = properties;
 		}
 
-		public static DataUnitWrapper of(final DataUnitPersistentModel dataUnit) {
+		public static DataUnitWrapper of(final DataUnitApiModel dataUnit) {
 			return new DataUnitWrapper(dataUnit.getId(), dataUnit.getSchemaId(),
 					MassProcessingUtils.processQuietly(dataUnit.getProperties(), DataUnitPropertyWrapper::of));
 		}
 
 		public static DataUnitWrapper of(final DataUnitServiceModel dataUnit) {
+			return new DataUnitWrapper(dataUnit.getId(), dataUnit.getSchemaId(),
+					MassProcessingUtils.processQuietly(dataUnit.getProperties(), DataUnitPropertyWrapper::of));
+		}
+
+		public static DataUnitWrapper of(final DataUnitPersistentModel dataUnit) {
 			return new DataUnitWrapper(dataUnit.getId(), dataUnit.getSchemaId(),
 					MassProcessingUtils.processQuietly(dataUnit.getProperties(), DataUnitPropertyWrapper::of));
 		}
@@ -113,11 +151,15 @@ public class DataUnitAsserter implements ModelAsserter<DataUnitServiceModel, Dat
 			this.value = value;
 		}
 
-		public static DataUnitPropertyWrapper of(final DataUnitPropertyPersistentModel dataUnitProperty) {
+		public static DataUnitPropertyWrapper of(final DataUnitPropertyApiModel dataUnitProperty) {
 			return new DataUnitPropertyWrapper(dataUnitProperty.getSchemaId(), dataUnitProperty.getValue());
 		}
 
 		public static DataUnitPropertyWrapper of(final DataUnitPropertyServiceModel dataUnitProperty) {
+			return new DataUnitPropertyWrapper(dataUnitProperty.getSchemaId(), dataUnitProperty.getValue());
+		}
+
+		public static DataUnitPropertyWrapper of(final DataUnitPropertyPersistentModel dataUnitProperty) {
 			return new DataUnitPropertyWrapper(dataUnitProperty.getSchemaId(), dataUnitProperty.getValue());
 		}
 

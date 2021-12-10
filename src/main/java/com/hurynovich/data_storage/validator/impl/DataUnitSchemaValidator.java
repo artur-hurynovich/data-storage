@@ -1,7 +1,8 @@
 package com.hurynovich.data_storage.validator.impl;
 
 import com.hurynovich.data_storage.model.Identified;
-import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaApiModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaApiModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
 import com.hurynovich.data_storage.service.dto_service.DataUnitSchemaService;
 import com.hurynovich.data_storage.utils.ValidationErrorMessageUtils;
@@ -21,7 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-class DataUnitSchemaValidator implements Validator<DataUnitSchemaServiceModel> {
+class DataUnitSchemaValidator implements Validator<DataUnitSchemaApiModel> {
 
 	private static final String DATA_UNIT_SCHEMA_NAME = "dataUnitSchema.name";
 
@@ -38,7 +39,7 @@ class DataUnitSchemaValidator implements Validator<DataUnitSchemaServiceModel> {
 	}
 
 	@Override
-	public ValidationResult validate(final @NonNull DataUnitSchemaServiceModel schema) {
+	public ValidationResult validate(final @NonNull DataUnitSchemaApiModel schema) {
 		final ValidationResult result = new ValidationResult();
 		final Long id = schema.getId();
 		final String name = schema.getName();
@@ -68,7 +69,7 @@ class DataUnitSchemaValidator implements Validator<DataUnitSchemaServiceModel> {
 			context = DataUnitPropertySchemaValidationContext.empty();
 		}
 
-		final List<DataUnitPropertySchemaServiceModel> propertySchemas = schema.getPropertySchemas();
+		final List<DataUnitPropertySchemaApiModel> propertySchemas = schema.getPropertySchemas();
 		if (CollectionUtils.isEmpty(propertySchemas)) {
 			result.setType(ValidationResultType.FAILURE);
 			result.addError(ValidationErrorMessageUtils.buildIsEmptyErrorMessage("dataUnitSchema.propertySchemas"));
@@ -81,7 +82,7 @@ class DataUnitSchemaValidator implements Validator<DataUnitSchemaServiceModel> {
 	}
 
 	private void validatePropertySchema(final @NonNull DataUnitPropertySchemaValidationContext context,
-										final @Nullable DataUnitPropertySchemaServiceModel propertySchema,
+										final @Nullable DataUnitPropertySchemaApiModel propertySchema,
 										final @NonNull ValidationResult result) {
 		if (propertySchema == null) {
 			result.setType(ValidationResultType.FAILURE);

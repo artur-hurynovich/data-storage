@@ -9,6 +9,7 @@ import com.hurynovich.data_storage.event.model.EventType;
 import com.hurynovich.data_storage.model.AbstractServiceModel_;
 import com.hurynovich.data_storage.model.ModelGenerator;
 import com.hurynovich.data_storage.model.PaginationParams;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaApiModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModelGenerator;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
@@ -62,7 +63,7 @@ class DataUnitSchemaServiceImplTest {
 	private final ModelGenerator<DataUnitSchemaPersistentModel> persistentModelGenerator =
 			new DataUnitSchemaPersistentModelGenerator();
 
-	private final ModelAsserter<DataUnitSchemaServiceModel, DataUnitSchemaPersistentModel> asserter =
+	private final ModelAsserter<DataUnitSchemaApiModel, DataUnitSchemaServiceModel, DataUnitSchemaPersistentModel> asserter =
 			new DataUnitSchemaAsserter();
 
 	@BeforeEach

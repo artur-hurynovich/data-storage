@@ -1,7 +1,7 @@
 package com.hurynovich.data_storage.it.api.data_unit_schema;
 
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaApiModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.ParameterizedTypeReference;
@@ -19,7 +19,7 @@ class GetSchemaByIdIT extends AbstractDataUnitSchemaIT {
 	void getSchemaByIdTest() {
 		final DataUnitSchemaPersistentModel savedSchema = testDAO.save(persistentModelGenerator.generateNullId());
 		final Long savedSchemaId = savedSchema.getId();
-		final ResponseEntity<DataUnitSchemaServiceModel> responseEntity = send(
+		final ResponseEntity<DataUnitSchemaApiModel> responseEntity = send(
 				HttpMethod.GET,
 				"/dataUnitSchema/" + savedSchemaId,
 				new ParameterizedTypeReference<>() {
@@ -27,7 +27,7 @@ class GetSchemaByIdIT extends AbstractDataUnitSchemaIT {
 		Assertions.assertNotNull(responseEntity);
 		Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 
-		final DataUnitSchemaServiceModel responseSchema = responseEntity.getBody();
+		final DataUnitSchemaApiModel responseSchema = responseEntity.getBody();
 		Assertions.assertNotNull(responseSchema);
 		Assertions.assertNotNull(responseSchema);
 		schemaAsserter.assertEquals(savedSchema, responseSchema);

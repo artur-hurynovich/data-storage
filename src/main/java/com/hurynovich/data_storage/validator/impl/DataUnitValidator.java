@@ -1,8 +1,8 @@
 package com.hurynovich.data_storage.validator.impl;
 
 import com.hurynovich.data_storage.model.Identified;
-import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyServiceModel;
-import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModel;
+import com.hurynovich.data_storage.model.data_unit.DataUnitApiModel;
+import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyApiModel;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
 import com.hurynovich.data_storage.service.data_unit_property_check_processor.DataUnitPropertyValueCheckProcessor;
@@ -26,7 +26,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-class DataUnitValidator implements Validator<DataUnitServiceModel> {
+class DataUnitValidator implements Validator<DataUnitApiModel> {
 
 	private final BaseService<DataUnitSchemaServiceModel, Long> schemaService;
 
@@ -39,7 +39,7 @@ class DataUnitValidator implements Validator<DataUnitServiceModel> {
 	}
 
 	@Override
-	public ValidationResult validate(final @NonNull DataUnitServiceModel dataUnit) {
+	public ValidationResult validate(final @NonNull DataUnitApiModel dataUnit) {
 		final ValidationResult result = new ValidationResult();
 		final Long schemaId = dataUnit.getSchemaId();
 		if (schemaId == null) {
@@ -51,7 +51,7 @@ class DataUnitValidator implements Validator<DataUnitServiceModel> {
 				result.setType(ValidationResultType.FAILURE);
 				result.addError(ValidationErrorMessageUtils.buildNotFoundByIdErrorMessage("dataUnitSchema", schemaId));
 			} else {
-				final List<DataUnitPropertyServiceModel> properties = dataUnit.getProperties();
+				final List<DataUnitPropertyApiModel> properties = dataUnit.getProperties();
 				if (CollectionUtils.isEmpty(properties)) {
 					result.setType(ValidationResultType.FAILURE);
 					result.addError(ValidationErrorMessageUtils.buildIsEmptyErrorMessage("dataUnit.properties"));
@@ -68,7 +68,7 @@ class DataUnitValidator implements Validator<DataUnitServiceModel> {
 	}
 
 	private void validateProperty(final @NonNull DataUnitPropertyValidationContext context,
-								  final @Nullable DataUnitPropertyServiceModel property,
+								  final @Nullable DataUnitPropertyApiModel property,
 								  final @NonNull ValidationResult result) {
 		if (property == null) {
 			result.setType(ValidationResultType.FAILURE);

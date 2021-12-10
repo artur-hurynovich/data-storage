@@ -2,6 +2,7 @@ package com.hurynovich.data_storage.converter.impl;
 
 import com.hurynovich.data_storage.converter.ServiceConverter;
 import com.hurynovich.data_storage.model.ModelGenerator;
+import com.hurynovich.data_storage.model.data_unit.DataUnitApiModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPersistentModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPersistentModelGenerator;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPropertyServiceModel;
@@ -26,7 +27,7 @@ class DataUnitServiceConverterTest {
 	private final ModelGenerator<DataUnitPersistentModel> persistentModelGenerator =
 			new DataUnitPersistentModelGenerator();
 
-	private final ModelAsserter<DataUnitServiceModel, DataUnitPersistentModel> asserter = new DataUnitAsserter();
+	private final ModelAsserter<DataUnitApiModel, DataUnitServiceModel, DataUnitPersistentModel> asserter = new DataUnitAsserter();
 
 	@Test
 	void convertPersistentModelNullTest() {

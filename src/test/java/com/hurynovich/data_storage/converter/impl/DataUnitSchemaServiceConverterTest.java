@@ -3,6 +3,7 @@ package com.hurynovich.data_storage.converter.impl;
 import com.hurynovich.data_storage.converter.ServiceConverter;
 import com.hurynovich.data_storage.model.ModelGenerator;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaApiModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModelGenerator;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
@@ -18,7 +19,7 @@ import java.util.List;
 class DataUnitSchemaServiceConverterTest {
 
 	private final ServiceConverter<DataUnitSchemaServiceModel, DataUnitSchemaPersistentModel> converter =
-			new DataUnitSchemaServiceConverter(new DataUnitPropertySchemaServiceConverter());
+			new DataUnitSchemaServiceConverter();
 
 	private final ModelGenerator<DataUnitSchemaServiceModel> serviceModelGenerator =
 			new DataUnitSchemaServiceModelGenerator();
@@ -26,7 +27,7 @@ class DataUnitSchemaServiceConverterTest {
 	private final ModelGenerator<DataUnitSchemaPersistentModel> persistentModelGenerator =
 			new DataUnitSchemaPersistentModelGenerator();
 
-	private final ModelAsserter<DataUnitSchemaServiceModel, DataUnitSchemaPersistentModel> asserter =
+	private final ModelAsserter<DataUnitSchemaApiModel, DataUnitSchemaServiceModel, DataUnitSchemaPersistentModel> asserter =
 			new DataUnitSchemaAsserter();
 
 	@Test

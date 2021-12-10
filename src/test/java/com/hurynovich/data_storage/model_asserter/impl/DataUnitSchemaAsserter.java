@@ -1,9 +1,11 @@
 package com.hurynovich.data_storage.model_asserter.impl;
 
 import com.hurynovich.data_storage.model.AbstractServiceModel_;
+import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaApiModel;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaPersistentModel;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertySchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_property_schema.DataUnitPropertyType;
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaApiModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModelImpl_;
@@ -15,10 +17,59 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class DataUnitSchemaAsserter implements ModelAsserter<DataUnitSchemaServiceModel, DataUnitSchemaPersistentModel> {
+public class DataUnitSchemaAsserter
+		implements ModelAsserter<DataUnitSchemaApiModel, DataUnitSchemaServiceModel, DataUnitSchemaPersistentModel> {
+
+	@Override
+	public void assertEquals(final DataUnitSchemaApiModel expected, final DataUnitSchemaApiModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitSchemaWrapper.of(expected), DataUnitSchemaWrapper.of(actual), ignoreProperties);
+	}
 
 	@Override
 	public void assertEquals(final DataUnitSchemaServiceModel expected, final DataUnitSchemaServiceModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitSchemaWrapper.of(expected), DataUnitSchemaWrapper.of(actual), ignoreProperties);
+	}
+
+	@Override
+	public void assertEquals(final DataUnitSchemaPersistentModel expected, final DataUnitSchemaPersistentModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitSchemaWrapper.of(expected), DataUnitSchemaWrapper.of(actual), ignoreProperties);
+	}
+
+	@Override
+	public void assertEquals(final DataUnitSchemaApiModel expected, final DataUnitSchemaServiceModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitSchemaWrapper.of(expected), DataUnitSchemaWrapper.of(actual), ignoreProperties);
+	}
+
+	@Override
+	public void assertEquals(final DataUnitSchemaApiModel expected, final DataUnitSchemaPersistentModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitSchemaWrapper.of(expected), DataUnitSchemaWrapper.of(actual), ignoreProperties);
+	}
+
+	@Override
+	public void assertEquals(final DataUnitSchemaServiceModel expected, final DataUnitSchemaApiModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitSchemaWrapper.of(expected), DataUnitSchemaWrapper.of(actual), ignoreProperties);
+	}
+
+	@Override
+	public void assertEquals(final DataUnitSchemaServiceModel expected, final DataUnitSchemaPersistentModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitSchemaWrapper.of(expected), DataUnitSchemaWrapper.of(actual), ignoreProperties);
+	}
+
+	@Override
+	public void assertEquals(final DataUnitSchemaPersistentModel expected, final DataUnitSchemaApiModel actual,
+							 final String... ignoreProperties) {
+		assertEquals(DataUnitSchemaWrapper.of(expected), DataUnitSchemaWrapper.of(actual), ignoreProperties);
+	}
+
+	@Override
+	public void assertEquals(final DataUnitSchemaPersistentModel expected, final DataUnitSchemaServiceModel actual,
 							 final String... ignoreProperties) {
 		assertEquals(DataUnitSchemaWrapper.of(expected), DataUnitSchemaWrapper.of(actual), ignoreProperties);
 	}
@@ -53,24 +104,6 @@ public class DataUnitSchemaAsserter implements ModelAsserter<DataUnitSchemaServi
 		}
 	}
 
-	@Override
-	public void assertEquals(final DataUnitSchemaServiceModel expected, final DataUnitSchemaPersistentModel actual,
-							 final String... ignoreProperties) {
-		assertEquals(DataUnitSchemaWrapper.of(expected), DataUnitSchemaWrapper.of(actual), ignoreProperties);
-	}
-
-	@Override
-	public void assertEquals(final DataUnitSchemaPersistentModel expected, final DataUnitSchemaServiceModel actual,
-							 final String... ignoreProperties) {
-		assertEquals(DataUnitSchemaWrapper.of(expected), DataUnitSchemaWrapper.of(actual), ignoreProperties);
-	}
-
-	@Override
-	public void assertEquals(final DataUnitSchemaPersistentModel expected, final DataUnitSchemaPersistentModel actual,
-							 final String... ignoreProperties) {
-		assertEquals(DataUnitSchemaWrapper.of(expected), DataUnitSchemaWrapper.of(actual), ignoreProperties);
-	}
-
 	private static class DataUnitSchemaWrapper {
 
 		private final Long id;
@@ -86,12 +119,17 @@ public class DataUnitSchemaAsserter implements ModelAsserter<DataUnitSchemaServi
 			this.propertySchemas = propertySchemas;
 		}
 
-		public static DataUnitSchemaWrapper of(final DataUnitSchemaPersistentModel schema) {
+		public static DataUnitSchemaWrapper of(final DataUnitSchemaApiModel schema) {
 			return new DataUnitSchemaWrapper(schema.getId(), schema.getName(),
 					MassProcessingUtils.processQuietly(schema.getPropertySchemas(), DataUnitPropertySchemaWrapper::of));
 		}
 
 		public static DataUnitSchemaWrapper of(final DataUnitSchemaServiceModel schema) {
+			return new DataUnitSchemaWrapper(schema.getId(), schema.getName(),
+					MassProcessingUtils.processQuietly(schema.getPropertySchemas(), DataUnitPropertySchemaWrapper::of));
+		}
+
+		public static DataUnitSchemaWrapper of(final DataUnitSchemaPersistentModel schema) {
 			return new DataUnitSchemaWrapper(schema.getId(), schema.getName(),
 					MassProcessingUtils.processQuietly(schema.getPropertySchemas(), DataUnitPropertySchemaWrapper::of));
 		}
@@ -124,13 +162,19 @@ public class DataUnitSchemaAsserter implements ModelAsserter<DataUnitSchemaServi
 		}
 
 		public static DataUnitPropertySchemaWrapper of(
-				final DataUnitPropertySchemaPersistentModel dataUnitPropertySchema) {
+				final DataUnitPropertySchemaApiModel dataUnitPropertySchema) {
 			return new DataUnitPropertySchemaWrapper(dataUnitPropertySchema.getId(), dataUnitPropertySchema.getName(),
 					dataUnitPropertySchema.getType());
 		}
 
 		public static DataUnitPropertySchemaWrapper of(
 				final DataUnitPropertySchemaServiceModel dataUnitPropertySchema) {
+			return new DataUnitPropertySchemaWrapper(dataUnitPropertySchema.getId(), dataUnitPropertySchema.getName(),
+					dataUnitPropertySchema.getType());
+		}
+
+		public static DataUnitPropertySchemaWrapper of(
+				final DataUnitPropertySchemaPersistentModel dataUnitPropertySchema) {
 			return new DataUnitPropertySchemaWrapper(dataUnitPropertySchema.getId(), dataUnitPropertySchema.getName(),
 					dataUnitPropertySchema.getType());
 		}

@@ -1,7 +1,7 @@
 package com.hurynovich.data_storage.it.api.data_unit_schema;
 
+import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaApiModel;
 import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaPersistentModel;
-import com.hurynovich.data_storage.model.data_unit_schema.DataUnitSchemaServiceModel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.ParameterizedTypeReference;
@@ -19,7 +19,7 @@ class DeleteSchemaByIdIT extends AbstractDataUnitSchemaIT {
 	void deleteSchemaByIdTest() {
 		final DataUnitSchemaPersistentModel savedSchema = testDAO.save(persistentModelGenerator.generateNullId());
 		final Long savedSchemaId = savedSchema.getId();
-		final ResponseEntity<DataUnitSchemaServiceModel> responseEntity = send(
+		final ResponseEntity<DataUnitSchemaApiModel> responseEntity = send(
 				HttpMethod.DELETE,
 				"/dataUnitSchema/" + savedSchemaId,
 				new ParameterizedTypeReference<>() {

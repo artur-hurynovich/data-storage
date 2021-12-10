@@ -31,26 +31,4 @@ public class DataUnitServiceModelImpl extends AbstractServiceModel<String> imple
 		return properties;
 	}
 
-	@GenerateMetamodel
-	public static class DataUnitPropertyServiceModelImpl implements DataUnitPropertyServiceModel {
-
-		private final Long schemaId;
-
-		private final Object value;
-
-		public DataUnitPropertyServiceModelImpl(final Long schemaId, final Object value) {
-			this.schemaId = schemaId;
-			this.value = value;
-		}
-
-		@Override
-		public Long getSchemaId() {
-			return schemaId;
-		}
-
-		@Override
-		public Object getValue() {
-			return value;
-		}
-	}
 }

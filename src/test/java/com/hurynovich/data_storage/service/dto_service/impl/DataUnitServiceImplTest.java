@@ -6,6 +6,7 @@ import com.hurynovich.data_storage.filter.model.DataUnitFilter;
 import com.hurynovich.data_storage.model.AbstractServiceModel_;
 import com.hurynovich.data_storage.model.ModelGenerator;
 import com.hurynovich.data_storage.model.PaginationParams;
+import com.hurynovich.data_storage.model.data_unit.DataUnitApiModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPersistentModel;
 import com.hurynovich.data_storage.model.data_unit.DataUnitPersistentModelGenerator;
 import com.hurynovich.data_storage.model.data_unit.DataUnitServiceModel;
@@ -51,7 +52,8 @@ class DataUnitServiceImplTest {
 	private final ModelGenerator<DataUnitPersistentModel> persistentModelGenerator =
 			new DataUnitPersistentModelGenerator();
 
-	private final ModelAsserter<DataUnitServiceModel, DataUnitPersistentModel> asserter = new DataUnitAsserter();
+	private final ModelAsserter<DataUnitApiModel, DataUnitServiceModel, DataUnitPersistentModel> asserter =
+			new DataUnitAsserter();
 
 	@BeforeEach
 	public void initService() {
